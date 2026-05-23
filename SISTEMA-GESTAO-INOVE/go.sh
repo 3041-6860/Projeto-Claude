@@ -10,10 +10,13 @@ mkdir -p "$B/app/(app)/rh/ponto"
 mkdir -p "$B/app/(app)/rh/ferias"
 mkdir -p "$B/app/(app)/rh/organograma"
 mkdir -p "$B/app/(app)/rh/relatorios"
+mkdir -p "$B/app/login"
+mkdir -p "$B/public"
 
 echo "Copiando arquivos..."
 cp -rf "$S/app/." "$B/app/"
 cp -rf "$S/components/." "$B/components/"
+cp -rf "$S/public/." "$B/public/"
 
 echo "Fazendo build..."
 cd "$B"
