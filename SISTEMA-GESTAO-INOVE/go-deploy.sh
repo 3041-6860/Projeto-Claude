@@ -14,7 +14,7 @@ mkdir -p "$B/public"
 echo "Copiando arquivos..."
 cp -rf "$S/app/." "$B/app/"
 cp -rf "$S/components/." "$B/components/"
-cp -rf "$S/public/." "$B/public/"
+if [ -d "$S/public" ]; then cp -rf "$S/public/." "$B/public/"; fi
 
 echo "Fazendo build..."
 cd "$B"
