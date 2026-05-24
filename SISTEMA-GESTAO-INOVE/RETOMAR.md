@@ -5,26 +5,24 @@
 
 ---
 
-## 🚨 ATENÇÃO — Deploy pendente
+## 🚨 ATENÇÃO — Como fazer deploy
 
-O site pode ainda estar exibindo código antigo. **Antes de testar qualquer funcionalidade**, verificar no terminal do cPanel:
-
-```bash
-tail -f /tmp/deploy.log
-```
-
-Se o log não mostrar atividade recente, o cron parou. Executar manualmente:
+O site **não atualiza automaticamente**. Sempre que houver mudanças no GitHub, rodar no terminal do cPanel:
 
 ```bash
-cd /root/inove-deploy && git pull && bash b
+cd /root/inove-deploy
+git pull
+bash b
+cat /tmp/deploy.log
 ```
 
-O `bash b` demora ~3 min (aparece `PRONTO` no log quando terminar).  
-Após isso, o auto-deploy volta a funcionar sozinho a cada 5 minutos.
+Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
+
+> ⚠️ O `git pull` é obrigatório antes do `bash b` — sem ele, o build usa código antigo.
 
 ---
 
-## ✅ O QUE ESTÁ PRONTO (código no GitHub)
+## ✅ O QUE ESTÁ PRONTO (código no GitHub + deploy confirmado)
 
 ### 🏠 Dashboard
 | Item | Status |
@@ -32,9 +30,26 @@ Após isso, o auto-deploy volta a funcionar sozinho a cada 5 minutos.
 | Banner dinâmico (Bom dia/Boa tarde/Boa noite por horário) | ✅ |
 | Data por extenso atualizada em tempo real | ✅ |
 | Nome do usuário logado no banner | ✅ |
-| 12 KPIs em 3 linhas (métricas fixas — aguarda dados reais) | ✅ |
+| 12 KPIs em 3 linhas (todos em "—" aguardando dados reais) | ✅ |
 | Acesso Rápido com 6 módulos | ✅ |
-| Feed + Comunicados no painel lateral | ✅ |
+| Comunicados (painel vazio, pronto para usar) | ✅ |
+
+### ⏰ Barra Superior (TopNav)
+| Item | Status |
+|------|--------|
+| Relógio ao vivo (HH:MM, atualiza a cada segundo) | ✅ |
+| Ponto virtual no dropdown do avatar (Entrada/Almoço/Retorno/Saída) | ✅ |
+| Registro automático com hora atual | ✅ |
+| Controle de permissão: gestor autoriza registros pendentes | ✅ |
+| Foto de perfil no avatar (carrega do localStorage) | ✅ |
+
+### 👤 Meu Perfil (`/perfil`)
+| Item | Status |
+|------|--------|
+| Upload de foto (armazenada em localStorage) | ✅ |
+| Campos: telefone, nascimento, cargo, departamento, bio | ✅ |
+| Cartão Ponto — tabela últimos 7 dias com total de horas | ✅ |
+| Link na Sidebar (seção Sistema) e no dropdown do avatar | ✅ |
 
 ### 👥 CRM / Leads (`/crm/leads`)
 | Item | Status |
@@ -44,8 +59,6 @@ Após isso, o auto-deploy volta a funcionar sozinho a cada 5 minutos.
 | Fases dinâmicas: botão **+** entre colunas (inserir no meio) | ✅ |
 | Excluir fases customizadas (× no cabeçalho) | ✅ |
 | Painel lateral com timeline de atividades | ✅ |
-| Tipos de atividade: nota, ligação, e-mail, tarefa | ✅ |
-| Vista Lista com filtros | ✅ |
 | Modal criação de lead (dados completos) | ✅ |
 | Filtros por status, origem, responsável, busca | ✅ |
 
@@ -54,8 +67,7 @@ Após isso, o auto-deploy volta a funcionar sozinho a cada 5 minutos.
 |------|--------|
 | 3 pipelines: GCJ Jurídico, IVI Negócios, Grupo Inove | ✅ |
 | Fases dinâmicas por pipeline (inserir em qualquer posição) | ✅ |
-| Vista Kanban + Lista + Atividades (em breve) | ✅ |
-| Métricas: valor total, negócios, fechados, prospecção | ✅ |
+| Vista Kanban + Lista | ✅ |
 
 ### ✅ Tarefas (`/tarefas`)
 | Item | Status |
@@ -63,42 +75,44 @@ Após isso, o auto-deploy volta a funcionar sozinho a cada 5 minutos.
 | Kanban 4 colunas padrão + fases dinâmicas | ✅ |
 | Modal 5 abas: Geral, Vínculos, Subtarefas, Checklist, Tempo | ✅ |
 | Delegação, participantes, tags, estimativa de horas | ✅ |
-| Vínculos com Lead ou Negócio | ✅ |
-| Avançar/Voltar card entre colunas | ✅ |
-| Vista Lista com filtros | ✅ |
-| Indicador de tarefas atrasadas | ✅ |
+| Inserir fase em qualquer posição | ✅ |
+
+### 💰 Financeiro (`/financeiro`)
+| Item | Status |
+|------|--------|
+| Cadastro real de lançamentos (receitas e despesas) | ✅ |
+| Modal com: descrição, tipo, categoria, valor, data, status, obs | ✅ |
+| KPIs calculados automaticamente (receita, despesa, saldo, a receber) | ✅ |
+| Filtros por tipo, categoria e status | ✅ |
+| Editar e excluir lançamentos | ✅ |
+| Dados salvos em localStorage | ✅ |
 
 ### 👤 RH (`/rh`)
 | Item | Status |
 |------|--------|
-| Lista de colaboradores | ✅ |
-| Modal admissão (dados pessoais + profissionais + benefícios) | ✅ |
-| Modal desligamento (checklist 6 itens) | ✅ |
-| **↳ Onboarding** (`/rh/onboarding`) — controle de acesso RH/Gestor | ✅ |
-| **↳ Ponto Eletrônico** (`/rh/ponto`) — 4 abas | ✅ |
-| **↳ Férias & Ausências** (`/rh/ferias`) — 4 abas | ✅ |
-| **↳ Organograma** (`/rh/organograma`) — visual em árvore | ✅ |
-| **↳ Relatórios RH** (`/rh/relatorios`) — por colaborador + período | ✅ |
+| Lista de colaboradores, modal admissão/desligamento | ✅ |
+| **↳ Onboarding** (`/rh/onboarding`) — acesso restrito RH/Gestor/Admin | ✅ |
+| **↳ Ponto Eletrônico** (`/rh/ponto`) | ✅ |
+| **↳ Férias & Ausências** (`/rh/ferias`) | ✅ |
+| **↳ Organograma** (`/rh/organograma`) | ✅ |
+| **↳ Relatórios RH** (`/rh/relatorios`) | ✅ |
 
 ### 📣 Marketing (`/marketing`)
 | Item | Status |
 |------|--------|
-| Kanban de campanhas (4 fases) | ✅ |
+| Kanban de campanhas (4 fases fixas) | ✅ |
 
 ### ⚙️ Configurações (`/configuracoes`)
 | Item | Status |
 |------|--------|
-| 7 abas: Usuários, Perfis & Permissões, Integrações, Notificações, Aparência, Segurança, Sistema | ✅ |
-| Matriz de permissões (14 módulos × 5 perfis × 4 níveis) | ✅ |
+| 7 abas + matriz de permissões (14 módulos × 5 perfis) | ✅ |
 
 ### 🔐 Sistema / Auth
 | Item | Status |
 |------|--------|
-| Login com logo embutida | ✅ |
-| Session cookie com `role` (admin, rh, gestor) | ✅ |
-| Controle de acesso: Onboarding restrito a RH/Gestor | ✅ |
-| Auto-deploy via cron GitHub → Servidor (a cada 5 min) | ✅ |
-| Sidebar com submenus dinâmicos para RH | ✅ |
+| Login com logo | ✅ |
+| Session cookie com `role` | ✅ |
+| Controle de acesso por perfil | ✅ |
 
 **Logins disponíveis:**
 | Usuário | Senha | Perfil |
@@ -112,75 +126,54 @@ Após isso, o auto-deploy volta a funcionar sozinho a cada 5 minutos.
 
 ## 🚧 O QUE AINDA PRECISA SER FEITO
 
-### 🏠 Dashboard
-- [ ] KPIs com dados reais (conectar CRM, Financeiro, Tarefas)
-- [ ] Gráfico de evolução de receita / despesas
+### 🏠 Dashboard — Prioridade média
+- [ ] KPIs com dados reais (conectar Financeiro, CRM, Tarefas, RH)
 - [ ] Widget "Próximas tarefas do dia"
 - [ ] Widget "Leads recentes"
+- [ ] Gráfico de receita × despesa
 
-### 💰 Financeiro (`/financeiro`) — **PRIORITÁRIO**
-> Módulo existe mas com dados **hardcoded** (lançamentos estáticos)
-
-- [ ] Cadastro real de lançamentos (receitas e despesas)
-- [ ] Contas a Pagar / Receber com vencimentos
-- [ ] Fluxo de Caixa com projeção
-- [ ] DRE (Demonstrativo de Resultado do Exercício)
+### 💰 Financeiro — Próxima sessão sugerida
+- [ ] Contas a Pagar / Receber com controle de vencimentos
+- [ ] Fluxo de Caixa com projeção mensal
+- [ ] DRE (Demonstrativo de Resultado)
 - [ ] Gráficos de receita × despesa × margem
-- [ ] Relatórios exportáveis
+- [ ] Exportar relatório (CSV/PDF)
 
-### 📅 Calendário (`/calendario`) — **PRIORITÁRIO**
-> Módulo existe mas sem persistência real
+### 📅 Calendário (`/calendario`)
+- [ ] Persistência de eventos em localStorage
+- [ ] Criar evento clicando no dia
+- [ ] Visualização semana / dia
+- [ ] Sincronizar com módulo de Tarefas
 
-- [ ] Persistência de eventos em localStorage (igual às tarefas)
-- [ ] Integração com Google Calendar OAuth
-- [ ] Visualização semana / dia além de mês
-- [ ] Criar evento diretamente do calendário clicando no dia
-- [ ] Sincronizar com módulo de Tarefas (tarefas com prazo aparecem no calendário)
+### 📣 Marketing (`/marketing`)
+- [ ] Fases dinâmicas no kanban (mesmo padrão CRM/Tarefas)
+- [ ] Métricas de campanha (cliques, conversões, leads gerados)
 
 ### 📋 Documentos (`/documentos`)
-> Lista estática apenas
-
 - [ ] Upload real de arquivos
 - [ ] Download / preview (PDF, DOCX)
 - [ ] Categorias, tags e filtros funcionando
-- [ ] Histórico de versões
-- [ ] Vincular documentos a leads ou negócios
+- [ ] Vincular a leads ou negócios
 
 ### 💬 Mensagens / Messenger (`/mensagens`)
-- [ ] Chat em tempo real (WebSocket ou polling)
+- [ ] Chat em tempo real
 - [ ] Grupos por departamento
-- [ ] Notificações de novas mensagens
-- [ ] Compartilhar documentos no chat
 
 ### ⚖️ Processos Jurídicos (`/processos`)
-> Módulo criado mas muito básico
-
 - [ ] Cadastro completo de processos
 - [ ] Controle de prazos e alertas
-- [ ] Integração com Datajuri (futuro)
-- [ ] Vincular processo a lead/cliente
 
-### 📣 Marketing (`/marketing`)
-- [ ] Kanban de campanhas com fases dinâmicas (+ Nova fase, mesmo padrão dos outros)
-- [ ] Métricas de campanha (cliques, conversões, leads gerados)
-- [ ] Vínculo com leads gerados no CRM
-
-### 👥 CRM / Leads
-- [ ] Integração CRM → Pipelines (mover lead vira negócio no Negócios)
-- [ ] Relatório de funil (taxas de conversão entre fases)
+### 👥 CRM / Leads — Melhorias
+- [ ] Integração: mover lead vira negócio no módulo Negócios
 - [ ] Importar leads via CSV
+- [ ] Relatório de funil (taxas de conversão)
 
-### 👤 RH — Onboarding
-- [ ] Criar perfis de integração diferentes por função/empresa
-- [ ] Envio de e-mail com link do cronograma para o colaborador
-- [ ] Assinatura digital dos termos (em vez de marcar manualmente)
-
-### 🔐 Sistema — Infraestrutura
-- [ ] **Migrar localStorage → Supabase** (banco real + dados não se perdem ao limpar browser)
-- [ ] Autenticação multi-usuário com permissões reais
+### 🔐 Infraestrutura — Futuro
+- [ ] **Migrar localStorage → Supabase** (dados não se perdem ao limpar browser)
+- [ ] Ponto virtual: painel gestor para ver todos os funcionários
 - [ ] Notificações push / e-mail
-- [ ] Backup automático dos dados
-- [ ] Logs de auditoria (quem fez o quê e quando)
+- [ ] Logs de auditoria
+- [ ] Backup automático
 
 ---
 
@@ -190,8 +183,7 @@ Após isso, o auto-deploy volta a funcionar sozinho a cada 5 minutos.
 |--|--|
 | **Site** | https://sistema.gcj.adv.br |
 | **IP** | 170.187.131.141 |
-| **SSH** | root / Gcj2026admin! (porta 22 pode estar bloqueada externamente) |
-| **cPanel terminal** | Funciona sempre (conexão local) |
+| **cPanel terminal** | Funciona sempre |
 | **App dir** | /var/www/inove-prime |
 | **Repo deploy** | /root/inove-deploy |
 | **Log deploy** | /tmp/deploy.log |
@@ -200,13 +192,14 @@ Após isso, o auto-deploy volta a funcionar sozinho a cada 5 minutos.
 
 ## 🔄 Próxima sessão — por onde começar
 
-1. **Verificar deploy** → `tail -f /tmp/deploy.log` no cPanel
-2. **Testar funcionalidades recentes** no site ao vivo:
-   - Banner dinâmico no Dashboard
-   - Botão **+** e inserção de fases nos kanbans (CRM, Negócios, Tarefas)
-   - Onboarding dentro do RH com controle de acesso
-3. **Escolher próximo módulo a desenvolver** (sugestão: Financeiro ou Calendário, pois são os mais usados no dia a dia)
+1. **Verificar deploy** → `git pull && bash b` no cPanel se necessário
+2. **Confirmar no browser** → Ctrl+Shift+R e testar:
+   - Relógio ao vivo na barra superior
+   - Ponto virtual no avatar (Entrada → Almoço → Retorno → Saída)
+   - Página Meu Perfil com upload de foto
+   - Financeiro com dados reais (sem hardcode)
+3. **Escolher próximo módulo** (sugestão: Financeiro avançado ou Calendário)
 
 ---
 
-*Gerado automaticamente pela sessão de desenvolvimento — 24/05/2026*
+*Atualizado pela sessão de desenvolvimento — 24/05/2026*
