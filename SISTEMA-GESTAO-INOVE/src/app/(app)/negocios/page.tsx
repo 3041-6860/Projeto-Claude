@@ -39,12 +39,17 @@ const PIPELINES: Record<string, { titulo: string; colunas: { titulo: string }[] 
 type Card = { id: string; titulo: string; empresa: string; valor: string; prazo: string }
 type CardsMap = Record<string, Card[][]>
 
-const STORAGE_KEY      = 'inove-negocios-cards'
-const CUSTOM_COLS_KEY  = 'inove-negocios-colunas'
-const CORES_NOVAS      = ['#06b6d4','#84cc16','#f97316','#ec4899','#a855f7','#14b8a6','#f43f5e','#0ea5e9']
+const STORAGE_KEY    = 'inove-negocios-cards'
+const ALL_COLS_KEY   = 'inove-negocios-all-colunas'
+const CORES_NOVAS   = ['#06b6d4','#84cc16','#f97316','#ec4899','#a855f7','#14b8a6','#f43f5e','#0ea5e9']
 const PADRAO_COUNTS: Record<string,number> = Object.fromEntries(
   Object.entries(PIPELINES).map(([k, v]) => [k, v.colunas.length])
 )
+function defaultAllCols(): Record<string,{titulo:string}[]> {
+  return Object.fromEntries(
+    Object.entries(PIPELINES).map(([k, v]) => [k, v.colunas.map(c => ({ titulo: c.titulo }))])
+  )
+}
 
 const pipelineOptions = [
   { key: 'gcj-juridico', label: 'GCJ Jurídico'      },
@@ -53,6 +58,21 @@ const pipelineOptions = [
 ]
 
 const views = ['Kanban', 'Lista', 'Atividades']
+
+function InsertBtn({ onClick }: { onClick: () => void }) {
+  return (
+    <div style={{ width:20, flexShrink:0, display:'flex', alignItems:'flex-start', paddingTop:16, marginRight:4 }}>
+      <button type="button" onClick={onClick} title="Inserir fase aqui"
+        style={{ width:20, height:32, border:'1px dashed #d1d5db', borderRadius:6, background:'transparent',
+          cursor:'pointer', color:'#9ca3af', fontSize:14, display:'flex', alignItems:'center',
+          justifyContent:'center', transition:'all .15s', padding:0 }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='var(--navy)'; (e.currentTarget as HTMLButtonElement).style.color='var(--navy)' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='#d1d5db'; (e.currentTarget as HTMLButtonElement).style.color='#9ca3af' }}>
+        +
+      </button>
+    </div>
+  )
+}
 
 function emptyMap(): CardsMap {
   const m: CardsMap = {}
@@ -63,22 +83,22 @@ function emptyMap(): CardsMap {
 }
 
 export default function Negocios() {
-  const [pipelineKey,    setPipelineKey]    = useState('gcj-juridico')
-  const [view,           setView]           = useState('Kanban')
-  const [dropOpen,       setDropOpen]       = useState(false)
-  const [cardsMap,       setCardsMap]       = useState<CardsMap>(emptyMap)
-  const [modal,          setModal]          = useState<{ colIdx: number } | null>(null)
-  const [form,           setForm]           = useState({ titulo: '', empresa: '', valor: '', prazo: '' })
-  const [customColsMap,  setCustomColsMap]  = useState<Record<string, {titulo:string}[]>>({})
-  const [adicionandoFase, setAdicionandoFase] = useState(false)
-  const [novaFaseNome,   setNovaFaseNome]   = useState('')
+  const [pipelineKey,    setPipelineKey]  = useState('gcj-juridico')
+  const [view,           setView]         = useState('Kanban')
+  const [dropOpen,       setDropOpen]     = useState(false)
+  const [cardsMap,       setCardsMap]     = useState<CardsMap>(emptyMap)
+  const [modal,          setModal]        = useState<{ colIdx: number } | null>(null)
+  const [form,           setForm]         = useState({ titulo: '', empresa: '', valor: '', prazo: '' })
+  const [allColsMap,     setAllColsMap]   = useState<Record<string,{titulo:string}[]>>(defaultAllCols)
+  const [insertPos,      setInsertPos]    = useState<number|null>(null)   // null = append; N = insert before N
+  const [novaFaseNome,   setNovaFaseNome] = useState('')
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) setCardsMap(JSON.parse(saved))
-      const savedCols = localStorage.getItem(CUSTOM_COLS_KEY)
-      if (savedCols) setCustomColsMap(JSON.parse(savedCols))
+      const savedCols = localStorage.getItem(ALL_COLS_KEY)
+      if (savedCols) setAllColsMap(JSON.parse(savedCols))
     } catch {}
   }, [])
 
@@ -87,30 +107,40 @@ export default function Negocios() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)) } catch {}
   }
 
-  function saveCustomCols(next: Record<string, {titulo:string}[]>) {
-    setCustomColsMap(next)
-    try { localStorage.setItem(CUSTOM_COLS_KEY, JSON.stringify(next)) } catch {}
+  function saveAllCols(next: Record<string,{titulo:string}[]>) {
+    setAllColsMap(next)
+    try { localStorage.setItem(ALL_COLS_KEY, JSON.stringify(next)) } catch {}
   }
 
-  function addCol() {
+  function confirmFase() {
     const nome = novaFaseNome.trim()
     if (!nome) return
-    const newCustom = [...(customColsMap[pipelineKey] ?? []), { titulo: nome }]
-    saveCustomCols({ ...customColsMap, [pipelineKey]: newCustom })
+    const cur = allColsMap[pipelineKey] ?? PIPELINES[pipelineKey].colunas.map(c => ({ titulo: c.titulo }))
+    // insertPos: null=never (shouldn't happen), -1=append at end, N=insert before col N
+    const idx  = (insertPos === null || insertPos === -1) ? cur.length : insertPos
+    const newCols = [...cur]
+    newCols.splice(idx, 0, { titulo: nome })
+    saveAllCols({ ...allColsMap, [pipelineKey]: newCols })
+    // Shift cardsMap: insert empty array at idx
     const nextCards: CardsMap = JSON.parse(JSON.stringify(cardsMap))
-    if (!nextCards[pipelineKey]) nextCards[pipelineKey] = PIPELINES[pipelineKey].colunas.map(() => [])
-    nextCards[pipelineKey].push([])
+    if (!nextCards[pipelineKey]) nextCards[pipelineKey] = cur.map(() => [])
+    nextCards[pipelineKey].splice(idx, 0, [])
     saveCards(nextCards)
     setNovaFaseNome('')
-    setAdicionandoFase(false)
+    setInsertPos(null)
+  }
+
+  function cancelFase() {
+    setInsertPos(null)
+    setNovaFaseNome('')
   }
 
   function removeCol(ci: number) {
     if (ci < PADRAO_COUNTS[pipelineKey]) return
-    const customIdx = ci - PADRAO_COUNTS[pipelineKey]
-    const newCustom = [...(customColsMap[pipelineKey] ?? [])]
-    newCustom.splice(customIdx, 1)
-    saveCustomCols({ ...customColsMap, [pipelineKey]: newCustom })
+    const cur = allColsMap[pipelineKey] ?? PIPELINES[pipelineKey].colunas.map(c => ({ titulo: c.titulo }))
+    const newCols = [...cur]
+    newCols.splice(ci, 1)
+    saveAllCols({ ...allColsMap, [pipelineKey]: newCols })
     const nextCards: CardsMap = JSON.parse(JSON.stringify(cardsMap))
     if (nextCards[pipelineKey]) {
       const orphans = nextCards[pipelineKey][ci] ?? []
@@ -146,11 +176,8 @@ export default function Negocios() {
     saveCards(next)
   }
 
-  const pipeline    = PIPELINES[pipelineKey]
-  const efectiveCols = [
-    ...pipeline.colunas,
-    ...(customColsMap[pipelineKey] ?? [])
-  ]
+  const efectiveCols = allColsMap[pipelineKey]
+    ?? PIPELINES[pipelineKey].colunas.map(c => ({ titulo: c.titulo }))
   const cards = efectiveCols.map((_, i) => (cardsMap[pipelineKey] ?? [])[i] ?? [])
   const allCards  = cards.flat()
 
@@ -234,16 +261,17 @@ export default function Negocios() {
 
       {/* Kanban */}
       {view === 'Kanban' && (
-        <div style={{ display:'flex', gap:12, overflowX:'auto', alignItems:'flex-start', paddingBottom:8 }}>
-          {efectiveCols.map((col, ci) => {
+        <div style={{ display:'flex', gap:0, overflowX:'auto', alignItems:'flex-start', paddingBottom:8 }}>
+          {efectiveCols.flatMap((col, ci) => {
             const isCustom = ci >= PADRAO_COUNTS[pipelineKey]
             const cor = isCustom
               ? CORES_NOVAS[(ci - PADRAO_COUNTS[pipelineKey]) % CORES_NOVAS.length]
               : undefined
-            return (
-              <div key={ci + '-' + col.titulo} className="k-col" style={{ minWidth:220, flexShrink:0 }}>
+
+            const column = (
+              <div key={`col-${ci}`} className="k-col" style={{ minWidth:220, flexShrink:0, marginRight:12 }}>
                 <div className={`k-col-head k-head-${Math.min(ci, 4)}`}
-                  style={isCustom ? { borderTop:`3px solid ${cor}` } : {}}>
+                  style={isCustom ? { borderTop:`3px solid ${cor}`, display:'flex', alignItems:'center', justifyContent:'space-between' } : { display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div className="k-col-title" style={isCustom ? { color: cor } : {}}>
                     {col.titulo}
                     <span className="k-count">{cards[ci]?.length ?? 0}</span>
@@ -251,7 +279,7 @@ export default function Negocios() {
                   {isCustom && (
                     <button type="button" onClick={() => removeCol(ci)} title="Excluir fase"
                       style={{ background:'none', border:'none', cursor:'pointer', color:'#9ca3af',
-                        fontSize:14, lineHeight:1, padding:'0 2px', marginLeft:4 }}>×</button>
+                        fontSize:14, lineHeight:1, padding:'0 2px', flexShrink:0 }}>×</button>
                   )}
                 </div>
 
@@ -274,38 +302,64 @@ export default function Negocios() {
                 </button>
               </div>
             )
-          })}
 
-          {/* + Nova fase */}
-          <div style={{ minWidth:180, flexShrink:0 }}>
-            {adicionandoFase ? (
-              <div style={{ background:'#fff', border:'1px solid var(--border)', borderRadius:8, padding:12 }}>
-                <input autoFocus value={novaFaseNome}
-                  onChange={e => setNovaFaseNome(e.target.value)}
-                  onKeyDown={e => { if (e.key==='Enter') addCol(); if (e.key==='Escape') { setAdicionandoFase(false); setNovaFaseNome('') } }}
-                  placeholder="Nome da fase…"
-                  style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--border)', borderRadius:6,
-                    fontSize:13, outline:'none', marginBottom:8, boxSizing:'border-box' }} />
-                <div style={{ display:'flex', gap:6 }}>
-                  <button type="button" className="btn btn-navy btn-sm" style={{ flex:1 }} onClick={addCol}>
-                    Adicionar
-                  </button>
-                  <button type="button" className="btn btn-outline btn-sm"
-                    onClick={() => { setAdicionandoFase(false); setNovaFaseNome('') }}>✕</button>
+            // Insert zone BEFORE this column (except before the first)
+            if (ci === 0) return [column]
+
+            const insertZone = insertPos === ci ? (
+              <div key={`ins-input-${ci}`} style={{ minWidth:180, flexShrink:0, marginRight:12 }}>
+                <div style={{ background:'#fff', border:'1px solid var(--border)', borderRadius:8, padding:12 }}>
+                  <p style={{ margin:'0 0 6px', fontSize:11, color:'var(--gray)', fontWeight:600 }}>
+                    Inserir antes de &ldquo;{col.titulo}&rdquo;
+                  </p>
+                  <input autoFocus value={novaFaseNome}
+                    onChange={e => setNovaFaseNome(e.target.value)}
+                    onKeyDown={e => { if (e.key==='Enter') confirmFase(); if (e.key==='Escape') cancelFase() }}
+                    placeholder="Nome da fase…"
+                    style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--border)', borderRadius:6,
+                      fontSize:13, outline:'none', marginBottom:8, boxSizing:'border-box' }} />
+                  <div style={{ display:'flex', gap:6 }}>
+                    <button type="button" className="btn btn-navy btn-sm" style={{ flex:1 }} onClick={confirmFase}>OK</button>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={cancelFase}>✕</button>
+                  </div>
                 </div>
               </div>
             ) : (
-              <button type="button" onClick={() => setAdicionandoFase(true)}
+              <InsertBtn key={`ins-btn-${ci}`} onClick={() => { setInsertPos(ci); setNovaFaseNome('') }} />
+            )
+
+            return [insertZone, column]
+          })}
+
+          {/* Zona de inserção no final / + Nova fase */}
+          {insertPos === null && (
+            <div style={{ minWidth:180, flexShrink:0 }}>
+              <button type="button" onClick={() => { setInsertPos(-1); setNovaFaseNome('') }}
                 style={{ width:'100%', height:56, border:'2px dashed #d1d5db', borderRadius:8,
                   background:'transparent', color:'#6b7280', fontSize:13, cursor:'pointer',
-                  display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-                  transition:'all .15s' }}
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='var(--navy)'; (e.currentTarget as HTMLButtonElement).style.color='var(--navy)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='#d1d5db'; (e.currentTarget as HTMLButtonElement).style.color='#6b7280' }}>
                 + Nova fase
               </button>
-            )}
-          </div>
+            </div>
+          )}
+          {insertPos === -1 && (
+            <div style={{ minWidth:180, flexShrink:0 }}>
+              <div style={{ background:'#fff', border:'1px solid var(--border)', borderRadius:8, padding:12 }}>
+                <input autoFocus value={novaFaseNome}
+                  onChange={e => setNovaFaseNome(e.target.value)}
+                  onKeyDown={e => { if (e.key==='Enter') confirmFase(); if (e.key==='Escape') cancelFase() }}
+                  placeholder="Nome da fase…"
+                  style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--border)', borderRadius:6,
+                    fontSize:13, outline:'none', marginBottom:8, boxSizing:'border-box' }} />
+                <div style={{ display:'flex', gap:6 }}>
+                  <button type="button" className="btn btn-navy btn-sm" style={{ flex:1 }} onClick={confirmFase}>Adicionar</button>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={cancelFase}>✕</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

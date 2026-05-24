@@ -113,7 +113,8 @@ export default function Tarefas() {
   const [fPrio,          setFPrio]          = useState('')
   const [fStatus,        setFStatus]        = useState('')
   const [statuses,       setStatuses]       = useState<Status[]>(STATUSES_PADRAO)
-  const [adicionandoFase, setAdicionandoFase] = useState(false)
+  // insertPos: null=hidden, -1=append at end, N=insert before status[N]
+  const [insertPos,      setInsertPos]      = useState<number|null>(null)
   const [novaFaseNome,   setNovaFaseNome]   = useState('')
 
   useEffect(() => {
@@ -134,11 +135,20 @@ export default function Tarefas() {
     return CUSTOM_STATUS_COLORS[Math.max(0, idx) % CUSTOM_STATUS_COLORS.length]
   }
 
-  function addStatus() {
+  function confirmStatus() {
     const nome = novaFaseNome.trim()
     if (!nome || statuses.includes(nome)) return
-    saveStatuses([...statuses, nome])
-    setNovaFaseNome(''); setAdicionandoFase(false)
+    const next = [...statuses]
+    const idx = (insertPos === null || insertPos === -1) ? next.length : insertPos
+    next.splice(idx, 0, nome)
+    saveStatuses(next)
+    setNovaFaseNome('')
+    setInsertPos(null)
+  }
+
+  function cancelStatus() {
+    setInsertPos(null)
+    setNovaFaseNome('')
   }
 
   function removeStatus(s: Status) {
@@ -272,13 +282,14 @@ export default function Tarefas() {
 
       {/* ── KANBAN ────────────────────────────────────────────── */}
       {view === 'Kanban' && (
-        <div style={{ display:'flex', gap:12, overflowX:'auto', alignItems:'flex-start', paddingBottom:8 }}>
-          {statuses.map((status, ci) => {
+        <div style={{ display:'flex', gap:0, overflowX:'auto', alignItems:'flex-start', paddingBottom:8 }}>
+          {statuses.flatMap((status, ci) => {
             const col = filtered.filter(t => t.status === status)
             const isCustom = !STATUSES_PADRAO_SET.has(status)
             const cor = statusClr(status)
-            return (
-              <div key={status} className="k-col" style={{ minWidth:220, flexShrink:0 }}>
+
+            const column = (
+              <div key={`col-${status}`} className="k-col" style={{ minWidth:220, flexShrink:0, marginRight:12 }}>
                 <div className="k-col-head"
                   style={{ borderTop: `3px solid ${cor}`, paddingBottom: 4, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div className="k-col-title" style={{ color: cor }}>
@@ -369,38 +380,72 @@ export default function Tarefas() {
                   onClick={() => openNew(status)}>+ Adicionar</button>
               </div>
             )
-          })}
 
-          {/* + Nova fase */}
-          <div style={{ minWidth:180, flexShrink:0 }}>
-            {adicionandoFase ? (
-              <div style={{ background:'#fff', border:'1px solid var(--border)', borderRadius:8, padding:12 }}>
-                <input autoFocus value={novaFaseNome}
-                  onChange={e => setNovaFaseNome(e.target.value)}
-                  onKeyDown={e => { if (e.key==='Enter') addStatus(); if (e.key==='Escape') { setAdicionandoFase(false); setNovaFaseNome('') } }}
-                  placeholder="Nome da fase…"
-                  style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--border)', borderRadius:6,
-                    fontSize:13, outline:'none', marginBottom:8, boxSizing:'border-box' }} />
-                <div style={{ display:'flex', gap:6 }}>
-                  <button type="button" className="btn btn-navy btn-sm" style={{ flex:1 }} onClick={addStatus}>
-                    Adicionar
-                  </button>
-                  <button type="button" className="btn btn-outline btn-sm"
-                    onClick={() => { setAdicionandoFase(false); setNovaFaseNome('') }}>✕</button>
+            if (ci === 0) return [column]
+
+            const insertZone = insertPos === ci ? (
+              <div key={`ins-input-${ci}`} style={{ minWidth:180, flexShrink:0, marginRight:12 }}>
+                <div style={{ background:'#fff', border:'1px solid var(--border)', borderRadius:8, padding:12 }}>
+                  <p style={{ margin:'0 0 6px', fontSize:11, color:'var(--gray)', fontWeight:600 }}>
+                    Inserir antes de &ldquo;{status}&rdquo;
+                  </p>
+                  <input autoFocus value={novaFaseNome}
+                    onChange={e => setNovaFaseNome(e.target.value)}
+                    onKeyDown={e => { if (e.key==='Enter') confirmStatus(); if (e.key==='Escape') cancelStatus() }}
+                    placeholder="Nome da fase…"
+                    style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--border)', borderRadius:6,
+                      fontSize:13, outline:'none', marginBottom:8, boxSizing:'border-box' }} />
+                  <div style={{ display:'flex', gap:6 }}>
+                    <button type="button" className="btn btn-navy btn-sm" style={{ flex:1 }} onClick={confirmStatus}>OK</button>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={cancelStatus}>✕</button>
+                  </div>
                 </div>
               </div>
             ) : (
-              <button type="button" onClick={() => setAdicionandoFase(true)}
+              <div key={`ins-btn-${ci}`} style={{ width:20, flexShrink:0, display:'flex', alignItems:'flex-start', paddingTop:16, marginRight:4 }}>
+                <button type="button" onClick={() => { setInsertPos(ci); setNovaFaseNome('') }} title="Inserir fase aqui"
+                  style={{ width:20, height:32, border:'1px dashed #d1d5db', borderRadius:6, background:'transparent',
+                    cursor:'pointer', color:'#9ca3af', fontSize:14, display:'flex', alignItems:'center',
+                    justifyContent:'center', transition:'all .15s', padding:0 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='var(--navy)'; (e.currentTarget as HTMLButtonElement).style.color='var(--navy)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='#d1d5db'; (e.currentTarget as HTMLButtonElement).style.color='#9ca3af' }}>
+                  +
+                </button>
+              </div>
+            )
+
+            return [insertZone, column]
+          })}
+
+          {/* Botão + Nova fase no final */}
+          {insertPos === null && (
+            <div style={{ minWidth:180, flexShrink:0 }}>
+              <button type="button" onClick={() => { setInsertPos(-1); setNovaFaseNome('') }}
                 style={{ width:'100%', height:56, border:'2px dashed #d1d5db', borderRadius:8,
                   background:'transparent', color:'#6b7280', fontSize:13, cursor:'pointer',
-                  display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-                  transition:'all .15s' }}
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='var(--navy)'; (e.currentTarget as HTMLButtonElement).style.color='var(--navy)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='#d1d5db'; (e.currentTarget as HTMLButtonElement).style.color='#6b7280' }}>
                 + Nova fase
               </button>
-            )}
-          </div>
+            </div>
+          )}
+          {insertPos === -1 && (
+            <div style={{ minWidth:180, flexShrink:0 }}>
+              <div style={{ background:'#fff', border:'1px solid var(--border)', borderRadius:8, padding:12 }}>
+                <input autoFocus value={novaFaseNome}
+                  onChange={e => setNovaFaseNome(e.target.value)}
+                  onKeyDown={e => { if (e.key==='Enter') confirmStatus(); if (e.key==='Escape') cancelStatus() }}
+                  placeholder="Nome da fase…"
+                  style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--border)', borderRadius:6,
+                    fontSize:13, outline:'none', marginBottom:8, boxSizing:'border-box' }} />
+                <div style={{ display:'flex', gap:6 }}>
+                  <button type="button" className="btn btn-navy btn-sm" style={{ flex:1 }} onClick={confirmStatus}>Adicionar</button>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={cancelStatus}>✕</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -73,7 +73,8 @@ function corAvatar(n:string){ const cores=['#3b82f6','#8b5cf6','#10b981','#f59e0
 export default function CrmLeads() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [colunas, setColunas] = useState(COLUNAS_PADRAO)
-  const [adicionandoFase, setAdicionandoFase] = useState(false)
+  // insertPos: null=hidden, -1=append at end, N=insert before colunas[N]
+  const [insertPos, setInsertPos] = useState<number|null>(null)
   const [novaFaseNome, setNovaFaseNome] = useState('')
   const [view, setView] = useState<'kanban'|'lista'>('kanban')
   const [filtroStatus, setFiltroStatus] = useState('')
@@ -99,13 +100,22 @@ export default function CrmLeads() {
   function save(data:Lead[]){ setLeads(data); localStorage.setItem('inove-crm-leads',JSON.stringify(data)) }
   function saveColunas(data:typeof COLUNAS_PADRAO){ setColunas(data); localStorage.setItem('inove-crm-colunas',JSON.stringify(data)) }
 
-  function adicionarFase(){
+  function confirmarFase(){
     const nome = novaFaseNome.trim()
     if(!nome) return
-    const cor = CORES_NOVAS[(colunas.length - COLUNAS_PADRAO.length) % CORES_NOVAS.length]
-    saveColunas([...colunas, {key:nome, label:nome, cor}])
+    const cor = CORES_NOVAS[(colunas.filter(c=>!KEYS_PADRAO.has(c.key)).length) % CORES_NOVAS.length]
+    const novoItem = {key:nome, label:nome, cor}
+    const idx = (insertPos === null || insertPos === -1) ? colunas.length : insertPos
+    const novasColunas = [...colunas]
+    novasColunas.splice(idx, 0, novoItem)
+    saveColunas(novasColunas)
     setNovaFaseNome('')
-    setAdicionandoFase(false)
+    setInsertPos(null)
+  }
+
+  function cancelarFase(){
+    setInsertPos(null)
+    setNovaFaseNome('')
   }
 
   function excluirFase(key:string){
@@ -206,12 +216,13 @@ export default function CrmLeads() {
 
       {/* ── KANBAN ── */}
       {view==='kanban' && (
-        <div style={{display:'flex',gap:10,overflowX:'auto',flex:1,alignItems:'flex-start',paddingBottom:8}}>
-          {colunas.map(col=>{
+        <div style={{display:'flex',gap:0,overflowX:'auto',flex:1,alignItems:'flex-start',paddingBottom:8}}>
+          {colunas.flatMap((col, ci)=>{
             const cards = leadsFiltrados.filter(l=>l.status===col.key)
             const tot = cards.reduce((s,l)=>s+(parseFloat(l.valor)||0),0)
-            return (
-              <div key={col.key} style={{minWidth:220,maxWidth:240,width:240,flexShrink:0,display:'flex',flexDirection:'column',gap:8}}>
+
+            const column = (
+              <div key={col.key} style={{minWidth:220,maxWidth:240,width:240,flexShrink:0,display:'flex',flexDirection:'column',gap:8,marginRight:10}}>
                 {/* cabeçalho coluna */}
                 <div style={{borderRadius:8,overflow:'hidden',background:'white',border:'1px solid var(--border)'}}>
                   <div style={{height:4,background:col.cor}}/>
@@ -235,7 +246,6 @@ export default function CrmLeads() {
                   <div key={lead.id} onClick={()=>setLeadAberto(lead)} style={{background:'white',border:'1px solid var(--border)',borderRadius:8,padding:'10px 12px',cursor:'pointer',transition:'box-shadow .15s'}}
                     onMouseEnter={e=>(e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)')}
                     onMouseLeave={e=>(e.currentTarget.style.boxShadow='none')}>
-                    {/* avatar + nome */}
                     <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
                       <div style={{width:32,height:32,borderRadius:'50%',background:corAvatar(lead.nome),display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:11,fontWeight:700,flexShrink:0}}>{initials(lead.nome)}</div>
                       <div>
@@ -243,14 +253,11 @@ export default function CrmLeads() {
                         <div style={{fontSize:10,color:'#888'}}>{lead.empresa}</div>
                       </div>
                     </div>
-                    {/* valor */}
                     <div style={{fontSize:13,fontWeight:700,color:'#10b981',marginBottom:6}}>{fmtValor(lead.valor)}</div>
-                    {/* badges */}
                     <div style={{display:'flex',flexWrap:'wrap',gap:4,marginBottom:6}}>
                       <span style={{background:origemCor[lead.origem]+'20',color:origemCor[lead.origem],borderRadius:10,padding:'2px 7px',fontSize:10,fontWeight:600}}>{lead.origem}</span>
                       {lead.tags.slice(0,2).map(t=><span key={t} style={{background:'#f3f4f6',color:'#6b7280',borderRadius:10,padding:'2px 7px',fontSize:10}}>{t}</span>)}
                     </div>
-                    {/* rodapé */}
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                       <div style={{display:'flex',alignItems:'center',gap:4}}>
                         <div style={{width:20,height:20,borderRadius:'50%',background:corAvatar(lead.responsavel),display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:8,fontWeight:700}}>{initials(lead.responsavel)}</div>
@@ -268,29 +275,60 @@ export default function CrmLeads() {
                 </button>
               </div>
             )
-          })}
 
-          {/* ── + NOVA FASE ── */}
-          <div style={{minWidth:220,flexShrink:0}}>
-            {adicionandoFase ? (
-              <div style={{background:'white',border:'1px solid var(--border)',borderRadius:8,padding:12,display:'flex',flexDirection:'column',gap:8}}>
-                <input autoFocus value={novaFaseNome} onChange={e=>setNovaFaseNome(e.target.value)}
-                  onKeyDown={e=>{if(e.key==='Enter')adicionarFase();if(e.key==='Escape')setAdicionandoFase(false)}}
-                  placeholder="Nome da fase…" style={{border:'1px solid var(--border)',borderRadius:6,padding:'7px 10px',fontSize:12,outline:'none',width:'100%',boxSizing:'border-box'}}/>
-                <div style={{display:'flex',gap:6}}>
-                  <button onClick={adicionarFase} style={{flex:1,background:'var(--navy)',color:'white',border:'none',borderRadius:6,padding:'6px',fontSize:11,fontWeight:600,cursor:'pointer'}}>Adicionar</button>
-                  <button onClick={()=>{setAdicionandoFase(false);setNovaFaseNome('')}} style={{background:'white',border:'1px solid var(--border)',borderRadius:6,padding:'6px 10px',fontSize:11,cursor:'pointer',color:'#6b7280'}}><X size={12}/></button>
+            if(ci===0) return [column]
+
+            const insertZone = insertPos === ci ? (
+              <div key={`ins-input-${ci}`} style={{minWidth:180,flexShrink:0,marginRight:10}}>
+                <div style={{background:'white',border:'1px solid var(--border)',borderRadius:8,padding:12,display:'flex',flexDirection:'column',gap:8}}>
+                  <p style={{margin:0,fontSize:11,color:'var(--gray)',fontWeight:600}}>Inserir antes de &ldquo;{col.label}&rdquo;</p>
+                  <input autoFocus value={novaFaseNome} onChange={e=>setNovaFaseNome(e.target.value)}
+                    onKeyDown={e=>{if(e.key==='Enter')confirmarFase();if(e.key==='Escape')cancelarFase()}}
+                    placeholder="Nome da fase…" style={{border:'1px solid var(--border)',borderRadius:6,padding:'7px 10px',fontSize:12,outline:'none',width:'100%',boxSizing:'border-box'}}/>
+                  <div style={{display:'flex',gap:6}}>
+                    <button onClick={confirmarFase} style={{flex:1,background:'var(--navy)',color:'white',border:'none',borderRadius:6,padding:'6px',fontSize:11,fontWeight:600,cursor:'pointer'}}>OK</button>
+                    <button onClick={cancelarFase} style={{background:'white',border:'1px solid var(--border)',borderRadius:6,padding:'6px 10px',fontSize:11,cursor:'pointer',color:'#6b7280'}}><X size={12}/></button>
+                  </div>
                 </div>
               </div>
             ) : (
-              <button onClick={()=>setAdicionandoFase(true)}
+              <div key={`ins-btn-${ci}`} style={{width:16,flexShrink:0,display:'flex',alignItems:'flex-start',paddingTop:14,marginRight:4}}>
+                <button onClick={()=>{setInsertPos(ci);setNovaFaseNome('')}} title="Inserir fase aqui"
+                  style={{width:16,height:28,border:'1px dashed #d1d5db',borderRadius:4,background:'transparent',cursor:'pointer',color:'#9ca3af',fontSize:13,display:'flex',alignItems:'center',justifyContent:'center',padding:0,transition:'all .15s'}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--navy)';e.currentTarget.style.color='var(--navy)'}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor='#d1d5db';e.currentTarget.style.color='#9ca3af'}}>
+                  +
+                </button>
+              </div>
+            )
+
+            return [insertZone, column]
+          })}
+
+          {/* + Nova fase no final */}
+          {insertPos === null && (
+            <div style={{minWidth:200,flexShrink:0}}>
+              <button onClick={()=>{setInsertPos(-1);setNovaFaseNome('')}}
                 style={{width:'100%',background:'transparent',border:'2px dashed #d1d5db',borderRadius:8,padding:'14px 12px',fontSize:12,color:'#9ca3af',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,transition:'all .15s'}}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--navy)';e.currentTarget.style.color='var(--navy)'}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor='#d1d5db';e.currentTarget.style.color='#9ca3af'}}>
                 <Plus size={14}/> Nova fase
               </button>
-            )}
-          </div>
+            </div>
+          )}
+          {insertPos === -1 && (
+            <div style={{minWidth:200,flexShrink:0}}>
+              <div style={{background:'white',border:'1px solid var(--border)',borderRadius:8,padding:12,display:'flex',flexDirection:'column',gap:8}}>
+                <input autoFocus value={novaFaseNome} onChange={e=>setNovaFaseNome(e.target.value)}
+                  onKeyDown={e=>{if(e.key==='Enter')confirmarFase();if(e.key==='Escape')cancelarFase()}}
+                  placeholder="Nome da fase…" style={{border:'1px solid var(--border)',borderRadius:6,padding:'7px 10px',fontSize:12,outline:'none',width:'100%',boxSizing:'border-box'}}/>
+                <div style={{display:'flex',gap:6}}>
+                  <button onClick={confirmarFase} style={{flex:1,background:'var(--navy)',color:'white',border:'none',borderRadius:6,padding:'6px',fontSize:11,fontWeight:600,cursor:'pointer'}}>Adicionar</button>
+                  <button onClick={cancelarFase} style={{background:'white',border:'1px solid var(--border)',borderRadius:6,padding:'6px 10px',fontSize:11,cursor:'pointer',color:'#6b7280'}}><X size={12}/></button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
