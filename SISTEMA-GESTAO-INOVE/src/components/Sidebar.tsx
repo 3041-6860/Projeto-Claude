@@ -25,10 +25,10 @@ const sections = [
       { label: "Documentos", href: "/documentos", icon: FileText    },
       { label: "Financeiro", href: "/financeiro", icon: DollarSign  },
       { label: "RH",          href: "/rh",          icon: UserSquare2 },
-      { label: "↳ Organograma", href: "/rh/organograma", icon: Network   },
-      { label: "↳ Ponto",      href: "/rh/ponto",       icon: Clock     },
-      { label: "↳ Férias",     href: "/rh/ferias",      icon: Palmtree  },
-      { label: "↳ Relatórios", href: "/rh/relatorios",  icon: BarChart2 },
+      { label: "↳ Organograma", href: "/rh/organograma", icon: Network,   showOnlyUnder: "/rh" },
+      { label: "↳ Ponto",      href: "/rh/ponto",       icon: Clock,     showOnlyUnder: "/rh" },
+      { label: "↳ Férias",     href: "/rh/ferias",      icon: Palmtree,  showOnlyUnder: "/rh" },
+      { label: "↳ Relatórios", href: "/rh/relatorios",  icon: BarChart2, showOnlyUnder: "/rh" },
       { label: "Onboarding", href: "/onboarding",  icon: UserPlus    },
       { label: "Marketing",  href: "/marketing",   icon: Megaphone   },
       { label: "Tarefas",    href: "/tarefas",     icon: CheckSquare },
@@ -59,6 +59,10 @@ export default function Sidebar() {
             {si > 0 && <div className="sb-sep" />}
             <p className="sb-label">{section.label}</p>
             {section.items.map((item) => {
+              // Ocultar submenus quando não está na seção pai
+              if (item.showOnlyUnder && !pathname.startsWith(item.showOnlyUnder)) {
+                return null;
+              }
               const isActive =
                 pathname === item.href ||
                 (item.href === "/dashboard" && pathname === "/") ||
