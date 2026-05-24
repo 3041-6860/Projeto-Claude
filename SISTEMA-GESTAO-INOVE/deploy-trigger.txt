@@ -1,0 +1,2 @@
+# Deploy trigger
+Ultimo deploy: 2026-05-24 13:42
