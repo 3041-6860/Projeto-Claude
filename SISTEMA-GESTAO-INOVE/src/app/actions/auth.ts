@@ -3,8 +3,10 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 const USERS = [
-  { email: 'admin', password: '1234', name: 'Administrador', role: 'admin' },
+  { email: 'admin',          password: '1234',       name: 'Administrador',    role: 'admin'           },
   { email: 'admin@gcj.adv.br', password: 'Inove2026!', name: 'Administrador', role: 'admin@gcj.adv.br' },
+  { email: 'rh',             password: 'rh1234',     name: 'Equipe RH',        role: 'rh'              },
+  { email: 'gestor',         password: 'gestor1234', name: 'Gestor',           role: 'gestor'          },
 ]
 
 export async function login(_prev: { error: string } | null, formData: FormData) {
