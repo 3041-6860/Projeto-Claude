@@ -308,7 +308,7 @@ export default function Tarefas() {
                   const late    = isLate(task)
                   return (
                     <div key={task.id} className="k-card"
-                      style={{ cursor: 'pointer', borderLeft: `3px solid ${STATUS_CLR[task.status]}` }}
+                      style={{ cursor: 'pointer', borderLeft: `3px solid ${statusClr(task.status)}` }}
                       onClick={() => openEdit(task)}>
 
                       <div className="k-card-title-row">
