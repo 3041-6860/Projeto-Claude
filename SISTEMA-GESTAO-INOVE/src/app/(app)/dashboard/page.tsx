@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import FeedClient from "@/components/FeedClient";
+import DashBanner from "@/components/DashBanner";
 
 const metricas1 = [
   { label: "Faturamento",   value: "R$ 2,4M", hint: "Receita consolidada mai/26",   progress: 72, valClass: "val-green", colorKey: "green" },
@@ -65,20 +67,22 @@ function MetricRow({ items }: { items: typeof metricas1 }) {
   );
 }
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const store = await cookies();
+  const session = store.get("inove-session");
+  let userName = "equipe";
+  if (session) {
+    try {
+      const u = JSON.parse(Buffer.from(session.value, "base64").toString());
+      if (u?.name) userName = u.name;
+    } catch {}
+  }
+
   return (
     <div className="dash-wrap">
 
-      {/* Banner de boas-vindas */}
-      <div className="dash-banner">
-        <div className="dash-banner-left">
-          <div className="dash-banner-greeting">👋 Bom dia, equipe!</div>
-          <div className="dash-banner-date">Sexta-feira, 23 de maio de 2026 · Inove Prime</div>
-        </div>
-        <div className="dash-banner-logo">
-          <img src="/logo-branco.png" alt="Inove Prime" className="dash-banner-logo-img" />
-        </div>
-      </div>
+      {/* Banner de boas-vindas dinâmico */}
+      <DashBanner userName={userName} />
 
       {/* Linhas de métricas */}
       <MetricRow items={metricas1} />
