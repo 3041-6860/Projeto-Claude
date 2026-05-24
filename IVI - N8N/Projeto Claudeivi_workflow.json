@@ -1,0 +1,3423 @@
+{
+  "data": {
+    "updatedAt": "2026-04-27T14:06:23.427Z",
+    "createdAt": "2026-04-15T18:17:10.277Z",
+    "id": "7aThlO57zWbcBxif",
+    "name": "IVI WhatsApp Completo",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "8bde07e1-3c79-4cf1-beb0-a6baa31f9e32",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -14416,
+          6480
+        ],
+        "id": "928a1680-8a20-4a3c-8e18-0901f3fa41bd",
+        "name": "Webhook",
+        "webhookId": "8bde07e1-3c79-4cf1-beb0-a6baa31f9e32"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 15
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -14416,
+          6784
+        ],
+        "id": "d52b0244-7bf9-4be2-869e-6d0368f18ff5",
+        "name": "Schedule 15min"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "f001",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "messages.upsert",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "f002",
+                "leftValue": "={{ $json.body.data.key.fromMe }}",
+                "rightValue": "false",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -14224,
+          6320
+        ],
+        "id": "37ef3a55-1828-4a04-9fa0-811f898770e4",
+        "name": "Msg do Cliente"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "f003",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "messages.upsert",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "f004",
+                "leftValue": "={{ $json.body.data.key.fromMe }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -14224,
+          6640
+        ],
+        "id": "7bf7bd4b-dae2-4135-9fe0-63b1fcaa4134",
+        "name": "Msg do Atendente"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.body.data.key.remoteJid;\nconst mensagem = ($json.body.data.message.conversation || '').trim();\nif (!staticData.estados) staticData.estados = {};\n\nif (mensagem === '*fim*') {\n  return [{ json: { numero, mensagem, acao: 'encerrar_manual' } }];\n}\n\nconst dados = staticData.estados[numero];\nif (!dados) {\n  staticData.estados[numero] = { estado: 'atendente_iniciou', timestamp: Date.now(), avisado: false };\n  return [{ json: { numero, mensagem, acao: 'ignorar' } }];\n}\n\nconst estado = typeof dados === 'string' ? dados : dados.estado;\nif (estado === 'aguardando_atendente' || estado === 'atendente_iniciou') {\n  staticData.estados[numero] = { estado: 'aguardando_cliente', timestamp: Date.now(), avisado: false };\n}\n\nreturn [{ json: { numero, mensagem, acao: 'normal' } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -14016,
+          6640
+        ],
+        "id": "fa765a15-20ef-4296-955c-de50475a4ca5",
+        "name": "Processar Atendente"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a001",
+                "leftValue": "={{ $json.acao }}",
+                "rightValue": "encerrar_manual",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13824,
+          6640
+        ],
+        "id": "3ddb3910-ef91-450b-8669-cb777e68abca",
+        "name": "Encerrar Manual"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Obrigado por entrar em contato com o Instituto Vinícius Ian! 🧩💙\\n\\nEsta conversa foi finalizada e arquivada. 📁\\n\\n⚠️ Atenção: se responder esta mensagem, um novo atendimento será iniciado automaticamente.\\n\\nSe precisar de mais informações, estaremos à disposição! ✅\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13616,
+          6576
+        ],
+        "id": "e9c2c083-2cbc-4035-9757-002a0c847f04",
+        "name": "Msg Encerramento Manual"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.numero;\nif (staticData.estados) delete staticData.estados[numero];\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13424,
+          6576
+        ],
+        "id": "45f12044-fd9a-4d6b-a534-ab1d3c11b74f",
+        "name": "Limpar Estado Manual"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Webhook').item.json.body.data.key.remoteJid;\nconst mensagem = ($('Webhook').item.json.body.data.message.conversation || '').trim();\nif (!staticData.estados) staticData.estados = {};\n\nconst dados = staticData.estados[numero];\nlet estado = 'novo';\n\nif (dados) {\n  estado = typeof dados === 'string' ? dados : dados.estado;\n  staticData.estados[numero] = { estado, timestamp: Date.now(), avisado: false };\n}\n\nconst emAtendimento = (estado === 'aguardando_atendente' || \n                       estado === 'aguardando_cliente' || \n                       estado === 'atendente_iniciou');\n\n// conversaAtiva para fora do horario — só bloqueia se for atendimento ativo\n// fora_horario_menu NAO é conversaAtiva — precisa processar as opcoes\nconst conversaAtiva = emAtendimento;\n\n// foraHorarioMenu — estado especial para processar opcoes fora do horario\nconst foraHorarioMenu = estado === 'fora_horario_menu';\n\nreturn [{ json: { numero, mensagem, estado, conversaAtiva, emAtendimento, foraHorarioMenu } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -14016,
+          6320
+        ],
+        "id": "16d1063e-f850-4d1c-bcc9-6383138b7a42",
+        "name": "Verificar Estado"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "h001",
+                "leftValue": "={{ (() => { const brt = new Date(new Date().getTime() - 3*60*60*1000); const h = brt.getUTCHours(); const d = brt.getUTCDay(); return (d >= 1 && d <= 5 && h >= 8 && h < 18) ? 'sim' : 'nao'; })() }}",
+                "rightValue": "sim",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13824,
+          6320
+        ],
+        "id": "c997157b-6c36-442e-a2c4-3fab5cd612ab",
+        "name": "Horario Comercial"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "conv001",
+                "leftValue": "={{ $('Verificar Estado').item.json.conversaAtiva }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13616,
+          6416
+        ],
+        "id": "f5b08484-e448-4c65-b7ef-7397ed7f5d76",
+        "name": "Conversa Ativa"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\n  \"text\": \"Olá! 👋 Obrigado por entrar em contato com o Instituto Vinícius Ian! 🧩💙⚖️\\n\\nNo momento estamos fora do horário de atendimento. Funcionamos de segunda a sexta, das 8h às 18h. 🕐\\n\\nPara adiantar seu atendimento, selecione uma das opções:\\n\\n1️⃣ Atendimento jurídico\\n2️⃣ Outros assuntos e informações\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13424,
+          6416
+        ],
+        "id": "26932c55-b9df-4799-a7c0-374a8806d8b3",
+        "name": "Msg Fora Horario"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Webhook').item.json.body.data.key.remoteJid;\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'fora_horario_menu', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13216,
+          6416
+        ],
+        "id": "27398b4e-e205-429f-a7a4-a180f1c936ba",
+        "name": "Salvar Fora Horario Menu"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "e001",
+                "leftValue": "={{ $json.estado }}",
+                "rightValue": "menu_enviado",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13616,
+          6192
+        ],
+        "id": "4fafe371-96ab-436e-9adb-60d097f7c562",
+        "name": "Ja Recebeu Menu"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "fh001",
+                "leftValue": "={{ $json.estado }}",
+                "rightValue": "fora_horario_menu",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13424,
+          6192
+        ],
+        "id": "a8402aea-a4dc-4b38-a926-f7e3f2e21d76",
+        "name": "Menu Fora Horario"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "fh002",
+                "leftValue": "={{ $json.mensagem }}",
+                "rightValue": "1",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13216,
+          6320
+        ],
+        "id": "be5c9883-33dd-4e60-9206-f9852912dbd9",
+        "name": "Fora Horario Opcao 1 ou 2"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Obrigado! 😊 Por favor, preencha nosso formulário para que possamos analisar seu caso:\\n👉 https://triagemivi.netlify.app/\\n\\nNossa equipe jurídica entrará em contato no próximo dia útil. ✅\\n\\n— Instituto Vinícius Ian 🧩⚖️\",\n  \"linkPreview\": false\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13024,
+          6224
+        ],
+        "id": "cf87fe6b-71f8-4aac-9006-9b873b5e38bc",
+        "name": "Fora Horario Resp 1"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Obrigado por entrar em contato! 😊🤝\\n\\nRecebemos sua mensagem e nossa equipe responderá no próximo dia útil, durante o horário comercial — segunda a sexta, das 8h às 18h. ✅\\n\\n— Instituto Vinícius Ian 🧩💙\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13024,
+          6384
+        ],
+        "id": "28511a56-e616-4015-ad2f-8a86be3c08a8",
+        "name": "Fora Horario Resp 2"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Verificar Estado').item.json.numero;\nif (staticData.estados) delete staticData.estados[numero];\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -12816,
+          6304
+        ],
+        "id": "f3d59e29-87bb-4be1-9a89-f8d8c03a18cf",
+        "name": "Limpar Fora Horario"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "e002",
+                "leftValue": "={{ $json.mensagem }}",
+                "rightValue": "1",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13424,
+          5984
+        ],
+        "id": "0143d8ac-743b-44cf-88be-6cce84f0ff1d",
+        "name": "Escolheu 1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "e003",
+                "leftValue": "={{ $json.mensagem }}",
+                "rightValue": "2",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13424,
+          6128
+        ],
+        "id": "94824799-af8d-48ef-82d5-28f5a1f1d9ab",
+        "name": "Escolheu 2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "e004",
+                "leftValue": "={{ $json.mensagem }}",
+                "rightValue": "3",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13424,
+          6272
+        ],
+        "id": "b7ec316b-b8d2-438b-9ebf-a0ea9771c1ca",
+        "name": "Escolheu 3"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Ficamos muito felizes com o seu contato! 😊⚖️\\n\\nPara que possamos lhe atender da melhor forma, precisamos conhecer um pouco mais sobre o seu caso.\\n\\n📋 Por favor, preencha o nosso formulário:\\n👉 https://triagemivi.netlify.app/\\n\\nApós o preenchimento, nossa equipe jurídica entrará em contato em horário comercial — segunda a sexta, das 8h às 18h. ✅\\n\\nEsta conversa foi encerrada. Se precisar de mais ajuda, é só nos chamar! 💙\\n\\n— Instituto Vinícius Ian 🧩\",\n  \"linkPreview\": false\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13216,
+          5872
+        ],
+        "id": "3f2663ce-00ea-4bb9-9ae9-2b58d1800bd6",
+        "name": "Resposta Opcao 1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Verificar Estado').item.json.numero;\nif (staticData.estados) delete staticData.estados[numero];\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13024,
+          5872
+        ],
+        "id": "256c59d0-1111-4dea-925b-226f167591c6",
+        "name": "Limpar Opcao 1"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Olá! Recebemos sua mensagem. 😊⚖️\\n\\nConta pra gente como podemos te ajudar e nossa equipe jurídica entrará em contato em breve, durante o horário comercial — segunda a sexta, das 8h às 18h. ✅\\n\\n— Instituto Vinícius Ian 🧩💙\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13216,
+          6080
+        ],
+        "id": "c69ab14c-8dfc-4e36-aee3-334f1e81663a",
+        "name": "Resposta Opcao 2"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Verificar Estado').item.json.numero;\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'aguardando_atendente', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13024,
+          6080
+        ],
+        "id": "204a5d18-56ee-4f80-b3c3-93d45bd831be",
+        "name": "Salvar Aguardando Atendente"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Olá! Recebemos sua mensagem. 😊🤝\\n\\nNossa equipe entrará em contato em breve, durante o horário comercial — segunda a sexta, das 8h às 18h. ✅\\n\\n— Instituto Vinícius Ian 🧩💙\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13216,
+          6224
+        ],
+        "id": "813f18d1-83c6-4281-957f-e1fafbebf71f",
+        "name": "Resposta Opcao 3"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Verificar Estado').item.json.numero;\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'aguardando_atendente', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13024,
+          6224
+        ],
+        "id": "a41b5efb-ede5-4148-a20c-4f19f38c8a96",
+        "name": "Salvar Opcao 3"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\n  \"text\": \"Olá! 👋 Seja bem-vindo(a) ao Instituto Vinícius Ian! 🧩💙⚖️\\n\\nPara lhe atender da melhor forma, selecione uma das opções abaixo:\\n\\n1️⃣ Novo atendimento jurídico\\n2️⃣ Atendimento jurídico já em andamento\\n3️⃣ Outros assuntos e informações\\n\\nInstituto Vinícius Ian 🧩\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13424,
+          6400
+        ],
+        "id": "bc6e4f65-59cf-4db0-8d90-7c2f5ce1ef26",
+        "name": "Reenviar Menu"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\n  \"text\": \"Olá! 👋 Seja bem-vindo(a) ao Instituto Vinícius Ian! 🧩💙⚖️\\n\\nPara lhe atender da melhor forma, selecione uma das opções abaixo:\\n\\n1️⃣ Novo atendimento jurídico\\n2️⃣ Atendimento jurídico já em andamento\\n3️⃣ Outros assuntos e informações\\n\\nInstituto Vinícius Ian 🧩\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13616,
+          5936
+        ],
+        "id": "a43c4dbb-4158-4c72-9d6f-3f11487584e5",
+        "name": "Enviar Menu"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Webhook').item.json.body.data.key.remoteJid;\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'menu_enviado', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13424,
+          5936
+        ],
+        "id": "fdeb65d9-b89a-499e-9992-be104cb92232",
+        "name": "Salvar Menu"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst agora = Date.now();\nconst TRES_HORAS = 3 * 60 * 60 * 1000;\nconst QUINZE_MIN = 15 * 60 * 1000;\nconst BRT_OFFSET = -3 * 60 * 60 * 1000;\n\nif (!staticData.estados) staticData.estados = {};\nif (!staticData.filaRetorno) staticData.filaRetorno = {};\n\nconst brt = new Date(agora + BRT_OFFSET);\nconst hora = brt.getUTCHours();\nconst dia = brt.getUTCDay();\nconst horarioComercial = dia >= 1 && dia <= 5 && hora >= 8 && hora < 18;\n\nconst paraEnviarMenu = [];\nconst paraAvisar = [];\nconst paraEncerrar = [];\n\n// Fila de retorno — so envia menu se nao tiver conversa ativa\nif (horarioComercial && Object.keys(staticData.filaRetorno).length > 0) {\n  for (const [numero] of Object.entries(staticData.filaRetorno)) {\n    const dadosAtivos = staticData.estados[numero];\n    const estadoAtivo = dadosAtivos ? (typeof dadosAtivos === 'string' ? dadosAtivos : dadosAtivos.estado) : null;\n    if (!estadoAtivo || estadoAtivo === 'menu_enviado') {\n      paraEnviarMenu.push({ numero, acao: 'menu_retorno' });\n    }\n    delete staticData.filaRetorno[numero];\n  }\n}\n\n// Avisos e encerramentos — SOMENTE dentro do horario comercial\nif (horarioComercial) {\n  for (const [numero, dados] of Object.entries(staticData.estados)) {\n    if (typeof dados === 'string') continue;\n    const { estado, timestamp, avisado } = dados;\n    const inativo = agora - timestamp;\n\n    if (estado === 'aguardando_atendente') {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        paraAvisar.push({ numero, acao: 'avisar_espera' });\n      }\n    } else if (estado === 'aguardando_cliente') {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        staticData.estados[numero].timestamp = Date.now();\n        paraAvisar.push({ numero, acao: 'avisar_cliente' });\n      } else if (avisado && inativo >= QUINZE_MIN) {\n        // Remove o estado IMEDIATAMENTE antes de encerrar para nao repetir\n        delete staticData.estados[numero];\n        paraEncerrar.push({ numero, acao: 'encerrar' });\n      }\n    }\n  }\n}\n\nconst resultado = [\n  ...paraEnviarMenu.map(n => ({ json: n })),\n  ...paraAvisar.map(n => ({ json: n })),\n  ...paraEncerrar.map(n => ({ json: n }))\n];\n\nreturn resultado.length > 0 ? resultado : [{ json: { vazio: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -14224,
+          6784
+        ],
+        "id": "d110cf17-8100-440c-992f-ba9766f1e149",
+        "name": "Verificar Inativos"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "s001",
+                "leftValue": "={{ $json.acao }}",
+                "rightValue": "vazio",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -14016,
+          6784
+        ],
+        "id": "567ddb27-b8af-4f22-802c-2678f9870776",
+        "name": "Tem Acao"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "s002",
+                "leftValue": "={{ $json.acao }}",
+                "rightValue": "encerrar",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13824,
+          6784
+        ],
+        "id": "627a3bdd-6267-44d8-a9bd-bb307a3eda6b",
+        "name": "Encerrar ou Avisar"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Obrigado por entrar em contato com o Instituto Vinícius Ian! 🧩💙\\n\\nEsta conversa foi finalizada e arquivada. 📁\\n\\n⚠️ Atenção: se responder esta mensagem, um novo atendimento será iniciado automaticamente.\\n\\nSe precisar de mais informações, estaremos à disposição! ✅\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13616,
+          6672
+        ],
+        "id": "f6b5bf7d-8161-43f7-8691-c67c94bf41a9",
+        "name": "Msg Encerramento"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.numero;\nif (staticData.estados) delete staticData.estados[numero];\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13424,
+          6672
+        ],
+        "id": "2694c8cf-82e3-46e8-a10c-2d5a3e74d62e",
+        "name": "Limpar Estado"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "s003",
+                "leftValue": "={{ $json.acao }}",
+                "rightValue": "menu_retorno",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13824,
+          6928
+        ],
+        "id": "167c6954-a6f7-4390-8d9a-7ca12b3071a1",
+        "name": "Menu Retorno ou Aviso"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Olá! 👋 Seja bem-vindo(a) ao Instituto Vinícius Ian! 🧩💙⚖️\\n\\nPara lhe atender da melhor forma, selecione uma das opções abaixo:\\n\\n1️⃣ Novo atendimento jurídico\\n2️⃣ Atendimento jurídico já em andamento\\n3️⃣ Outros assuntos e informações\\n\\nInstituto Vinícius Ian 🧩\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13616,
+          6864
+        ],
+        "id": "5ce6cc40-e044-4398-b14b-c44ff44b5885",
+        "name": "Menu Retorno"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.numero;\nif (staticData.filaRetorno) delete staticData.filaRetorno[numero];\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'menu_enviado', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13424,
+          6864
+        ],
+        "id": "54402071-ae8e-41fc-bbfe-a085ab75f8dc",
+        "name": "Salvar Menu Retorno"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "s004",
+                "leftValue": "={{ $json.acao }}",
+                "rightValue": "avisar_espera",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13824,
+          7072
+        ],
+        "id": "ad3c639d-7233-43a9-b7c9-545c3453afc7",
+        "name": "Tipo Aviso"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Olá! 👋 Nossos atendentes estão ocupados no momento, mas sua mensagem é muito importante para nós. 💙\\n\\nEm breve entraremos em contato. Agradecemos a compreensão! 🙏\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13616,
+          7008
+        ],
+        "id": "3a7e9172-4628-44a3-b145-7f2aa76f13b0",
+        "name": "Msg Espera Atendente"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Olá! 👋 Como não recebemos sua resposta, estamos encerrando este atendimento em breve.\\n\\nCaso ainda precise de ajuda, responda esta mensagem antes que o atendimento seja finalizado. 😊💙\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -13616,
+          7152
+        ],
+        "id": "93ab29dc-0c41-45c3-bb94-f0e47312e6a9",
+        "name": "Msg Aviso Cliente"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.numero;\nif (staticData.estados && staticData.estados[numero]) {\n  staticData.estados[numero].avisado = true;\n  staticData.estados[numero].timestamp = Date.now();\n}\nreturn [{ json: { ok: true } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -13424,
+          7072
+        ],
+        "id": "de609bfa-c47f-431d-b2b9-bd900e7422ca",
+        "name": "Marcar Avisado"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "eat001",
+                "leftValue": "={{ $json.emAtendimento }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13616,
+          6080
+        ],
+        "id": "7b88644d-c1d7-4a39-9559-af88740836f0",
+        "name": "Em Atendimento"
+      },
+      {
+        "parameters": {
+          "path": "ivi-limpar-estados",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -14416,
+          7072
+        ],
+        "id": "3cbe6ada-0da7-4530-af5a-17b0d152797b",
+        "name": "Webhook Limpeza",
+        "webhookId": "ivi-limpar-estados"
+      },
+      {
+        "parameters": {
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.estados = {};\nstaticData.filaRetorno = {};\nreturn [{ json: { ok: true, msg: 'Estados limpos!' } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -14224,
+          7072
+        ],
+        "id": "c7fd5f09-a333-4f58-bbd9-d2b1d930a50c",
+        "name": "Executar Limpeza"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "fh100",
+                "leftValue": "={{ $('Verificar Estado').item.json.foraHorarioMenu }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13616,
+          6336
+        ],
+        "id": "d90fc3d3-f734-4c3d-beaf-527ded55a76d",
+        "name": "Fora Horario Ativo"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Msg do Cliente",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Msg do Atendente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule 15min": {
+        "main": [
+          [
+            {
+              "node": "Verificar Inativos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg do Cliente": {
+        "main": [
+          [
+            {
+              "node": "Verificar Estado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg do Atendente": {
+        "main": [
+          [
+            {
+              "node": "Processar Atendente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Processar Atendente": {
+        "main": [
+          [
+            {
+              "node": "Encerrar Manual",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Encerrar Manual": {
+        "main": [
+          [
+            {
+              "node": "Msg Encerramento Manual",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg Encerramento Manual": {
+        "main": [
+          [
+            {
+              "node": "Limpar Estado Manual",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verificar Estado": {
+        "main": [
+          [
+            {
+              "node": "Horario Comercial",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Horario Comercial": {
+        "main": [
+          [
+            {
+              "node": "Em Atendimento",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Conversa Ativa",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Conversa Ativa": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Fora Horario Ativo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg Fora Horario": {
+        "main": [
+          [
+            {
+              "node": "Salvar Fora Horario Menu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ja Recebeu Menu": {
+        "main": [
+          [
+            {
+              "node": "Escolheu 1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Enviar Menu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Menu Fora Horario": {
+        "main": [
+          [
+            {
+              "node": "Fora Horario Opcao 1 ou 2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Enviar Menu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fora Horario Opcao 1 ou 2": {
+        "main": [
+          [
+            {
+              "node": "Fora Horario Resp 1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Fora Horario Resp 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fora Horario Resp 1": {
+        "main": [
+          [
+            {
+              "node": "Limpar Fora Horario",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fora Horario Resp 2": {
+        "main": [
+          [
+            {
+              "node": "Limpar Fora Horario",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Menu": {
+        "main": [
+          [
+            {
+              "node": "Salvar Menu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Escolheu 1": {
+        "main": [
+          [
+            {
+              "node": "Resposta Opcao 1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Escolheu 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Escolheu 2": {
+        "main": [
+          [
+            {
+              "node": "Resposta Opcao 2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Escolheu 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Escolheu 3": {
+        "main": [
+          [
+            {
+              "node": "Resposta Opcao 3",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Reenviar Menu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resposta Opcao 1": {
+        "main": [
+          [
+            {
+              "node": "Limpar Opcao 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resposta Opcao 2": {
+        "main": [
+          [
+            {
+              "node": "Salvar Aguardando Atendente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resposta Opcao 3": {
+        "main": [
+          [
+            {
+              "node": "Salvar Opcao 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verificar Inativos": {
+        "main": [
+          [
+            {
+              "node": "Tem Acao",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tem Acao": {
+        "main": [
+          [
+            {
+              "node": "Encerrar ou Avisar",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Encerrar ou Avisar": {
+        "main": [
+          [
+            {
+              "node": "Msg Encerramento",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Menu Retorno ou Aviso",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg Encerramento": {
+        "main": [
+          [
+            {
+              "node": "Limpar Estado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Menu Retorno ou Aviso": {
+        "main": [
+          [
+            {
+              "node": "Menu Retorno",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Tipo Aviso",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Menu Retorno": {
+        "main": [
+          [
+            {
+              "node": "Salvar Menu Retorno",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tipo Aviso": {
+        "main": [
+          [
+            {
+              "node": "Msg Espera Atendente",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Msg Aviso Cliente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg Espera Atendente": {
+        "main": [
+          [
+            {
+              "node": "Marcar Avisado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Msg Aviso Cliente": {
+        "main": [
+          [
+            {
+              "node": "Marcar Avisado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Em Atendimento": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Ja Recebeu Menu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook Limpeza": {
+        "main": [
+          [
+            {
+              "node": "Executar Limpeza",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fora Horario Ativo": {
+        "main": [
+          [
+            {
+              "node": "Fora Horario Opcao 1 ou 2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Msg Fora Horario",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
+    },
+    "staticData": {
+      "global": {
+        "estados": {
+          "554791928128@s.whatsapp.net": {
+            "estado": "atendente_iniciou",
+            "timestamp": 1777550899451,
+            "avisado": false
+          },
+          "554784018389@s.whatsapp.net": {
+            "estado": "fora_horario_menu",
+            "timestamp": 1778036074772,
+            "avisado": false
+          },
+          "554792260444@s.whatsapp.net": {
+            "estado": "menu_enviado",
+            "timestamp": 1778081025751,
+            "avisado": false
+          },
+          "554791340162@s.whatsapp.net": {
+            "estado": "aguardando_cliente",
+            "timestamp": 1778696152031,
+            "avisado": true
+          },
+          "554797551267@s.whatsapp.net": {
+            "estado": "menu_enviado",
+            "timestamp": 1778503334343,
+            "avisado": false
+          },
+          "554788540599@s.whatsapp.net": {
+            "estado": "menu_enviado",
+            "timestamp": 1778694422400,
+            "avisado": false
+          }
+        },
+        "filaRetorno": {}
+      },
+      "node:Schedule 15min": {
+        "recurrenceRules": []
+      }
+    },
+    "meta": null,
+    "pinData": {},
+    "versionId": "4c3a9523-4f85-437e-acbd-ec6bd35cf2e1",
+    "activeVersionId": "4c3a9523-4f85-437e-acbd-ec6bd35cf2e1",
+    "versionCounter": 783,
+    "triggerCount": 3,
+    "shared": [
+      {
+        "updatedAt": "2026-04-15T18:17:10.280Z",
+        "createdAt": "2026-04-15T18:17:10.280Z",
+        "role": "workflow:owner",
+        "workflowId": "7aThlO57zWbcBxif",
+        "projectId": "szpw9VxWBZR2t55m",
+        "project": {
+          "updatedAt": "2026-05-13T18:18:20.183Z",
+          "createdAt": "2026-04-15T01:22:10.338Z",
+          "id": "szpw9VxWBZR2t55m",
+          "name": "Instituto Vinícius Ian <atendimento@institutoviniciusian.org.br>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "creatorId": "505d4046-8751-4878-b79d-fda56b57dd93"
+        }
+      }
+    ],
+    "tags": [],
+    "parentFolder": null,
+    "activeVersion": {
+      "updatedAt": "2026-04-27T14:06:28.000Z",
+      "createdAt": "2026-04-27T14:06:23.428Z",
+      "versionId": "4c3a9523-4f85-437e-acbd-ec6bd35cf2e1",
+      "workflowId": "7aThlO57zWbcBxif",
+      "nodes": [
+        {
+          "parameters": {
+            "httpMethod": "POST",
+            "path": "8bde07e1-3c79-4cf1-beb0-a6baa31f9e32",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2.1,
+          "position": [
+            -14416,
+            6480
+          ],
+          "id": "928a1680-8a20-4a3c-8e18-0901f3fa41bd",
+          "name": "Webhook",
+          "webhookId": "8bde07e1-3c79-4cf1-beb0-a6baa31f9e32"
+        },
+        {
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "minutes",
+                  "minutesInterval": 15
+                }
+              ]
+            }
+          },
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1.2,
+          "position": [
+            -14416,
+            6784
+          ],
+          "id": "d52b0244-7bf9-4be2-869e-6d0368f18ff5",
+          "name": "Schedule 15min"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "f001",
+                  "leftValue": "={{ $json.body.event }}",
+                  "rightValue": "messages.upsert",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                },
+                {
+                  "id": "f002",
+                  "leftValue": "={{ $json.body.data.key.fromMe }}",
+                  "rightValue": "false",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -14224,
+            6320
+          ],
+          "id": "37ef3a55-1828-4a04-9fa0-811f898770e4",
+          "name": "Msg do Cliente"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "f003",
+                  "leftValue": "={{ $json.body.event }}",
+                  "rightValue": "messages.upsert",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                },
+                {
+                  "id": "f004",
+                  "leftValue": "={{ $json.body.data.key.fromMe }}",
+                  "rightValue": "true",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -14224,
+            6640
+          ],
+          "id": "7bf7bd4b-dae2-4135-9fe0-63b1fcaa4134",
+          "name": "Msg do Atendente"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.body.data.key.remoteJid;\nconst mensagem = ($json.body.data.message.conversation || '').trim();\nif (!staticData.estados) staticData.estados = {};\n\nif (mensagem === '*fim*') {\n  return [{ json: { numero, mensagem, acao: 'encerrar_manual' } }];\n}\n\nconst dados = staticData.estados[numero];\nif (!dados) {\n  staticData.estados[numero] = { estado: 'atendente_iniciou', timestamp: Date.now(), avisado: false };\n  return [{ json: { numero, mensagem, acao: 'ignorar' } }];\n}\n\nconst estado = typeof dados === 'string' ? dados : dados.estado;\nif (estado === 'aguardando_atendente' || estado === 'atendente_iniciou') {\n  staticData.estados[numero] = { estado: 'aguardando_cliente', timestamp: Date.now(), avisado: false };\n}\n\nreturn [{ json: { numero, mensagem, acao: 'normal' } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -14016,
+            6640
+          ],
+          "id": "fa765a15-20ef-4296-955c-de50475a4ca5",
+          "name": "Processar Atendente"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "a001",
+                  "leftValue": "={{ $json.acao }}",
+                  "rightValue": "encerrar_manual",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13824,
+            6640
+          ],
+          "id": "3ddb3910-ef91-450b-8669-cb777e68abca",
+          "name": "Encerrar Manual"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Obrigado por entrar em contato com o Instituto Vinícius Ian! 🧩💙\\n\\nEsta conversa foi finalizada e arquivada. 📁\\n\\n⚠️ Atenção: se responder esta mensagem, um novo atendimento será iniciado automaticamente.\\n\\nSe precisar de mais informações, estaremos à disposição! ✅\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13616,
+            6576
+          ],
+          "id": "e9c2c083-2cbc-4035-9757-002a0c847f04",
+          "name": "Msg Encerramento Manual"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.numero;\nif (staticData.estados) delete staticData.estados[numero];\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13424,
+            6576
+          ],
+          "id": "45f12044-fd9a-4d6b-a534-ab1d3c11b74f",
+          "name": "Limpar Estado Manual"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Webhook').item.json.body.data.key.remoteJid;\nconst mensagem = ($('Webhook').item.json.body.data.message.conversation || '').trim();\nif (!staticData.estados) staticData.estados = {};\n\nconst dados = staticData.estados[numero];\nlet estado = 'novo';\n\nif (dados) {\n  estado = typeof dados === 'string' ? dados : dados.estado;\n  staticData.estados[numero] = { estado, timestamp: Date.now(), avisado: false };\n}\n\nconst emAtendimento = (estado === 'aguardando_atendente' || \n                       estado === 'aguardando_cliente' || \n                       estado === 'atendente_iniciou');\n\n// conversaAtiva para fora do horario — só bloqueia se for atendimento ativo\n// fora_horario_menu NAO é conversaAtiva — precisa processar as opcoes\nconst conversaAtiva = emAtendimento;\n\n// foraHorarioMenu — estado especial para processar opcoes fora do horario\nconst foraHorarioMenu = estado === 'fora_horario_menu';\n\nreturn [{ json: { numero, mensagem, estado, conversaAtiva, emAtendimento, foraHorarioMenu } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -14016,
+            6320
+          ],
+          "id": "16d1063e-f850-4d1c-bcc9-6383138b7a42",
+          "name": "Verificar Estado"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "h001",
+                  "leftValue": "={{ (() => { const brt = new Date(new Date().getTime() - 3*60*60*1000); const h = brt.getUTCHours(); const d = brt.getUTCDay(); return (d >= 1 && d <= 5 && h >= 8 && h < 18) ? 'sim' : 'nao'; })() }}",
+                  "rightValue": "sim",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13824,
+            6320
+          ],
+          "id": "c997157b-6c36-442e-a2c4-3fab5cd612ab",
+          "name": "Horario Comercial"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "conv001",
+                  "leftValue": "={{ $('Verificar Estado').item.json.conversaAtiva }}",
+                  "rightValue": true,
+                  "operator": {
+                    "type": "boolean",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13616,
+            6416
+          ],
+          "id": "f5b08484-e448-4c65-b7ef-7397ed7f5d76",
+          "name": "Conversa Ativa"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\n  \"text\": \"Olá! 👋 Obrigado por entrar em contato com o Instituto Vinícius Ian! 🧩💙⚖️\\n\\nNo momento estamos fora do horário de atendimento. Funcionamos de segunda a sexta, das 8h às 18h. 🕐\\n\\nPara adiantar seu atendimento, selecione uma das opções:\\n\\n1️⃣ Atendimento jurídico\\n2️⃣ Outros assuntos e informações\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13424,
+            6416
+          ],
+          "id": "26932c55-b9df-4799-a7c0-374a8806d8b3",
+          "name": "Msg Fora Horario"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Webhook').item.json.body.data.key.remoteJid;\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'fora_horario_menu', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13216,
+            6416
+          ],
+          "id": "27398b4e-e205-429f-a7a4-a180f1c936ba",
+          "name": "Salvar Fora Horario Menu"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "e001",
+                  "leftValue": "={{ $json.estado }}",
+                  "rightValue": "menu_enviado",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13616,
+            6192
+          ],
+          "id": "4fafe371-96ab-436e-9adb-60d097f7c562",
+          "name": "Ja Recebeu Menu"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "fh001",
+                  "leftValue": "={{ $json.estado }}",
+                  "rightValue": "fora_horario_menu",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13424,
+            6192
+          ],
+          "id": "a8402aea-a4dc-4b38-a926-f7e3f2e21d76",
+          "name": "Menu Fora Horario"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "fh002",
+                  "leftValue": "={{ $json.mensagem }}",
+                  "rightValue": "1",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13216,
+            6320
+          ],
+          "id": "be5c9883-33dd-4e60-9206-f9852912dbd9",
+          "name": "Fora Horario Opcao 1 ou 2"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Obrigado! 😊 Por favor, preencha nosso formulário para que possamos analisar seu caso:\\n👉 https://triagemivi.netlify.app/\\n\\nNossa equipe jurídica entrará em contato no próximo dia útil. ✅\\n\\n— Instituto Vinícius Ian 🧩⚖️\",\n  \"linkPreview\": false\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13024,
+            6224
+          ],
+          "id": "cf87fe6b-71f8-4aac-9006-9b873b5e38bc",
+          "name": "Fora Horario Resp 1"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Obrigado por entrar em contato! 😊🤝\\n\\nRecebemos sua mensagem e nossa equipe responderá no próximo dia útil, durante o horário comercial — segunda a sexta, das 8h às 18h. ✅\\n\\n— Instituto Vinícius Ian 🧩💙\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13024,
+            6384
+          ],
+          "id": "28511a56-e616-4015-ad2f-8a86be3c08a8",
+          "name": "Fora Horario Resp 2"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Verificar Estado').item.json.numero;\nif (staticData.estados) delete staticData.estados[numero];\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -12816,
+            6304
+          ],
+          "id": "f3d59e29-87bb-4be1-9a89-f8d8c03a18cf",
+          "name": "Limpar Fora Horario"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "e002",
+                  "leftValue": "={{ $json.mensagem }}",
+                  "rightValue": "1",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13424,
+            5984
+          ],
+          "id": "0143d8ac-743b-44cf-88be-6cce84f0ff1d",
+          "name": "Escolheu 1"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "e003",
+                  "leftValue": "={{ $json.mensagem }}",
+                  "rightValue": "2",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13424,
+            6128
+          ],
+          "id": "94824799-af8d-48ef-82d5-28f5a1f1d9ab",
+          "name": "Escolheu 2"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "e004",
+                  "leftValue": "={{ $json.mensagem }}",
+                  "rightValue": "3",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13424,
+            6272
+          ],
+          "id": "b7ec316b-b8d2-438b-9ebf-a0ea9771c1ca",
+          "name": "Escolheu 3"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Ficamos muito felizes com o seu contato! 😊⚖️\\n\\nPara que possamos lhe atender da melhor forma, precisamos conhecer um pouco mais sobre o seu caso.\\n\\n📋 Por favor, preencha o nosso formulário:\\n👉 https://triagemivi.netlify.app/\\n\\nApós o preenchimento, nossa equipe jurídica entrará em contato em horário comercial — segunda a sexta, das 8h às 18h. ✅\\n\\nEsta conversa foi encerrada. Se precisar de mais ajuda, é só nos chamar! 💙\\n\\n— Instituto Vinícius Ian 🧩\",\n  \"linkPreview\": false\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13216,
+            5872
+          ],
+          "id": "3f2663ce-00ea-4bb9-9ae9-2b58d1800bd6",
+          "name": "Resposta Opcao 1"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Verificar Estado').item.json.numero;\nif (staticData.estados) delete staticData.estados[numero];\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13024,
+            5872
+          ],
+          "id": "256c59d0-1111-4dea-925b-226f167591c6",
+          "name": "Limpar Opcao 1"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Olá! Recebemos sua mensagem. 😊⚖️\\n\\nConta pra gente como podemos te ajudar e nossa equipe jurídica entrará em contato em breve, durante o horário comercial — segunda a sexta, das 8h às 18h. ✅\\n\\n— Instituto Vinícius Ian 🧩💙\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13216,
+            6080
+          ],
+          "id": "c69ab14c-8dfc-4e36-aee3-334f1e81663a",
+          "name": "Resposta Opcao 2"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Verificar Estado').item.json.numero;\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'aguardando_atendente', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13024,
+            6080
+          ],
+          "id": "204a5d18-56ee-4f80-b3c3-93d45bd831be",
+          "name": "Salvar Aguardando Atendente"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $('Verificar Estado').item.json.numero }}\",\n  \"text\": \"Olá! Recebemos sua mensagem. 😊🤝\\n\\nNossa equipe entrará em contato em breve, durante o horário comercial — segunda a sexta, das 8h às 18h. ✅\\n\\n— Instituto Vinícius Ian 🧩💙\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13216,
+            6224
+          ],
+          "id": "813f18d1-83c6-4281-957f-e1fafbebf71f",
+          "name": "Resposta Opcao 3"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Verificar Estado').item.json.numero;\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'aguardando_atendente', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13024,
+            6224
+          ],
+          "id": "a41b5efb-ede5-4148-a20c-4f19f38c8a96",
+          "name": "Salvar Opcao 3"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\n  \"text\": \"Olá! 👋 Seja bem-vindo(a) ao Instituto Vinícius Ian! 🧩💙⚖️\\n\\nPara lhe atender da melhor forma, selecione uma das opções abaixo:\\n\\n1️⃣ Novo atendimento jurídico\\n2️⃣ Atendimento jurídico já em andamento\\n3️⃣ Outros assuntos e informações\\n\\nInstituto Vinícius Ian 🧩\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13424,
+            6400
+          ],
+          "id": "bc6e4f65-59cf-4db0-8d90-7c2f5ce1ef26",
+          "name": "Reenviar Menu"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $('Webhook').item.json.body.data.key.remoteJid }}\",\n  \"text\": \"Olá! 👋 Seja bem-vindo(a) ao Instituto Vinícius Ian! 🧩💙⚖️\\n\\nPara lhe atender da melhor forma, selecione uma das opções abaixo:\\n\\n1️⃣ Novo atendimento jurídico\\n2️⃣ Atendimento jurídico já em andamento\\n3️⃣ Outros assuntos e informações\\n\\nInstituto Vinícius Ian 🧩\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13616,
+            5936
+          ],
+          "id": "a43c4dbb-4158-4c72-9d6f-3f11487584e5",
+          "name": "Enviar Menu"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $('Webhook').item.json.body.data.key.remoteJid;\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'menu_enviado', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13424,
+            5936
+          ],
+          "id": "fdeb65d9-b89a-499e-9992-be104cb92232",
+          "name": "Salvar Menu"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst agora = Date.now();\nconst TRES_HORAS = 3 * 60 * 60 * 1000;\nconst QUINZE_MIN = 15 * 60 * 1000;\nconst BRT_OFFSET = -3 * 60 * 60 * 1000;\n\nif (!staticData.estados) staticData.estados = {};\nif (!staticData.filaRetorno) staticData.filaRetorno = {};\n\nconst brt = new Date(agora + BRT_OFFSET);\nconst hora = brt.getUTCHours();\nconst dia = brt.getUTCDay();\nconst horarioComercial = dia >= 1 && dia <= 5 && hora >= 8 && hora < 18;\n\nconst paraEnviarMenu = [];\nconst paraAvisar = [];\nconst paraEncerrar = [];\n\n// Fila de retorno — so envia menu se nao tiver conversa ativa\nif (horarioComercial && Object.keys(staticData.filaRetorno).length > 0) {\n  for (const [numero] of Object.entries(staticData.filaRetorno)) {\n    const dadosAtivos = staticData.estados[numero];\n    const estadoAtivo = dadosAtivos ? (typeof dadosAtivos === 'string' ? dadosAtivos : dadosAtivos.estado) : null;\n    if (!estadoAtivo || estadoAtivo === 'menu_enviado') {\n      paraEnviarMenu.push({ numero, acao: 'menu_retorno' });\n    }\n    delete staticData.filaRetorno[numero];\n  }\n}\n\n// Avisos e encerramentos — SOMENTE dentro do horario comercial\nif (horarioComercial) {\n  for (const [numero, dados] of Object.entries(staticData.estados)) {\n    if (typeof dados === 'string') continue;\n    const { estado, timestamp, avisado } = dados;\n    const inativo = agora - timestamp;\n\n    if (estado === 'aguardando_atendente') {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        paraAvisar.push({ numero, acao: 'avisar_espera' });\n      }\n    } else if (estado === 'aguardando_cliente') {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        staticData.estados[numero].timestamp = Date.now();\n        paraAvisar.push({ numero, acao: 'avisar_cliente' });\n      } else if (avisado && inativo >= QUINZE_MIN) {\n        // Remove o estado IMEDIATAMENTE antes de encerrar para nao repetir\n        delete staticData.estados[numero];\n        paraEncerrar.push({ numero, acao: 'encerrar' });\n      }\n    }\n  }\n}\n\nconst resultado = [\n  ...paraEnviarMenu.map(n => ({ json: n })),\n  ...paraAvisar.map(n => ({ json: n })),\n  ...paraEncerrar.map(n => ({ json: n }))\n];\n\nreturn resultado.length > 0 ? resultado : [{ json: { vazio: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -14224,
+            6784
+          ],
+          "id": "d110cf17-8100-440c-992f-ba9766f1e149",
+          "name": "Verificar Inativos"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "s001",
+                  "leftValue": "={{ $json.acao }}",
+                  "rightValue": "vazio",
+                  "operator": {
+                    "type": "string",
+                    "operation": "notEquals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -14016,
+            6784
+          ],
+          "id": "567ddb27-b8af-4f22-802c-2678f9870776",
+          "name": "Tem Acao"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "s002",
+                  "leftValue": "={{ $json.acao }}",
+                  "rightValue": "encerrar",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13824,
+            6784
+          ],
+          "id": "627a3bdd-6267-44d8-a9bd-bb307a3eda6b",
+          "name": "Encerrar ou Avisar"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Obrigado por entrar em contato com o Instituto Vinícius Ian! 🧩💙\\n\\nEsta conversa foi finalizada e arquivada. 📁\\n\\n⚠️ Atenção: se responder esta mensagem, um novo atendimento será iniciado automaticamente.\\n\\nSe precisar de mais informações, estaremos à disposição! ✅\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13616,
+            6672
+          ],
+          "id": "f6b5bf7d-8161-43f7-8691-c67c94bf41a9",
+          "name": "Msg Encerramento"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.numero;\nif (staticData.estados) delete staticData.estados[numero];\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13424,
+            6672
+          ],
+          "id": "2694c8cf-82e3-46e8-a10c-2d5a3e74d62e",
+          "name": "Limpar Estado"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "s003",
+                  "leftValue": "={{ $json.acao }}",
+                  "rightValue": "menu_retorno",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13824,
+            6928
+          ],
+          "id": "167c6954-a6f7-4390-8d9a-7ca12b3071a1",
+          "name": "Menu Retorno ou Aviso"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Olá! 👋 Seja bem-vindo(a) ao Instituto Vinícius Ian! 🧩💙⚖️\\n\\nPara lhe atender da melhor forma, selecione uma das opções abaixo:\\n\\n1️⃣ Novo atendimento jurídico\\n2️⃣ Atendimento jurídico já em andamento\\n3️⃣ Outros assuntos e informações\\n\\nInstituto Vinícius Ian 🧩\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13616,
+            6864
+          ],
+          "id": "5ce6cc40-e044-4398-b14b-c44ff44b5885",
+          "name": "Menu Retorno"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.numero;\nif (staticData.filaRetorno) delete staticData.filaRetorno[numero];\nif (!staticData.estados) staticData.estados = {};\nstaticData.estados[numero] = { estado: 'menu_enviado', timestamp: Date.now(), avisado: false };\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13424,
+            6864
+          ],
+          "id": "54402071-ae8e-41fc-bbfe-a085ab75f8dc",
+          "name": "Salvar Menu Retorno"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "s004",
+                  "leftValue": "={{ $json.acao }}",
+                  "rightValue": "avisar_espera",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13824,
+            7072
+          ],
+          "id": "ad3c639d-7233-43a9-b7c9-545c3453afc7",
+          "name": "Tipo Aviso"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Olá! 👋 Nossos atendentes estão ocupados no momento, mas sua mensagem é muito importante para nós. 💙\\n\\nEm breve entraremos em contato. Agradecemos a compreensão! 🙏\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13616,
+            7008
+          ],
+          "id": "3a7e9172-4628-44a3-b145-7f2aa76f13b0",
+          "name": "Msg Espera Atendente"
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "http://172.18.0.3:8080/message/sendText/IVI-WhatsApp",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "apikey",
+                  "value": "77e0577e5b61a954accf488930462ce4b39653aa3c4efdf56dc694cf5b3d628d"
+                }
+              ]
+            },
+            "sendBody": true,
+            "specifyBody": "json",
+            "jsonBody": "={\n  \"number\": \"{{ $json.numero }}\",\n  \"text\": \"Olá! 👋 Como não recebemos sua resposta, estamos encerrando este atendimento em breve.\\n\\nCaso ainda precise de ajuda, responda esta mensagem antes que o atendimento seja finalizado. 😊💙\\n\\n— Instituto Vinícius Ian 🧩\"\n}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.4,
+          "position": [
+            -13616,
+            7152
+          ],
+          "id": "93ab29dc-0c41-45c3-bb94-f0e47312e6a9",
+          "name": "Msg Aviso Cliente"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst numero = $json.numero;\nif (staticData.estados && staticData.estados[numero]) {\n  staticData.estados[numero].avisado = true;\n  staticData.estados[numero].timestamp = Date.now();\n}\nreturn [{ json: { ok: true } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -13424,
+            7072
+          ],
+          "id": "de609bfa-c47f-431d-b2b9-bd900e7422ca",
+          "name": "Marcar Avisado"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "eat001",
+                  "leftValue": "={{ $json.emAtendimento }}",
+                  "rightValue": true,
+                  "operator": {
+                    "type": "boolean",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13616,
+            6080
+          ],
+          "id": "7b88644d-c1d7-4a39-9559-af88740836f0",
+          "name": "Em Atendimento"
+        },
+        {
+          "parameters": {
+            "path": "ivi-limpar-estados",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2.1,
+          "position": [
+            -14416,
+            7072
+          ],
+          "id": "3cbe6ada-0da7-4530-af5a-17b0d152797b",
+          "name": "Webhook Limpeza",
+          "webhookId": "ivi-limpar-estados"
+        },
+        {
+          "parameters": {
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.estados = {};\nstaticData.filaRetorno = {};\nreturn [{ json: { ok: true, msg: 'Estados limpos!' } }];"
+          },
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "position": [
+            -14224,
+            7072
+          ],
+          "id": "c7fd5f09-a333-4f58-bbd9-d2b1d930a50c",
+          "name": "Executar Limpeza"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "fh100",
+                  "leftValue": "={{ $('Verificar Estado').item.json.foraHorarioMenu }}",
+                  "rightValue": true,
+                  "operator": {
+                    "type": "boolean",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13616,
+            6336
+          ],
+          "id": "d90fc3d3-f734-4c3d-beaf-527ded55a76d",
+          "name": "Fora Horario Ativo"
+        }
+      ],
+      "connections": {
+        "Webhook": {
+          "main": [
+            [
+              {
+                "node": "Msg do Cliente",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Msg do Atendente",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Schedule 15min": {
+          "main": [
+            [
+              {
+                "node": "Verificar Inativos",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Msg do Cliente": {
+          "main": [
+            [
+              {
+                "node": "Verificar Estado",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Msg do Atendente": {
+          "main": [
+            [
+              {
+                "node": "Processar Atendente",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Processar Atendente": {
+          "main": [
+            [
+              {
+                "node": "Encerrar Manual",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Encerrar Manual": {
+          "main": [
+            [
+              {
+                "node": "Msg Encerramento Manual",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Msg Encerramento Manual": {
+          "main": [
+            [
+              {
+                "node": "Limpar Estado Manual",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Verificar Estado": {
+          "main": [
+            [
+              {
+                "node": "Horario Comercial",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Horario Comercial": {
+          "main": [
+            [
+              {
+                "node": "Em Atendimento",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Conversa Ativa",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Conversa Ativa": {
+          "main": [
+            [],
+            [
+              {
+                "node": "Fora Horario Ativo",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Msg Fora Horario": {
+          "main": [
+            [
+              {
+                "node": "Salvar Fora Horario Menu",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Ja Recebeu Menu": {
+          "main": [
+            [
+              {
+                "node": "Escolheu 1",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Enviar Menu",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Menu Fora Horario": {
+          "main": [
+            [
+              {
+                "node": "Fora Horario Opcao 1 ou 2",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Enviar Menu",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Fora Horario Opcao 1 ou 2": {
+          "main": [
+            [
+              {
+                "node": "Fora Horario Resp 1",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Fora Horario Resp 2",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Fora Horario Resp 1": {
+          "main": [
+            [
+              {
+                "node": "Limpar Fora Horario",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Fora Horario Resp 2": {
+          "main": [
+            [
+              {
+                "node": "Limpar Fora Horario",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Enviar Menu": {
+          "main": [
+            [
+              {
+                "node": "Salvar Menu",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Escolheu 1": {
+          "main": [
+            [
+              {
+                "node": "Resposta Opcao 1",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Escolheu 2",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Escolheu 2": {
+          "main": [
+            [
+              {
+                "node": "Resposta Opcao 2",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Escolheu 3",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Escolheu 3": {
+          "main": [
+            [
+              {
+                "node": "Resposta Opcao 3",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Reenviar Menu",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Resposta Opcao 1": {
+          "main": [
+            [
+              {
+                "node": "Limpar Opcao 1",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Resposta Opcao 2": {
+          "main": [
+            [
+              {
+                "node": "Salvar Aguardando Atendente",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Resposta Opcao 3": {
+          "main": [
+            [
+              {
+                "node": "Salvar Opcao 3",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Verificar Inativos": {
+          "main": [
+            [
+              {
+                "node": "Tem Acao",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Tem Acao": {
+          "main": [
+            [
+              {
+                "node": "Encerrar ou Avisar",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Encerrar ou Avisar": {
+          "main": [
+            [
+              {
+                "node": "Msg Encerramento",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Menu Retorno ou Aviso",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Msg Encerramento": {
+          "main": [
+            [
+              {
+                "node": "Limpar Estado",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Menu Retorno ou Aviso": {
+          "main": [
+            [
+              {
+                "node": "Menu Retorno",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Tipo Aviso",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Menu Retorno": {
+          "main": [
+            [
+              {
+                "node": "Salvar Menu Retorno",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Tipo Aviso": {
+          "main": [
+            [
+              {
+                "node": "Msg Espera Atendente",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Msg Aviso Cliente",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Msg Espera Atendente": {
+          "main": [
+            [
+              {
+                "node": "Marcar Avisado",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Msg Aviso Cliente": {
+          "main": [
+            [
+              {
+                "node": "Marcar Avisado",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Em Atendimento": {
+          "main": [
+            [],
+            [
+              {
+                "node": "Ja Recebeu Menu",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Webhook Limpeza": {
+          "main": [
+            [
+              {
+                "node": "Executar Limpeza",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Fora Horario Ativo": {
+          "main": [
+            [
+              {
+                "node": "Fora Horario Opcao 1 ou 2",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Msg Fora Horario",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "authors": "Sandra  Otto",
+      "name": "Version 4c3a9523",
+      "description": "",
+      "autosaved": true,
+      "workflowPublishHistory": [
+        {
+          "createdAt": "2026-04-27T14:06:28.583Z",
+          "id": 131,
+          "workflowId": "7aThlO57zWbcBxif",
+          "versionId": "4c3a9523-4f85-437e-acbd-ec6bd35cf2e1",
+          "event": "activated",
+          "userId": "505d4046-8751-4878-b79d-fda56b57dd93"
+        }
+      ]
+    },
+    "scopes": [
+      "workflow:create",
+      "workflow:delete",
+      "workflow:execute",
+      "workflow:execute-chat",
+      "workflow:list",
+      "workflow:move",
+      "workflow:publish",
+      "workflow:read",
+      "workflow:share",
+      "workflow:unpublish",
+      "workflow:update"
+    ],
+    "checksum": "8cbba895d4259b4b97f7a318fada0f84078e673e85c6b0d5d371f881ece77b26"
+  }
+}

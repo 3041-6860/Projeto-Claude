@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Home, Briefcase, Users, FileText,
   DollarSign, UserSquare2, Megaphone, MessageSquare,
-  Settings, CheckSquare, Calendar, Rss, UserPlus, Clock, Palmtree, Network, BarChart2,
+  Settings, CheckSquare, Calendar, Rss, UserPlus, Clock, Palmtree, Network, BarChart2, User,
 } from "lucide-react";
 
 const sections = [
@@ -43,6 +43,7 @@ const sections = [
   {
     label: "Sistema",
     items: [
+      { label: "Meu Perfil",    href: "/perfil",        icon: User     },
       { label: "Configurações", href: "/configuracoes", icon: Settings },
     ],
   },

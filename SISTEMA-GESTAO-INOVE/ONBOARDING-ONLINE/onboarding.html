@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bem-vindo(a) ao Grupo Inove Prime</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--navy:#1F3763;--navy-dark:#162b52;--navy-mid:#2a4a82;--green:#62974B;--green-dark:#4d7a38;--green-light:#eaf3e5;--gray:#606062;--border:#E2E8EF;--light:#F5F7FA}
+    html{scroll-behavior:smooth}
+    body{font-family:'Montserrat',Arial,sans-serif;background:var(--light);color:#111827;font-size:15px;line-height:1.6}
+
+    /* ── LOGO MARCA (CSS — independe de imagem) ── */
+    .lm{display:inline-flex;flex-direction:column;line-height:1.15;gap:0}
+    .lm-grupo{font-size:9px;font-weight:700;letter-spacing:5px;margin-bottom:1px}
+    .lm-nome{font-weight:800;letter-spacing:-.5px;line-height:1}
+    .lm-prime{color:var(--green)}
+    .lm-tag{letter-spacing:2px;text-transform:uppercase;font-weight:500;margin-top:4px}
+    .lm-dark .lm-grupo{color:rgba(255,255,255,.85);font-size:9px}
+    .lm-dark .lm-nome{color:#fff;font-size:22px}
+    .lm-dark .lm-prime{color:#7ecf5c}
+    .lm-dark .lm-tag{color:rgba(255,255,255,.75);font-size:7.5px}
+    .lm-light .lm-grupo{color:var(--navy);font-size:9px}
+    .lm-light .lm-nome{color:var(--navy);font-size:22px}
+    .lm-light .lm-prime{color:var(--green)}
+    .lm-light .lm-tag{color:var(--gray);font-size:7.5px}
+    .lm-lg .lm-grupo{font-size:12px;letter-spacing:7px}
+    .lm-lg .lm-nome{font-size:34px}
+    .lm-lg .lm-tag{font-size:9.5px;letter-spacing:2.5px;margin-top:6px}
+
+    /* ── Splash ── */
+    #splash{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
+    #splash .lm{margin-bottom:28px;text-align:center;align-items:center}
+    #splash-bar{width:200px;height:4px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden}
+    #splash-fill{height:100%;background:var(--green);width:0;transition:width 1.4s ease;border-radius:4px}
+    #splash p{color:rgba(255,255,255,.6);margin-top:14px;font-size:12px}
+
+    /* ── Progress global ── */
+    #gp{position:fixed;top:0;left:0;right:0;height:4px;background:rgba(31,55,99,.15);z-index:100}
+    #gf{height:100%;background:var(--green);transition:width .4s ease;width:0%}
+
+    /* ── Header ── */
+    header{position:fixed;top:4px;left:0;right:0;background:#fff;border-bottom:2px solid var(--navy);z-index:90;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;display:none}
+    header img{height:34px}
+    .hdr-info{font-size:11.5px;color:var(--gray);text-align:right;line-height:1.4}
+    .hdr-info strong{color:var(--navy)}
+
+    /* ── App ── */
+    #app{max-width:800px;margin:0 auto;padding:100px 20px 60px;display:none}
+
+    /* ── Steps indicator ── */
+    .steps-wrap{display:flex;gap:5px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+    .sdot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--gray);cursor:default;transition:all .2s}
+    .sdot.done{background:var(--green);border-color:var(--green);color:#fff}
+    .sdot.active{background:var(--navy);border-color:var(--navy);color:#fff}
+
+    /* ── Step ── */
+    .step{display:none;animation:fi .35s ease}
+    .step.active{display:block}
+    @keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── Card ── */
+    .card{background:#fff;border-radius:16px;padding:28px;box-shadow:0 2px 14px rgba(0,0,0,.07);margin-bottom:22px}
+
+    /* ── Hero ── */
+    .hero{background:linear-gradient(135deg,#1F3763 0%,#2a5298 55%,#62974B 100%);border-radius:16px;padding:38px 28px;text-align:center;margin-bottom:22px}
+    .hero img{height:64px;margin-bottom:18px}
+    .hero h1{font-size:26px;font-weight:800;color:#fff;margin-bottom:8px;line-height:1.2}
+    .hero p{color:rgba(255,255,255,.85);font-size:14px}
+
+    /* ── Tipografia ── */
+    h2{font-size:21px;font-weight:800;color:var(--navy);margin-bottom:6px}
+    h3{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:8px}
+    .sub{font-size:12.5px;color:var(--gray);margin-bottom:20px}
+    p{margin-bottom:10px;font-size:14px}
+    .stag{display:inline-block;background:var(--navy);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:20px;margin-bottom:12px}
+    .stag.g{background:var(--green)}
+    .stag.o{background:#e65100}
+
+    /* ── Inputs ── */
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:11px;font-weight:700;color:var(--gray);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+    .field input,.field select{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:#fff;color:#111827}
+    .field input:focus,.field select:focus{border-color:var(--navy)}
+
+    /* ── Botões ── */
+    .btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap}
+    .btn{padding:11px 26px;border-radius:10px;border:none;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s,transform .1s;display:inline-flex;align-items:center;gap:6px}
+    .btn:hover{opacity:.88;transform:translateY(-1px)}
+    .btn-navy{background:var(--navy);color:#fff}
+    .btn-outline{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+    .btn-green{background:var(--green);color:#fff}
+    .btn-big{padding:15px 36px;font-size:15px;width:100%;justify-content:center;margin-top:8px}
+
+    /* ── Missão/Visão/Valores ── */
+    .mvc{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0}
+    .mvc-c{border-radius:12px;padding:18px;text-align:center}
+    .mvc-c.m{background:#edf1f9;border:1px solid #c9d5ea}
+    .mvc-c.v{background:var(--green-light);border:1px solid #b5d4a5}
+    .mvc-c.s{background:#fff8e1;border:1px solid #f0c850}
+    .mvc-icon{font-size:28px;margin-bottom:8px}
+    .mvc-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);margin-bottom:4px}
+    .mvc-txt{font-size:12.5px;font-weight:500}
+    .vtags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+    .vtag{background:var(--navy);color:#fff;padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:600}
+
+    /* ── Empresas ── */
+    .emp-card{border-radius:14px;padding:24px;margin-bottom:18px;overflow:hidden}
+    .emp-card.gcj{background:#f4f6fc;border-left:5px solid var(--navy)}
+    .emp-card.ivi{background:var(--green-light);border-left:5px solid var(--green)}
+    .emp-card.jh{background:#fff8f3;border-left:5px solid #e65100}
+    .emp-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+    .emp-icon{font-size:36px;flex-shrink:0}
+    .emp-slogan{font-size:12px;font-style:italic;color:var(--gray);margin-bottom:4px}
+    .emp-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px}
+    .emp-tab{padding:7px 14px;border:none;background:none;font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s}
+    .emp-tab.on{color:var(--navy);border-bottom-color:var(--navy)}
+    .emp-pane{display:none;font-size:13px;color:#374151;line-height:1.7}
+    .emp-pane.on{display:block}
+    .emp-list{margin:6px 0 0 18px}
+    .emp-list li{margin-bottom:5px}
+    .emp-highlight{background:rgba(31,55,99,.06);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12.5px}
+    .emp-highlight.g{background:rgba(98,151,75,.1)}
+    .emp-highlight.o{background:rgba(230,81,0,.08)}
+    .story-box{background:linear-gradient(135deg,var(--green-light),#fff);border-radius:10px;border-left:4px solid var(--green);padding:14px 16px;margin-top:12px;font-size:13px;font-style:italic;color:#2d4a20}
+
+    /* ── Sistemas ── */
+    .sis-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:16px}
+    .sis-card{border-radius:12px;padding:20px 14px;text-align:center;border:1px solid var(--border);background:#fff;transition:transform .15s,box-shadow .15s}
+    .sis-card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,.1)}
+    .sis-icon{font-size:34px;margin-bottom:10px;display:block}
+    .sis-nome{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:5px}
+    .sis-desc{font-size:12px;color:var(--gray);line-height:1.5}
+    .sis-tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+    .sis-tag{background:var(--light);color:var(--navy);font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:8px}
+
+    /* ── Cronograma ── */
+    .dia-card{border-radius:12px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border)}
+    .dia-hdr{padding:12px 18px;font-size:12.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+    .dia-hdr.seg{background:var(--navy);color:#fff}
+    .dia-hdr.ter{background:#1a5276;color:#fff}
+    .dia-hdr.qua{background:#1e6b5e;color:#fff}
+    .dia-hdr.qui{background:var(--green-dark);color:#fff}
+    .dia-hdr.sex{background:var(--green);color:#fff}
+    .chevron{transition:transform .2s;font-size:12px}
+    .dia-hdr.open .chevron{transform:rotate(180deg)}
+    .dia-body{background:#fff;display:none}
+    .dia-body.open{display:block}
+    .at{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+    .at:last-child{border-bottom:none}
+    .at:hover{background:var(--light)}
+    .at.done{background:var(--green-light)}
+    .at-chk{width:18px;height:18px;border-radius:4px;flex-shrink:0;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all .15s}
+    .at.done .at-chk{background:var(--green);border-color:var(--green);color:#fff;font-size:9px}
+    .at-txt{flex:1}
+    .at-lbl{font-size:13px;color:#111827;line-height:1.4}
+    .at.done .at-lbl{text-decoration:line-through;color:var(--gray)}
+    .at-resp{font-size:11px;color:var(--gray);margin-top:2px}
+
+    /* ── ESG ── */
+    .esg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:18px 0}
+    .esg-c{border-radius:12px;padding:20px}
+    .esg-c.e{background:#e8f5e9;border:1px solid #a5d6a7}
+    .esg-c.s{background:#e3f2fd;border:1px solid #90caf9}
+    .esg-c.g{background:#ede7f6;border:1px solid #ce93d8}
+    .esg-l{font-size:34px;font-weight:800;margin-bottom:4px}
+    .esg-c.e .esg-l{color:#2e7d32}.esg-c.s .esg-l{color:#1565c0}.esg-c.g .esg-l{color:#6a1b9a}
+    .esg-t{font-size:12px;font-weight:700;margin-bottom:8px}
+    .esg-i{font-size:12px;color:#374151;margin-bottom:4px;display:flex;gap:6px}
+    .esg-i::before{content:"•";flex-shrink:0}
+
+    /* ── LGPD ── */
+    .lgpd-tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+    .lgpd-tbl th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+    .lgpd-tbl td{padding:9px 12px;border-bottom:1px solid var(--border)}
+    .lgpd-tbl tr:last-child td{border-bottom:none}
+    .lgpd-tbl tr:nth-child(even) td{background:var(--light)}
+    .lgpd-alert{background:#fce8e8;border-left:4px solid #c62828;border-radius:0 8px 8px 0;padding:12px 14px;font-size:13px;color:#b71c1c;margin-top:14px}
+
+    /* ── Termos ── */
+    .termo{display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:12px;margin-bottom:9px;border:2px solid var(--border);background:#fff;cursor:pointer;transition:all .15s}
+    .termo:hover{border-color:var(--navy);background:var(--light)}
+    .termo.ok{border-color:var(--green);background:var(--green-light)}
+    .termo-nome{flex:1;font-size:13px;font-weight:600}
+    .termo.ok .termo-nome{color:var(--green-dark)}
+    .termo-data{font-size:11px;color:var(--gray);margin-top:2px}
+    .tbadge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;flex-shrink:0}
+    .tbadge.p{background:#fff3e0;color:#bf360c}
+    .tbadge.ok{background:var(--green-light);color:var(--green-dark)}
+
+    /* ── Função personalizada ── */
+    .funcao-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:16px;padding:28px;margin-bottom:18px;text-align:center}
+    .funcao-hero h2{color:#fff;font-size:22px;margin-bottom:6px}
+    .funcao-hero p{color:rgba(255,255,255,.8);font-size:13px}
+    .resp-lista{margin-top:0}
+    .resp-li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);font-size:13.5px}
+    .resp-li:last-child{border-bottom:none}
+    .resp-li::before{content:"▸";color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px}
+    .sis-pill{display:inline-flex;align-items:center;gap:5px;background:var(--light);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:12.5px;font-weight:600;color:var(--navy);margin:4px}
+    .obs-box{background:#fffbf0;border:1px solid #f0c850;border-radius:10px;padding:14px 16px;font-size:13px;color:#5d4a00;margin-top:14px;font-style:italic}
+
+    /* ── Alert ── */
+    .alert{border-radius:10px;padding:12px 15px;display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-bottom:14px}
+    .alert.n{background:#edf1f9;border-left:4px solid var(--navy);color:var(--navy-dark)}
+    .alert.g{background:var(--green-light);border-left:4px solid var(--green);color:var(--green-dark)}
+    .alert.o{background:#fff3e0;border-left:4px solid #e65100;color:#bf360c}
+
+    /* ── Prazo badge (header) ── */
+    #prazo-badge{font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;display:none}
+    .pb-ok{background:var(--green-light);color:var(--green-dark)}
+    .pb-warn{background:#fff3e0;color:#e65100}
+    .pb-late{background:#fce4ec;color:#c62828}
+    /* ── Cabeçalho do documento (personalizado) ── */
+    .doc-meta-hdr{border:1.5px solid var(--navy);border-radius:8px;padding:10px 14px;margin-bottom:14px;background:#edf1f9}
+    .doc-meta-titulo{font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.4px;text-align:center;margin-bottom:8px}
+    .doc-meta-table{width:100%;border-collapse:collapse;font-size:11px}
+    .doc-meta-table td{padding:2.5px 5px}
+    .doc-meta-table td:first-child{font-weight:700;color:var(--gray);width:90px}
+    .doc-meta-divider{border:none;border-top:1.5px solid #c8d6e8;margin:8px 0 0}
+    /* ── Bloco de confirmação dentro do doc ── */
+    .doc-confirm-blk{display:none;margin-top:12px;border:2px solid var(--green);border-radius:10px;padding:12px 14px;background:var(--green-light)}
+    .doc-confirm-blk .ctitulo{font-size:11.5px;font-weight:800;color:var(--green-dark);margin-bottom:6px}
+    .doc-confirm-blk p{font-size:11.5px;color:#374151;margin-bottom:3px;line-height:1.5}
+    /* ── Alerta bloqueio de conclusão ── */
+    .concluir-alert{display:none;background:#fff3e0;border:2px solid #e65100;border-radius:10px;padding:13px 16px;font-size:13px;color:#bf360c;margin-bottom:12px;line-height:1.9}
+    /* ── PDF / Impressão ── */
+    #print-area{display:none}
+    @media print{
+      body>*:not(#print-area){display:none!important}
+      #print-area{display:block!important;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#111;line-height:1.6}
+      .print-cover{text-align:center;padding:30px 0 24px;border-bottom:3px solid #1F3763;margin-bottom:20px}
+      .print-cover h1{font-size:18px;font-weight:800;color:#1F3763;margin-bottom:2px}
+      .print-cover h2{font-size:13px;color:#62974B;font-weight:700;margin-bottom:4px}
+      .print-cover h3{font-size:12px;color:#606062;font-weight:600;margin-bottom:16px}
+      .print-info-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:10px}
+      .print-info-table td{padding:4px 8px;border:1px solid #E2E8EF}
+      .print-info-table td:first-child{font-weight:700;color:#606062;width:130px;background:#F5F7FA}
+      .print-doc{page-break-before:always;padding:0}
+      .print-doc-hdr{border-bottom:2px solid #1F3763;padding-bottom:12px;margin-bottom:14px}
+      .print-empresa{font-size:9px;color:#606062;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+      .print-doc-titulo{font-size:14px;font-weight:800;color:#1F3763;margin-bottom:10px}
+      .print-doc-body h4{font-size:9.5px;font-weight:700;color:#1F3763;margin:8px 0 3px;text-transform:uppercase}
+      .print-doc-body p{margin-bottom:4px}
+      .print-doc-body ul{margin:3px 0 6px 14px}
+      .print-doc-body li{margin-bottom:2px}
+      .print-confirm-blk{margin-top:16px;border:2px solid #62974B;border-radius:6px;padding:10px 14px;background:#eaf3e5}
+      .print-confirm-titulo{font-size:11px;font-weight:800;color:#4d7a38;margin-bottom:6px}
+      .print-confirm-blk p{margin-bottom:4px;font-size:10px}
+    }
+    /* ── Avaliação por estrelas ── */
+    .star-row{display:flex;gap:2px;margin:8px 0 4px}
+    .star-btn{font-size:34px;background:none;border:none;cursor:pointer;padding:2px 5px;line-height:1;transition:transform .12s;color:#d1d5db;font-family:inherit}
+    .star-btn:hover{transform:scale(1.2)}
+    .star-btn.selected{color:#f59e0b}
+    /* ── Conclusão ── */
+    .ok-hero{background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);border-radius:16px;padding:44px 28px;text-align:center;margin-bottom:22px}
+    .ok-hero span{font-size:60px;display:block;margin-bottom:14px}
+    .ok-hero h2{color:#fff;font-size:24px;margin-bottom:8px}
+    .ok-hero p{color:rgba(255,255,255,.9);font-size:14px}
+    .prox-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:16px}
+    .prox-item{background:var(--light);border-radius:10px;padding:14px;border:1px solid var(--border)}
+    .prox-lbl{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray);margin-bottom:4px}
+    .prox-val{font-size:13px;font-weight:600;color:var(--navy)}
+
+    @media(max-width:600px){#app{padding:86px 14px 50px}.card{padding:20px 16px}.hero{padding:26px 16px}.hero h1{font-size:20px}.btn-row{flex-direction:column}.btn{width:100%;justify-content:center}}
+
+    /* ── Documentos com verificação de leitura ── */
+    .doc-item{border-radius:12px;margin-bottom:12px;border:2px solid var(--border);overflow:hidden;background:#fff}
+    .doc-item.lido{border-color:var(--green)}
+    .doc-hdr{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;background:#fff;transition:background .15s}
+    .doc-hdr:hover,.doc-hdr.open{background:var(--light)}
+    .doc-ico{font-size:20px;flex-shrink:0}
+    .doc-nome{flex:1;font-size:13px;font-weight:600;color:#111;line-height:1.35}
+    .doc-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;flex-shrink:0}
+    .doc-badge.p{background:#fff3e0;color:#bf360c}
+    .doc-badge.ok{background:var(--green-light);color:var(--green-dark)}
+    .doc-caret{font-size:12px;color:var(--gray);transition:transform .2s;flex-shrink:0;margin-left:4px}
+    .doc-hdr.open .doc-caret{transform:rotate(180deg)}
+    .doc-body{display:none;padding:0 16px 16px}
+    .doc-body.open{display:block}
+    .doc-scroll{max-height:290px;overflow-y:auto;border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.8;color:#374151;background:#fafafa;margin:8px 0}
+    .doc-scroll h4{color:var(--navy);font-size:12.5px;font-weight:700;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.3px}
+    .doc-scroll p{margin-bottom:6px}
+    .doc-scroll ul{margin:4px 0 8px 16px}
+    .doc-scroll li{margin-bottom:3px}
+    .scroll-hint{font-size:11.5px;color:var(--gray);text-align:center;margin:4px 0 5px;font-style:italic}
+    .btn-lock{opacity:.45;cursor:not-allowed!important}
+    /* ── Roteiro de Treinamento ── */
+    .rot-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;margin-bottom:8px;border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:all .15s}
+    .rot-item:hover{background:var(--light);border-color:var(--navy)}
+    .rot-item.done{background:var(--green-light);border-color:var(--green)}
+    .rot-num{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .rot-item.done .rot-num{background:var(--green)}
+    .rot-chk{width:20px;height:20px;border-radius:4px;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:transparent}
+    .rot-item.done .rot-chk{background:var(--green);border-color:var(--green);color:#fff}
+    .rot-txt{flex:1}
+    .rot-lbl{font-size:13.5px;color:#111;line-height:1.4}
+    .rot-item.done .rot-lbl{color:var(--green-dark)}
+    .rot-resp{font-size:11px;color:var(--gray);margin-top:2px}
+    /* ── Tutoriais de Sistemas ── */
+    .tut-blk{margin-bottom:14px;border-radius:14px;overflow:hidden;border:1.5px solid var(--border)}
+    .tut-hdr{display:flex;align-items:center;gap:12px;padding:15px 18px;cursor:pointer;user-select:none;transition:background .15s;background:#fff}
+    .tut-hdr:hover{background:var(--light)}
+    .tut-hdr.open{background:var(--navy);color:#fff}
+    .tut-hdr.open .tut-caret,.tut-hdr.open .tut-sub{color:rgba(255,255,255,.7)}
+    .tut-ico{font-size:26px;flex-shrink:0}
+    .tut-title{font-size:15px;font-weight:800;flex:1}
+    .tut-sub{font-size:11.5px;color:var(--gray);margin-top:1px}
+    .tut-caret{font-size:13px;color:var(--gray);transition:transform .2s}
+    .tut-hdr.open .tut-caret{transform:rotate(180deg)}
+    .tut-body{display:none;padding:0 18px 18px;background:#fff}
+    .tut-body.open{display:block}
+    .tut-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border);margin:12px 0 16px;flex-wrap:wrap}
+    .tut-tab{padding:7px 15px;border:none;background:none;font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;font-family:inherit;transition:color .15s}
+    .tut-tab.on{color:var(--navy);border-bottom-color:var(--navy)}
+    .tut-pane{display:none}.tut-pane.on{display:block}
+    .gstep{display:flex;gap:12px;margin-bottom:11px;align-items:flex-start}
+    .gnum{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .gnum.g{background:var(--green)}
+    .gtxt{flex:1;font-size:13.5px;line-height:1.55}
+    .gtxt strong{color:var(--navy)}
+    .gobs{background:#fff3cd;border-left:3px solid #ffc107;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12.5px;color:#664d03;margin:8px 0 10px 38px}
+    .ginfo{background:#e8f4fd;border-left:3px solid #2196f3;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12.5px;color:#0d47a1;margin:8px 0 10px 38px}
+    .vid-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;margin:8px 0 14px}
+    .vid-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+    .vid-lbl{font-size:11.5px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 5px}
+    .sis-badge{display:inline-block;background:var(--light);border:1px solid var(--border);color:var(--navy);font-size:11px;font-weight:600;padding:3px 10px;border-radius:8px;margin:2px}
+  </style>
+</head>
+<body>
+
+<!-- Splash -->
+<div id="splash">
+  <div class="lm lm-dark lm-lg">
+    <span class="lm-grupo">G R U P O</span>
+    <span class="lm-nome">INOVE<span class="lm-prime">PRIME</span></span>
+    <span class="lm-tag">TRANSFORMANDO IDEIAS EM RESULTADOS</span>
+  </div>
+  <div id="splash-bar"><div id="splash-fill"></div></div>
+  <p>Preparando seu ambiente de integração…</p>
+</div>
+
+<!-- Progress bar -->
+<div id="gp"><div id="gf"></div></div>
+
+<!-- Header -->
+<header id="hdr">
+  <div class="lm lm-light">
+    <span class="lm-grupo">G R U P O</span>
+    <span class="lm-nome">INOVE<span class="lm-prime">PRIME</span></span>
+    <span class="lm-tag">TRANSFORMANDO IDEIAS EM RESULTADOS</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span id="prazo-badge"></span>
+    <div class="hdr-info" id="hdr-info"></div>
+  </div>
+</header>
+
+<!-- App -->
+<div id="app">
+  <div class="steps-wrap" id="steps-wrap"></div>
+
+  <!-- ══ ETAPA 0 — Identificação ══════════════════════════════════════════════ -->
+  <div class="step active" id="step-0">
+    <div class="hero">
+      <div class="lm lm-dark lm-lg" style="margin:0 auto 20px;align-items:center">
+        <span class="lm-grupo">G R U P O</span>
+        <span class="lm-nome">INOVE<span class="lm-prime">PRIME</span></span>
+        <span class="lm-tag">TRANSFORMANDO IDEIAS EM RESULTADOS</span>
+      </div>
+      <h1>Bem-vindo(a) ao Grupo Inove Prime! 🎉</h1>
+      <p>Estamos muito felizes em tê-lo(a) aqui.<br>Vamos começar o seu processo de integração.</p>
+    </div>
+    <div class="card" id="id-form-card">
+      <span class="stag">Identificação</span>
+      <h2>Antes de começar…</h2>
+      <p class="sub">Preencha seus dados para personalizar a sua integração.</p>
+      <div class="field"><label>Seu nome completo *</label><input id="inp-nome" type="text" placeholder="Ex: Ana Paula Souza" /></div>
+      <div class="field"><label>Seu cargo / função *</label><input id="inp-cargo" type="text" placeholder="Ex: Advogada Associada" /></div>
+      <div class="field">
+        <label>Empresa do Grupo *</label>
+        <select id="inp-empresa">
+          <option value="">Selecione…</option>
+          <option value="GCJ">Gonçalves Consultoria Jurídica</option>
+          <option value="IVI">Instituto Vinícius Ian</option>
+          <option value="JH">Just Help</option>
+        </select>
+      </div>
+      <div class="field"><label>Data de início</label><input id="inp-data" type="date" /></div>
+      <button class="btn btn-navy btn-big" onclick="comecar()">Começar minha integração →</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 1 — O Grupo ════════════════════════════════════════════════════ -->
+  <div class="step" id="step-1">
+    <div class="hero"><h1>O Grupo Inove Prime</h1><p>Transformando ideias em resultados</p></div>
+    <div class="card">
+      <span class="stag">Nossa história</span>
+      <h2>Quem somos</h2>
+      <p>Fundado em <strong>19 de abril de 2022</strong> e sediado em <strong>Blumenau/SC</strong>, o Grupo Inove Prime é um ecossistema de negócios interconectados, dedicado a transformar visões empreendedoras em sucessos tangíveis por meio da inovação, da colaboração e do impacto social.</p>
+      <p>Nosso grupo reúne <strong>consultoria jurídica</strong>, <strong>acesso digital à justiça</strong> e <strong>atendimento social especializado</strong> — tudo integrado, compartilhando valores, tecnologia e cultura organizacional.</p>
+      <div class="mvc">
+        <div class="mvc-c m"><div class="mvc-icon">🎯</div><div class="mvc-lbl">Missão</div><div class="mvc-txt">Criar sinergias poderosas entre as empresas, cultivando inovação e colaboração para gerar resultados exclusivos</div></div>
+        <div class="mvc-c v"><div class="mvc-icon">🔭</div><div class="mvc-lbl">Visão</div><div class="mvc-txt">Ser referência em Blumenau como ecossistema integrado de soluções jurídicas, administrativas e de impacto social</div></div>
+        <div class="mvc-c s"><div class="mvc-icon">✨</div><div class="mvc-lbl">Slogan</div><div class="mvc-txt" style="font-weight:800;font-size:15px">"Transformando Ideias em Resultados"</div></div>
+      </div>
+      <h3 style="margin-top:20px">Nossos Valores</h3>
+      <div class="vtags">
+        <span class="vtag">💡 Inovação</span><span class="vtag">🤝 Colaboração</span><span class="vtag">⚖️ Ética</span>
+        <span class="vtag">🏆 Excelência</span><span class="vtag">🌱 Impacto Social</span>
+        <span class="vtag">🎯 Responsabilidade</span><span class="vtag">🔍 Transparência</span>
+      </div>
+      <div class="alert n" style="margin-top:20px">
+        <span>📍</span>
+        <div><strong>Endereço:</strong> Rua La Paz, 37 · Ponta Aguda · Blumenau/SC · CEP 89051-080<br>
+        <strong>CNPJ:</strong> 46.084.096/0001-14 · <strong>Instagram:</strong> @grupoinoveprime</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStep(0)">← Anterior</button>
+      <button class="btn btn-navy" onclick="goStep(2)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 2 — As Empresas ════════════════════════════════════════════════ -->
+  <div class="step" id="step-2">
+    <div class="card" style="margin-bottom:10px"><span class="stag">Estrutura do grupo</span><h2>Nossas 3 Empresas</h2><p class="sub">Cada empresa tem missão e público distintos — juntas formam uma proposta única e completa.</p></div>
+
+    <!-- GCJ -->
+    <div class="emp-card gcj">
+      <div class="emp-header">
+        <div class="emp-icon">⚖️</div>
+        <div>
+          <h3>Gonçalves Consultoria Jurídica — GCJ</h3>
+          <p class="emp-slogan">"Inovação e modernidade jurídica!"</p>
+        </div>
+      </div>
+      <div class="emp-tabs">
+        <button class="emp-tab on" onclick="empTab('gcj','sobre',this)">Sobre</button>
+        <button class="emp-tab" onclick="empTab('gcj','atende',this)">A quem atendemos</button>
+        <button class="emp-tab" onclick="empTab('gcj','funciona',this)">Como funcionamos</button>
+        <button class="emp-tab" onclick="empTab('gcj','diff',this)">Diferenciais</button>
+      </div>
+      <div class="emp-pane on" id="gcj-sobre">
+        <p>A Gonçalves Consultoria Jurídica é o coração jurídico do Grupo Inove Prime. Fundada com a missão de modernizar o atendimento jurídico, a GCJ une <strong>expertise técnica</strong>, tecnologia e humanização para oferecer uma experiência completamente diferente ao cliente.</p>
+        <p>Nossa atuação vai além da simples prestação de serviço — somos parceiros estratégicos dos nossos clientes, acompanhando cada etapa do processo com transparência, agilidade e comprometimento.</p>
+      </div>
+      <div class="emp-pane" id="gcj-atende">
+        <ul class="emp-list">
+          <li>Pessoas físicas com demandas nas áreas cível, trabalhista e consumerista</li>
+          <li>Empresas e empreendedores que precisam de assessoria jurídica contínua</li>
+          <li>Clientes indicados pelas empresas parceiras do Grupo Inove</li>
+          <li>Casos encaminhados pela plataforma Just Help</li>
+        </ul>
+        <div class="emp-highlight">📌 Atendimento <strong>presencial em Blumenau/SC</strong> e <strong>online para todo o Brasil</strong> nas modalidades permitidas pela OAB.</div>
+      </div>
+      <div class="emp-pane" id="gcj-funciona">
+        <ul class="emp-list">
+          <li><strong>Triagem inicial:</strong> contato via WhatsApp, e-mail ou plataforma Just Help</li>
+          <li><strong>Consulta:</strong> análise do caso com o advogado responsável</li>
+          <li><strong>Proposta:</strong> apresentação da estratégia jurídica e honorários</li>
+          <li><strong>Acompanhamento:</strong> atualização periódica via Bitrix24 e e-mail</li>
+          <li><strong>Encerramento:</strong> relatório final e prestação de contas ao cliente</li>
+        </ul>
+        <div class="emp-highlight">💻 Todos os processos são gerenciados no <strong>Bitrix24</strong> (CRM) e no <strong>Datajuri</strong> (prazos processuais).</div>
+      </div>
+      <div class="emp-pane" id="gcj-diff">
+        <ul class="emp-list">
+          <li>🚀 <strong>Resposta rápida:</strong> retorno ao cliente em até 24h úteis</li>
+          <li>📱 <strong>100% digital:</strong> documentos, contratos e comunicação via plataformas digitais</li>
+          <li>🤝 <strong>Atendimento humanizado:</strong> cada cliente é único e tratado como tal</li>
+          <li>🔍 <strong>Transparência total:</strong> o cliente sempre sabe o que está acontecendo com o seu caso</li>
+          <li>🔗 <strong>Ecossistema integrado:</strong> acesso às soluções do IVI e da Just Help quando necessário</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- IVI -->
+    <div class="emp-card ivi">
+      <div class="emp-header">
+        <div class="emp-icon">💚</div>
+        <div>
+          <h3>Instituto Vinícius Ian — IVI</h3>
+          <p class="emp-slogan">"Nosso porquê tem nome, rosto e coração!"</p>
+        </div>
+      </div>
+      <div class="emp-tabs">
+        <button class="emp-tab on" onclick="empTab('ivi','sobre',this)">Nossa história</button>
+        <button class="emp-tab" onclick="empTab('ivi','atende',this)">A quem atendemos</button>
+        <button class="emp-tab" onclick="empTab('ivi','funciona',this)">Serviços</button>
+        <button class="emp-tab" onclick="empTab('ivi','diff',this)">Impacto</button>
+      </div>
+      <div class="emp-pane on" id="ivi-sobre">
+        <div class="story-box">
+          💚 <strong>Vinícius Ian</strong> é o filho do fundador Rodrigo Gonçalves. Diagnosticado com Transtorno do Espectro Autista (TEA) aos dois anos de idade, Vinícius Ian deu nome e alma a uma causa que nasceu da vivência mais íntima de uma família: a luta por direitos, por inclusão e por dignidade.
+        </div>
+        <p style="margin-top:12px">Fundado em <strong>30 de março de 2022</strong>, o Instituto Vinícius Ian surgiu da dor que se transformou em propósito. Rodrigo Gonçalves, advogado e empreendedor, vivenciou de perto as dificuldades que famílias com crianças TEA enfrentam: planos de saúde que negam tratamentos, escolas que recusam matrícula, falta de orientação jurídica e um sistema burocrático que parece indiferente.</p>
+        <p>Com o apoio de advogados que se voluntariaram para oferecer atendimento gratuito, o instituto nasceu com um compromisso claro: <strong>nenhuma família deve lutar sozinha.</strong></p>
+        <div class="emp-highlight g">🏛️ Em 2024, o Instituto recebeu a <strong>Declaração de Utilidade Pública Municipal</strong> (Lei 9490/2024) — um reconhecimento oficial do impacto do trabalho realizado pela equipe.</div>
+      </div>
+      <div class="emp-pane" id="ivi-atende">
+        <ul class="emp-list">
+          <li>Famílias de crianças e pessoas com Transtorno do Espectro Autista (TEA)</li>
+          <li>Pessoas com outras necessidades especiais e seus responsáveis</li>
+          <li>Famílias em situação de vulnerabilidade socioeconômica</li>
+          <li>Atendimento para <strong>qualquer cidade do Brasil</strong> — 100% online e gratuito</li>
+        </ul>
+        <div class="emp-highlight g">💛 Todo o atendimento é <strong>gratuito</strong>, sem burocracia e sem exigência de documentação prévia para o primeiro contato.</div>
+      </div>
+      <div class="emp-pane" id="ivi-funciona">
+        <ul class="emp-list">
+          <li>⚖️ <strong>Ações contra planos de saúde</strong> que negam terapias e tratamentos para TEA</li>
+          <li>🏫 <strong>Suporte jurídico para inclusão escolar</strong> — escolas que recusam crianças autistas</li>
+          <li>👔 <strong>Redução de jornada para servidores públicos</strong> com dependentes com TEA</li>
+          <li>📋 <strong>Orientação sobre laudos e diagnósticos</strong> e seus efeitos jurídicos</li>
+          <li>🏠 <strong>Apoio em questões de benefícios</strong> (BPC/LOAS, aposentadoria por invalidez)</li>
+          <li>📣 <strong>Conscientização e educação</strong> sobre direitos das pessoas com TEA</li>
+        </ul>
+      </div>
+      <div class="emp-pane" id="ivi-diff">
+        <ul class="emp-list">
+          <li>🆓 Atendimento <strong>100% gratuito</strong> — sem nenhum custo para as famílias</li>
+          <li>🌐 Atende famílias de <strong>qualquer cidade do Brasil</strong> online</li>
+          <li>❤️ Equipe formada por profissionais com <strong>sensibilidade e vivência real</strong> com o TEA</li>
+          <li>🏛️ Reconhecido como <strong>Utilidade Pública Municipal</strong> em Blumenau</li>
+          <li>🤝 Rede de voluntários e parceiros comprometidos com a causa</li>
+        </ul>
+        <div class="emp-highlight g">🌟 Trabalhar no IVI é fazer parte de algo maior. Cada atendimento representa uma família que encontrou um aliado na sua luta por direitos.</div>
+      </div>
+    </div>
+
+    <!-- JH -->
+    <div class="emp-card jh">
+      <div class="emp-header">
+        <div class="emp-icon">📱</div>
+        <div>
+          <h3>Just Help — JH</h3>
+          <p class="emp-slogan">"Conectando. Resolvendo. Tranquilizando."</p>
+        </div>
+      </div>
+      <div class="emp-tabs">
+        <button class="emp-tab on" onclick="empTab('jh','sobre',this)">Sobre</button>
+        <button class="emp-tab" onclick="empTab('jh','atende',this)">A quem atendemos</button>
+        <button class="emp-tab" onclick="empTab('jh','funciona',this)">Como funciona</button>
+        <button class="emp-tab" onclick="empTab('jh','diff',this)">Diferenciais</button>
+      </div>
+      <div class="emp-pane on" id="jh-sobre">
+        <p>A Just Help nasceu para resolver um problema real: <strong>a maioria das pessoas não sabe quais são os seus direitos</strong> e, quando sabe, não sabe a quem recorrer — ou teme os custos de um advogado.</p>
+        <p>É uma <strong>plataforma digital gratuita</strong> que conecta quem precisa de ajuda jurídica com especialistas que podem resolver o problema com rapidez, simplicidade e total privacidade.</p>
+        <div class="emp-highlight o">📲 Sem burocracia, sem custos iniciais, sem necessidade de agendamento. A pessoa descreve o caso e o especialista entra em contato.</div>
+      </div>
+      <div class="emp-pane" id="jh-atende">
+        <ul class="emp-list">
+          <li>Qualquer pessoa que tenha uma dúvida ou problema jurídico</li>
+          <li>Pessoas que não sabem se têm direito a algo ou por onde começar</li>
+          <li>Quem procura uma orientação rápida antes de tomar uma decisão importante</li>
+          <li>Empresas e empreendedores em busca de suporte jurídico ágil</li>
+        </ul>
+        <div class="emp-highlight o">🌍 Plataforma <strong>100% digital</strong> — atende pessoas de qualquer lugar do Brasil, a qualquer hora.</div>
+      </div>
+      <div class="emp-pane" id="jh-funciona">
+        <ul class="emp-list">
+          <li>1️⃣ <strong>Usuário acessa a plataforma</strong> e descreve seu caso em poucos cliques</li>
+          <li>2️⃣ <strong>Sistema identifica a área jurídica</strong> e direciona para o especialista adequado</li>
+          <li>3️⃣ <strong>Especialista entra em contato</strong> com orientação personalizada</li>
+          <li>4️⃣ <strong>Caso resolvido</strong> — ou encaminhado para atendimento mais aprofundado se necessário</li>
+        </ul>
+        <div class="emp-highlight o">🔒 <strong>Privacidade total:</strong> os dados do usuário são protegidos e jamais compartilhados sem autorização (LGPD).</div>
+      </div>
+      <div class="emp-pane" id="jh-diff">
+        <ul class="emp-list">
+          <li>🆓 <strong>100% gratuito</strong> para o usuário — sem surpresas de cobrança</li>
+          <li>⚡ <strong>Resposta rápida:</strong> especialistas acionados em minutos</li>
+          <li>🔐 <strong>Privacidade garantida</strong> por política de dados e LGPD</li>
+          <li>📱 <strong>Interface simples</strong> — funciona em qualquer celular, sem instalar nada</li>
+          <li>🔗 <strong>Integrada com a GCJ</strong> — casos que precisam de representação são encaminhados para advogados qualificados</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStep(1)">← Anterior</button>
+      <button class="btn btn-navy" onclick="goStep(3)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 3 — ESG ════════════════════════════════════════════════════════ -->
+  <div class="step" id="step-3">
+    <div class="card">
+      <span class="stag g">Responsabilidade</span>
+      <h2>ESG — Ambiental, Social e Governança</h2>
+      <p class="sub">Você é parte ativa desta construção. Cada atitude diária reflete os valores do Grupo.</p>
+      <div class="esg-grid">
+        <div class="esg-c e"><div class="esg-l">E</div><div class="esg-t">AMBIENTAL</div><div class="esg-i">Digitalização progressiva — menos papel</div><div class="esg-i">Comunicação prioritariamente eletrônica</div><div class="esg-i">Descarte consciente de equipamentos</div><div class="esg-i">Uso racional de energia nas dependências</div><div class="esg-i">Incentivo ao trabalho remoto</div></div>
+        <div class="esg-c s"><div class="esg-l">S</div><div class="esg-t">SOCIAL</div><div class="esg-i">Atendimento jurídico gratuito a famílias TEA (IVI)</div><div class="esg-i">Democratização do acesso à justiça (Just Help)</div><div class="esg-i">Ambiente inclusivo, sem qualquer discriminação</div><div class="esg-i">Desenvolvimento profissional contínuo</div><div class="esg-i">Atendimento humanizado e linguagem acessível</div></div>
+        <div class="esg-c g"><div class="esg-l">G</div><div class="esg-t">GOVERNANÇA</div><div class="esg-i">Código de Ética aplicável a todos</div><div class="esg-i">Transparência na gestão e prestação de contas</div><div class="esg-i">Políticas formais: LGPD, sigilo, uso de sistemas</div><div class="esg-i">Rastreabilidade via sistemas autorizados</div><div class="esg-i">Conformidade legal contínua</div></div>
+      </div>
+      <div class="alert g"><span>💡</span><div><strong>Você é um agente ESG.</strong> Do atendimento humanizado ao uso responsável dos sistemas, cada ação sua expressa os valores do Grupo Inove Prime.</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStep(2)">← Anterior</button>
+      <button class="btn btn-navy" onclick="goStep(4)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 4 — Documentos (leitura verificada) ════════════════════════════ -->
+  <div class="step" id="step-4">
+    <div class="card" style="margin-bottom:10px">
+      <span class="stag">Documentação obrigatória</span>
+      <h2>Termos e Políticas do Grupo</h2>
+      <p class="sub">Leia cada documento até o final. O botão de confirmação só é liberado após a leitura completa.</p>
+      <div id="docs-prog" style="font-size:13px;color:var(--gray);margin-top:4px"></div>
+    </div>
+    <div id="docs-wrap"></div>
+    <div class="alert o" style="margin-top:4px"><span>📋</span><div>Os originais físicos são assinados com o(a) gestor(a) no <strong>primeiro dia</strong>. Esta tela registra digitalmente que você leu e compreendeu cada documento.</div></div>
+    <div id="pdf-btn-wrap" style="display:none;text-align:center;margin:12px 0">
+      <button class="btn btn-outline" onclick="gerarPDF()" style="gap:8px;border-color:var(--navy);color:var(--navy)">
+        📥 Baixar Comprovante de Leitura (PDF)
+      </button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStep(3)">← Anterior</button>
+      <button class="btn btn-navy btn-lock" id="btn-proximo-docs" onclick="tentarProximoDocs()">Leia todos os documentos (0/5)</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 5 — LGPD ═══════════════════════════════════════════════════════ -->
+  <div class="step" id="step-5">
+    <div class="card">
+      <span class="stag">Proteção de dados</span>
+      <h2>LGPD — Lei Geral de Proteção de Dados</h2>
+      <p class="sub">Lei nº 13.709/2018 — obrigatório desde o primeiro dia de trabalho.</p>
+      <table class="lgpd-tbl">
+        <thead><tr><th>Conceito</th><th>O que significa na prática do Grupo</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Dado Pessoal</strong></td><td>Nome, CPF, endereço, e-mail, telefone de clientes e colaboradores</td></tr>
+          <tr><td><strong>Dado Sensível</strong></td><td>Diagnósticos de saúde (TEA), laudos, condição socioeconômica, dados de menores</td></tr>
+          <tr><td><strong>Titular dos Dados</strong></td><td>A pessoa a quem os dados pertencem — possui direitos garantidos por lei</td></tr>
+          <tr><td><strong>Controlador</strong></td><td>As empresas do Grupo — decidem como e por que os dados são tratados</td></tr>
+          <tr><td><strong>Operador</strong></td><td>Você, colaborador(a), ao tratar dados no exercício das suas funções</td></tr>
+          <tr><td><strong>Finalidade</strong></td><td>Dados só podem ser usados para o fim informado ao titular</td></tr>
+        </tbody>
+      </table>
+      <h3>Suas obrigações:</h3>
+      <ul style="margin:10px 0 0 18px;font-size:13.5px;line-height:2.1">
+        <li>Tratar dados pessoais <strong>apenas no exercício de suas funções</strong></li>
+        <li>Registrar informações <strong>somente nos sistemas autorizados</strong></li>
+        <li><strong>Nunca armazenar</strong> dados de clientes em dispositivos ou apps pessoais</li>
+        <li>Comunicar <strong>imediatamente ao gestor</strong> qualquer suspeita de vazamento</li>
+        <li>Respeitar os direitos dos titulares: acesso, correção, exclusão e portabilidade</li>
+      </ul>
+      <div class="lgpd-alert">⚠️ <strong>Atenção:</strong> violação à LGPD pode gerar responsabilidade civil, administrativa e penal. Em caso de dúvida, consulte sempre o(a) gestor(a) antes de agir.</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStep(4)">← Anterior</button>
+      <button class="btn btn-navy" onclick="goStep(6)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 6 — Sua Função (personalizada) — só aparece com ?c= ══════════ -->
+  <div class="step" id="step-6" style="display:none">
+    <div class="funcao-hero">
+      <h2 id="fn-titulo">Sua Função no Grupo</h2>
+      <p id="fn-sub">Responsabilidades, sistemas e orientações específicas para o seu cargo.</p>
+    </div>
+    <div class="card">
+      <span class="stag">Seu cargo</span>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--light);border-radius:10px;margin-bottom:20px">
+        <div style="font-size:40px">👤</div>
+        <div>
+          <p style="font-weight:800;font-size:16px;color:var(--navy);margin:0" id="fn-nome-cargo"></p>
+          <p style="font-size:12.5px;color:var(--gray);margin:2px 0 0" id="fn-empresa-gestor"></p>
+        </div>
+      </div>
+      <h3>Suas responsabilidades</h3>
+      <div class="resp-lista" id="fn-resps" style="margin:10px 0"></div>
+      <h3 style="margin-top:20px">Sistemas que você vai utilizar</h3>
+      <div id="fn-sistemas" style="margin-top:8px"></div>
+      <div id="fn-obs-wrap" style="display:none">
+        <h3 style="margin-top:20px">Orientações do seu gestor</h3>
+        <div class="obs-box" id="fn-obs"></div>
+      </div>
+      <div id="fn-seguro-wrap" style="display:none;margin-top:20px;background:#fff8e1;border:1.5px solid #f9a825;border-radius:10px;padding:16px">
+        <h3 style="color:#f57f17;margin-bottom:12px">🛡️ Seu Seguro de Vida (obrigatório para estagiários)</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:12px">Como estagiário(a), você está protegido(a) por um seguro de vida conforme exige a Lei 11.788/2008. Guarde estas informações:</p>
+        <div id="fn-seguro-dados"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStep(5)">← Anterior</button>
+      <button class="btn btn-navy" onclick="goStep(7)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 7 — Roteiro de Treinamento ════════════════════════════════════ -->
+  <div class="step" id="step-7">
+    <div class="card" style="margin-bottom:10px">
+      <span class="stag">Treinamento</span>
+      <h2>Roteiro de Treinamento</h2>
+      <p class="sub">Módulos a concluir junto ao(à) gestor(a). Clique para marcar como feito. Sem prazo fixo — o ritmo é definido com o gestor.</p>
+      <div id="roteiro-prog" style="font-size:13px;color:var(--gray);margin-top:4px"></div>
+    </div>
+    <div id="roteiro-wrap"></div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStepBack7()">← Anterior</button>
+      <button class="btn btn-navy" onclick="goStep(8)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 8 — Sistemas ════════════════════════════════════════════════════ -->
+  <div class="step" id="step-8">
+    <div class="card">
+      <span class="stag g">Tecnologia</span>
+      <h2>Sistemas que você vai utilizar</h2>
+      <p class="sub">O treinamento prático de cada sistema acontece nos módulos indicados no Roteiro. Seu gestor ou TI fornecerá as credenciais de acesso no primeiro dia.</p>
+      <div id="sis-tutoriais"></div>
+      <div class="alert o" style="margin-top:16px"><span>⚠️</span><div><strong>Importante:</strong> sistemas são de uso exclusivamente institucional. Credenciais são pessoais e intransferíveis. Dados de clientes nunca devem sair dos sistemas autorizados.</div></div>
+    </div>
+    <div class="concluir-alert" id="concluir-alert"></div>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="goStep(7)">← Anterior</button>
+      <button class="btn btn-navy" onclick="tentarConcluir()">Concluir integração →</button>
+    </div>
+  </div>
+
+  <!-- ══ ETAPA 9 — Conclusão ═══════════════════════════════════════════════════ -->
+  <div class="step" id="step-9">
+    <div class="ok-hero">
+      <span>🎊</span>
+      <h2 id="ok-titulo">Integração concluída!</h2>
+      <p id="ok-sub">Você está pronto(a) para começar. Bem-vindo(a) à família Inove!</p>
+    </div>
+
+    <!-- ── Formulário de Feedback ── -->
+    <div class="card" id="feedback-form">
+      <span class="stag">Feedback Inicial</span>
+      <h3>Como foi sua experiência de integração?</h3>
+      <p class="sub" style="margin-bottom:20px">Sua avaliação ajuda o Grupo Inove Prime a melhorar continuamente o processo de boas-vindas.</p>
+
+      <div class="field">
+        <label>Avaliação geral *</label>
+        <div class="star-row" id="star-row">
+          <button class="star-btn" data-val="1" onclick="selectStar(1)" onmouseover="hoverStar(1)" onmouseout="unhoverStar()">☆</button>
+          <button class="star-btn" data-val="2" onclick="selectStar(2)" onmouseover="hoverStar(2)" onmouseout="unhoverStar()">☆</button>
+          <button class="star-btn" data-val="3" onclick="selectStar(3)" onmouseover="hoverStar(3)" onmouseout="unhoverStar()">☆</button>
+          <button class="star-btn" data-val="4" onclick="selectStar(4)" onmouseover="hoverStar(4)" onmouseout="unhoverStar()">☆</button>
+          <button class="star-btn" data-val="5" onclick="selectStar(5)" onmouseover="hoverStar(5)" onmouseout="unhoverStar()">☆</button>
+        </div>
+        <span id="star-label" style="font-size:12.5px;color:var(--gray);font-style:italic">Selecione sua avaliação</span>
+      </div>
+
+      <div class="field">
+        <label>Ficou alguma dúvida ou precisa de suporte?</label>
+        <textarea id="fb-duvidas" placeholder="Ex: Ainda tenho dúvidas sobre o processo de cadastro no Datajuri…" rows="2" style="min-height:64px"></textarea>
+      </div>
+      <div class="field">
+        <label>Quais são suas expectativas para os próximos 30 dias?</label>
+        <textarea id="fb-expectativas" placeholder="Ex: Quero dominar o Bitrix24 e acompanhar meu primeiro caso completo…" rows="2" style="min-height:64px"></textarea>
+      </div>
+      <div class="field">
+        <label>Sugestões para melhorar a integração?</label>
+        <textarea id="fb-sugestoes" placeholder="Ex: Seria útil ter um vídeo mostrando o primeiro acesso ao sistema…" rows="2" style="min-height:64px"></textarea>
+      </div>
+
+      <button class="btn btn-green btn-big" id="btn-finalizar" onclick="enviarRelatorio()" style="width:100%;justify-content:center;margin-top:8px">
+        ✅ Finalizar e Notificar Gestor
+      </button>
+      <p id="fb-nota" style="font-size:11.5px;color:var(--gray);text-align:center;margin-top:10px">
+        Um resumo da sua integração será enviado ao(à) gestor(a) por e-mail.
+      </p>
+    </div>
+
+    <!-- ── Tela de Sucesso (aparece após envio) ── -->
+    <div id="conclusao-sucesso" style="display:none">
+      <div class="card" style="text-align:center;padding:28px;border:2px solid var(--green)">
+        <span style="font-size:48px">📨</span>
+        <h3 style="color:var(--green-dark);margin:12px 0 6px">Relatório enviado ao gestor!</h3>
+        <p id="sucesso-msg" style="font-size:13.5px;color:var(--gray)">Seu(sua) gestor(a) foi notificado(a) com o resumo da sua integração.</p>
+      </div>
+      <div class="card">
+        <h3>Próximos passos</h3>
+        <ul style="margin:12px 0 0 18px;font-size:13.5px;line-height:2.2">
+          <li>✅ Assine todos os documentos físicos com seu(sua) gestor(a) no primeiro dia</li>
+          <li>📧 Configure seu e-mail institucional e acesse o Bitrix24</li>
+          <li>📅 Siga o roteiro de treinamento junto ao(à) seu(sua) gestor(a)</li>
+          <li>💬 Tire dúvidas com seu(sua) gestor(a) sempre que precisar</li>
+          <li>⭐ Avaliação de desempenho inicial após os primeiros <strong>30 dias</strong></li>
+        </ul>
+        <h3 style="margin-top:22px">Contatos importantes</h3>
+        <div class="prox-grid">
+          <div class="prox-item"><div class="prox-lbl">Endereço</div><div class="prox-val">Rua La Paz, 37 — Ponta Aguda, Blumenau/SC</div></div>
+          <div class="prox-item"><div class="prox-lbl">Instagram</div><div class="prox-val">@grupoinoveprime</div></div>
+          <div class="prox-item"><div class="prox-lbl">E-mail Geral</div><div class="prox-val">contato@gcj.adv.br</div></div>
+          <div class="prox-item"><div class="prox-lbl">CNPJ</div><div class="prox-val">46.084.096/0001-14</div></div>
+        </div>
+      </div>
+      <div class="card" style="text-align:center;background:linear-gradient(135deg,#1F3763,#2a5298)">
+        <p style="font-size:19px;font-weight:800;color:#fff;margin-bottom:6px">Seja muito bem-vindo(a) à família Inove! 🌟</p>
+        <p style="color:rgba(255,255,255,.8);font-size:13.5px">Contamos com você para transformar ideias em resultados.</p>
+      </div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn btn-outline" onclick="goStep(8)">← Revisar Sistemas</button>
+        <button class="btn btn-green" onclick="reiniciar()">↩ Recomeçar</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Área de impressão (PDF) — oculta na tela, visível apenas no print -->
+<div id="print-area"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'inove_ob_v3';
+
+// ── EmailJS — configure em emailjs.com (gratuito) ────────────────────────────
+// 1. Crie conta em https://emailjs.com
+// 2. Adicione um Email Service (Gmail/Outlook) → copie o Service ID
+// 3. Crie um Email Template → copie o Template ID
+// 4. Vá em Account > API Keys → copie a Public Key
+// Substitua os três valores abaixo pelos seus:
+const EJS_KEY     = 'E8kOw_aFuB2Veli6R';  // Public Key
+const EJS_SERVICE = 'service_nfa9spk';     // Service ID
+const EJS_TPLID   = 'gp6ry2a';            // Template ID
+
+let TOTAL_STEPS = 10; // 0-9 (step-6 oculto se sem personalização)
+let temPersonalizacao = false;
+let currentStep = 0;
+let perfil = {};
+let ativCheck = {};
+let termoCheck = {};
+let roteiroCheck = {};
+
+// ── Decodifica parâmetro ?c= ──────────────────────────────────────────────────
+function lerParam() {
+  try {
+    const u = new URLSearchParams(window.location.search);
+    const c = u.get('c');
+    if (!c) return null;
+    return JSON.parse(decodeURIComponent(escape(atob(c))));
+  } catch(e) { return null; }
+}
+
+// ── Splash & Init ─────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  // Inicializa EmailJS se configurado
+  if (EJS_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+    emailjs.init({ publicKey: EJS_KEY });
+  }
+
+  document.getElementById('splash-fill').style.width = '0';
+  setTimeout(() => document.getElementById('splash-fill').style.width = '100%', 80);
+
+  const dados = lerParam();
+  if (dados && dados.nome) {
+    // Se for pessoa diferente da salva no localStorage, limpa tudo para começar do zero
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (!d.perfil || d.perfil.nome !== dados.nome) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+    } catch(e) { localStorage.removeItem(STORAGE_KEY); }
+
+    temPersonalizacao = true;
+    perfil = dados;
+    preencherPersonalizacao(dados);
+    // Mostra step-6 (Sua Função)
+    document.getElementById('step-6').style.display = '';
+  } else {
+    TOTAL_STEPS = 9; // sem step-6
+    buildSisTutoriais(null); // default: Bitrix24 + Email
+  }
+
+  setTimeout(() => {
+    const s = document.getElementById('splash');
+    s.style.opacity = '0';
+    setTimeout(() => {
+      s.style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('hdr').style.display = 'flex';
+      buildIndicator();
+      buildDocs();
+      buildRoteiro();
+      carregarLocal();
+      updateUI();
+    }, 450);
+  }, 1600);
+});
+
+// ── Personalização ────────────────────────────────────────────────────────────
+function preencherPersonalizacao(d) {
+  // Preenche campos do step-0 e pula direto (será verificado em comecar())
+  document.getElementById('inp-nome').value    = d.nome || '';
+  document.getElementById('inp-cargo').value   = d.cargo || '';
+  const empMap = { GCJ:'GCJ', IVI:'IVI', JH:'JH' };
+  document.getElementById('inp-empresa').value = empMap[d.empresa] || '';
+
+  // Step-7
+  document.getElementById('fn-titulo').textContent  = 'Olá, ' + d.nome.split(' ')[0] + '! Esta é a sua função 👋';
+  document.getElementById('fn-sub').textContent     = d.cargo + ' · ' + (d.empresaNome || d.empresa);
+  document.getElementById('fn-nome-cargo').textContent   = d.nome + ' — ' + d.cargo;
+  document.getElementById('fn-empresa-gestor').textContent = (d.empresaNome || d.empresa) + ' · Gestor(a): ' + (d.gestor || '—') + (d.dataInicio ? ' · Início: ' + new Date(d.dataInicio + 'T00:00:00').toLocaleDateString('pt-BR') : '');
+
+  // Seguro de vida (estagiários)
+  if (d.seguro) {
+    const sw = document.getElementById('fn-seguro-wrap');
+    const sd = document.getElementById('fn-seguro-dados');
+    sw.style.display = 'block';
+    const items = [
+      d.seguro.seguradora ? ['Seguradora', d.seguro.seguradora] : null,
+      d.seguro.apolice    ? ['Nº da Apólice', d.seguro.apolice] : null,
+      d.seguro.vigencia   ? ['Vigência', new Date(d.seguro.vigencia + 'T00:00:00').toLocaleDateString('pt-BR')] : null,
+    ].filter(Boolean);
+    if (items.length) {
+      sd.innerHTML = items.map(([k,v]) =>
+        `<div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px">
+           <span style="font-weight:700;min-width:110px;color:#555">${k}:</span>
+           <span style="color:#111">${v}</span>
+         </div>`
+      ).join('');
+    } else {
+      sd.innerHTML = '<p style="font-size:13px;color:#777">Dados do seguro a serem informados pelo gestor.</p>';
+    }
+  }
+
+  // Responsabilidades
+  const rWrap = document.getElementById('fn-resps');
+  if (d.responsabilidades && d.responsabilidades.length) {
+    rWrap.innerHTML = d.responsabilidades.map(r => `<div class="resp-li">${r}</div>`).join('');
+  } else {
+    rWrap.innerHTML = '<p style="color:var(--gray);font-size:13px;font-style:italic">Nenhuma responsabilidade cadastrada pelo gestor.</p>';
+  }
+
+  // Sistemas
+  const sWrap = document.getElementById('fn-sistemas');
+  if (d.sistemas && d.sistemas.length) {
+    sWrap.innerHTML = d.sistemas.map(s => `<span class="sis-pill">${s}</span>`).join('');
+  } else {
+    sWrap.innerHTML = '<p style="color:var(--gray);font-size:13px;font-style:italic">Sistemas a definir com o gestor.</p>';
+  }
+
+  // Build tutorials in step-8
+  buildSisTutoriais(d.sistemas);
+  buildRoteiro();
+
+  // Observações
+  if (d.observacoes) {
+    document.getElementById('fn-obs-wrap').style.display = 'block';
+    document.getElementById('fn-obs').textContent = d.observacoes;
+  }
+
+  // Conclusão personalizada
+  document.getElementById('ok-titulo').textContent = 'Parabéns, ' + d.nome.split(' ')[0] + '! 🎊';
+  document.getElementById('ok-sub').textContent = 'Integração concluída com sucesso. Bem-vindo(a) à família Inove!';
+
+  // Badge de prazo no header
+  if (d.dataInicio && d.diasPrazo) {
+    mostrarPrazoBadge(d.dataInicio, d.diasPrazo);
+  }
+
+  // Ajusta botão finalizar conforme e-mail do gestor configurado
+  atualizarBtnFinalizar();
+}
+
+// ── Navegação ─────────────────────────────────────────────────────────────────
+function getSteps() {
+  // Se sem personalização, pula step-6 (Sua Função)
+  const all = Array.from({ length: 10 }, (_, i) => i);
+  return temPersonalizacao ? all : all.filter(i => i !== 6);
+}
+
+function goStep(n) {
+  // Se n=6 e sem personalização, pula para 7 (Roteiro)
+  if (n === 6 && !temPersonalizacao) n = 7;
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  currentStep = n;
+  const el = document.getElementById('step-' + n);
+  el.classList.add('active');
+  updateUI();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goStepBack7() {
+  goStep(temPersonalizacao ? 6 : 5);
+}
+
+function tentarProximoDocs() {
+  const feitos = DOCS.filter(d => termoCheck[d.id]).length;
+  if (feitos < DOCS.length) return;
+  goStep(5);
+}
+
+function comecar() {
+  const nome = document.getElementById('inp-nome').value.trim();
+  const cargo = document.getElementById('inp-cargo').value.trim();
+  const emp = document.getElementById('inp-empresa').value;
+  if (!nome || !cargo || !emp) { alert('Preencha nome, cargo e empresa antes de continuar.'); return; }
+  if (!perfil.nome) {
+    perfil = { nome, cargo, empresa: emp, empresaNome: { GCJ:'Gonçalves Consultoria Jurídica', IVI:'Instituto Vinícius Ian', JH:'Just Help' }[emp] };
+  }
+  salvarLocal();
+  updateHeaderInfo();
+  goStep(1);
+}
+
+function reiniciar() {
+  if (!confirm('Deseja reiniciar? Todos os dados serão apagados.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.href = location.pathname;
+}
+
+// ── Indicador ─────────────────────────────────────────────────────────────────
+function buildIndicator() {
+  const wrap = document.getElementById('steps-wrap');
+  const steps = getSteps();
+  const titles = { 0:'Identificação', 1:'O Grupo', 2:'Empresas', 3:'ESG', 4:'Documentos', 5:'LGPD', 6:'Sua Função', 7:'Roteiro', 8:'Sistemas', 9:'Conclusão' };
+  steps.forEach((i, idx) => {
+    const d = document.createElement('div');
+    d.className = 'sdot'; d.id = 'dot-' + i;
+    d.textContent = i === 0 ? '👤' : i === 9 ? '✓' : String(idx);
+    d.title = titles[i] || '';
+    wrap.appendChild(d);
+  });
+}
+
+function updateIndicator() {
+  const steps = getSteps();
+  const idx = steps.indexOf(currentStep);
+  steps.forEach((s, i) => {
+    const d = document.getElementById('dot-' + s);
+    if (!d) return;
+    d.className = 'sdot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+  });
+  const pct = steps.length > 1 ? Math.round((idx / (steps.length - 1)) * 100) : 0;
+  document.getElementById('gf').style.width = pct + '%';
+}
+
+function updateHeaderInfo() {
+  const el = document.getElementById('hdr-info');
+  if (perfil.nome) el.innerHTML = '<strong>' + perfil.nome + '</strong><br>' + (perfil.cargo || '');
+}
+
+function updateUI() { updateIndicator(); updateHeaderInfo(); updateProgresso(); }
+
+// ── Cronograma ─────────────────────────────────────────────────────────────────
+const DIAS = [
+  {
+    id:'seg', cls:'seg',
+    titulo:'Segunda-feira — Recepção, Leitura e Assinaturas',
+    ativs:[
+      { id:'s1', label:'Recepção formal, tour pelas dependências e apresentação da equipe', resp:'Gestor(a)' },
+      { id:'s2', label:'Entrega do kit de boas-vindas (crachá, materiais de escritório)', resp:'Gestor(a)' },
+      { id:'s3', label:'Entrega e leitura completa do Plano de Integração', resp:'Gestor(a) + Colab.' },
+      { id:'s4', label:'Leitura orientada do Manual Interno do Grupo Inove Prime', resp:'Colaborador(a)' },
+      { id:'s5', label:'Leitura do Código de Ética e Conduta do Grupo', resp:'Colaborador(a)' },
+      { id:'s6', label:'Assinatura dos 5 Termos de Integração (com gestor presente)', resp:'Gestor(a) + Colab.' },
+      { id:'s7', label:'Configuração do e-mail institucional e primeiro acesso aos sistemas', resp:'Gestor(a) / TI' },
+      { id:'s8', label:'Alinhamento ao final do dia: primeiras impressões e dúvidas', resp:'Gestor(a)' },
+    ]
+  },
+  {
+    id:'ter', cls:'ter',
+    titulo:'Terça-feira — Cultura, ESG, LGPD e Primeiros Sistemas',
+    ativs:[
+      { id:'t1', label:'Apresentação aprofundada: história, missão, visão e valores do Grupo', resp:'Gestor(a)' },
+      { id:'t2', label:'Apresentação das 3 empresas: GCJ, Instituto Vinícius Ian e Just Help', resp:'Gestor(a)' },
+      { id:'t3', label:'Treinamento ESG: princípios ambientais, sociais e de governança', resp:'Gestor(a)' },
+      { id:'t4', label:'Treinamento LGPD: conceitos, obrigações e boas práticas', resp:'Gestor(a)' },
+      { id:'t5', label:'Política de uso de sistemas, equipamentos e dados', resp:'Gestor(a)' },
+      { id:'t6', label:'Primeiro acesso ao Bitrix24: navegação básica e orientação inicial', resp:'Gestor(a)' },
+    ]
+  },
+  {
+    id:'qua', cls:'qua',
+    titulo:'Quarta-feira — Sistemas e Processos Operacionais',
+    ativs:[
+      { id:'q1', label:'Bitrix24 aprofundado: funil de atendimento, automações e relatórios', resp:'Gestor(a)' },
+      { id:'q2', label:'Datajuri: cadastro de processos, controle de prazos e alertas processuais', resp:'Gestor(a)' },
+      { id:'q3', label:'Fluxo completo de atendimento: da triagem ao encerramento do caso', resp:'Gestor(a)' },
+      { id:'q4', label:'Apresentação de modelos de documentos, petições e templates do grupo', resp:'Gestor(a)' },
+    ]
+  },
+  {
+    id:'qui', cls:'qui',
+    titulo:'Quinta-feira — Prática Supervisionada',
+    ativs:[
+      { id:'qu1', label:'Acompanhamento de atendimento real com o(a) gestor(a) — observação ativa', resp:'Gestor(a)' },
+      { id:'qu2', label:'Primeiras atividades práticas assistidas conforme a função designada', resp:'Gestor(a)' },
+      { id:'qu3', label:'Registro e atualização de dados nos sistemas sob supervisão', resp:'Colaborador(a)' },
+      { id:'qu4', label:'Check-in intermediário: adaptação, dúvidas e alinhamento de processos', resp:'Gestor(a)' },
+    ]
+  },
+  {
+    id:'sex', cls:'sex',
+    titulo:'Sexta-feira — Consolidação e Boas-Vindas Oficial',
+    ativs:[
+      { id:'sx1', label:'Revisão geral da semana: consolidação dos aprendizados e dúvidas finais', resp:'Gestor(a)' },
+      { id:'sx2', label:'Preenchimento da Ficha de Encerramento da Integração', resp:'Gestor(a) + Colab.' },
+      { id:'sx3', label:'Reunião de feedback final e definição das metas para os primeiros 30 dias', resp:'Gestor(a)' },
+      { id:'sx4', label:'Boas-vindas oficial: apresentação formal à equipe e início das atividades', resp:'Equipe' },
+    ]
+  }
+];
+
+function buildCrono() {
+  const wrap = document.getElementById('crono-wrap');
+  DIAS.forEach(dia => {
+    const dc = document.createElement('div'); dc.className = 'dia-card';
+    const hdr = document.createElement('div');
+    hdr.className = 'dia-hdr ' + dia.cls; hdr.id = 'dh-' + dia.id;
+    hdr.innerHTML = `<span>${dia.titulo}</span><span class="chevron">▼</span>`;
+    hdr.onclick = () => toggleDia(dia.id);
+    const body = document.createElement('div');
+    body.className = 'dia-body'; body.id = 'db-' + dia.id;
+    dia.ativs.forEach(a => {
+      const it = document.createElement('div');
+      it.className = 'at'; it.id = 'at-' + a.id;
+      it.innerHTML = `<div class="at-chk" id="chk-${a.id}"></div><div class="at-txt"><div class="at-lbl">${a.label}</div><div class="at-resp">Responsável: ${a.resp}</div></div>`;
+      it.onclick = () => toggleAt(a.id);
+      body.appendChild(it);
+    });
+    dc.appendChild(hdr); dc.appendChild(body); wrap.appendChild(dc);
+  });
+  toggleDia('seg');
+}
+
+function toggleDia(id) {
+  const hdr = document.getElementById('dh-' + id);
+  const bod = document.getElementById('db-' + id);
+  const open = bod.classList.contains('open');
+  hdr.classList.toggle('open', !open);
+  bod.classList.toggle('open', !open);
+}
+
+function toggleAt(id) {
+  ativCheck[id] = !ativCheck[id];
+  const it = document.getElementById('at-' + id);
+  const ch = document.getElementById('chk-' + id);
+  it.classList.toggle('done', ativCheck[id]);
+  ch.textContent = ativCheck[id] ? '✓' : '';
+  salvarLocal(); updateProgresso();
+}
+
+function updateProgresso() {
+  const total = DIAS.reduce((s,d)=>s+d.ativs.length,0);
+  const feitas = Object.values(ativCheck).filter(Boolean).length;
+  const pct = total ? Math.round((feitas/total)*100) : 0;
+  const el = document.getElementById('prog-txt');
+  if (el) el.textContent = `${feitas} de ${total} atividades concluídas (${pct}%)`;
+}
+
+// ── Termos ─────────────────────────────────────────────────────────────────────
+const TERMOS = [
+  { id:'tc', nome:'Termo de Confidencialidade e Sigilo Profissional' },
+  { id:'tl', nome:'Termo de Ciência e Responsabilidade — LGPD (Lei 13.709/2018)' },
+  { id:'te', nome:'Termo de Ciência — Código de Ética e Conduta' },
+  { id:'ts', nome:'Política de Uso de Sistemas, Equipamentos e Dados' },
+  { id:'tr', nome:'Termo de Recebimento de Equipamentos e Materiais' },
+];
+
+function buildTermos() {
+  const wrap = document.getElementById('termos-wrap');
+  TERMOS.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'termo'; el.id = 'trm-' + t.id;
+    el.onclick = () => toggleTermo(t.id);
+    el.innerHTML = `<span style="font-size:22px" id="tic-${t.id}">📄</span><div style="flex:1"><div class="termo-nome" id="tnm-${t.id}">${t.nome}</div><div class="termo-data" id="tdt-${t.id}"></div></div><span class="tbadge p" id="tbg-${t.id}">Pendente</span>`;
+    wrap.appendChild(el);
+  });
+}
+
+function toggleTermo(id) {
+  termoCheck[id] = !termoCheck[id];
+  const now = new Date().toLocaleDateString('pt-BR');
+  document.getElementById('trm-' + id).classList.toggle('ok', termoCheck[id]);
+  document.getElementById('tic-' + id).textContent  = termoCheck[id] ? '✅' : '📄';
+  const bg = document.getElementById('tbg-' + id);
+  bg.className = 'tbadge ' + (termoCheck[id] ? 'ok' : 'p');
+  bg.textContent = termoCheck[id] ? 'Lido ✓' : 'Pendente';
+  document.getElementById('tdt-' + id).textContent = termoCheck[id] ? 'Confirmado em ' + now : '';
+  salvarLocal();
+}
+
+// ── Tabs das empresas ──────────────────────────────────────────────────────────
+function empTab(emp, pane, btn) {
+  document.querySelectorAll(`#step-2 .emp-card.${emp} .emp-pane`).forEach(p => p.classList.remove('on'));
+  document.querySelectorAll(`#step-2 .emp-card.${emp} .emp-tab`).forEach(b => b.classList.remove('on'));
+  document.getElementById(emp + '-' + pane).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── Cards simples de Sistemas ─────────────────────────────────────────────────
+function buildSisTutoriais(sistemas) {
+  const container = document.getElementById('sis-tutoriais');
+  if (!container) return;
+  const map = {
+    'Bitrix24':              { ico:'🔵', desc:'Central de trabalho: CRM, tarefas, agenda, comunicação interna e automações de atendimento.', tags:['CRM','Tarefas','Agenda','Chat','Automações'] },
+    'Datajuri':              { ico:'⚖️', desc:'Gestão processual: cadastro de processos, controle de prazos e alertas automáticos.', tags:['Processos','Prazos','Alertas','Relatórios'] },
+    'E-mail Institucional':  { ico:'📧', desc:'Comunicação formal com clientes e equipe. Seu e-mail @gcj.adv.br será configurado no 1º dia.', tags:['Atendimento','Protocolos'] },
+    'WhatsApp Institucional':{ ico:'💬', desc:'Atendimento inicial e follow-up. Apenas o número institucional do Grupo é autorizado.', tags:['Triagem','Agendamentos','Retornos'] },
+  };
+  const sisList = (sistemas && sistemas.length) ? sistemas : ['Bitrix24','E-mail Institucional'];
+  const cards = sisList.map(s => {
+    const m = map[s] || { ico:'💻', desc:s, tags:[] };
+    return `<div class="sis-card"><span class="sis-icon">${m.ico}</span><div class="sis-nome">${s}</div><div class="sis-desc">${m.desc}</div><div class="sis-tags">${m.tags.map(t=>`<span class="sis-tag">${t}</span>`).join('')}</div></div>`;
+  }).join('');
+  container.innerHTML = `<div class="sis-grid" style="margin-top:14px">${cards}</div>`;
+}
+
+// ── Documentos com verificação de leitura ─────────────────────────────────────
+const DOCS = [
+  { id:'tc', nome:'Termo de Confidencialidade e Sigilo Profissional', texto:`
+    <h4>Termo de Confidencialidade e Sigilo Profissional</h4>
+    <p>Pelo presente instrumento, eu, colaborador(a) do <strong>Grupo Inove Prime</strong> (compreendendo a Gonçalves Consultoria Jurídica, o Instituto Vinícius Ian e a Just Help), assumo os seguintes compromissos:</p>
+    <h4>1. Do Objeto</h4>
+    <p>Este Termo estabelece as obrigações relativas ao sigilo e à confidencialidade das informações a que o(a) Colaborador(a) tiver acesso em decorrência do exercício de suas atividades profissionais.</p>
+    <h4>2. Das Informações Confidenciais</h4>
+    <p>Considera-se informação confidencial toda e qualquer informação relacionada a:</p>
+    <ul>
+      <li>Clientes, seus processos, dados pessoais, situação jurídica e financeira;</li>
+      <li>Estratégias, metodologias e procedimentos operacionais internos;</li>
+      <li>Dados financeiros, contratuais e comerciais do Grupo;</li>
+      <li>Informações técnicas, sistemas e softwares utilizados;</li>
+      <li>Quaisquer outras informações que, pela sua natureza, devam ser tratadas como sigilosas.</li>
+    </ul>
+    <h4>3. Das Obrigações</h4>
+    <p>O(A) Colaborador(a) se obriga a:</p>
+    <ul>
+      <li>Manter em absoluto sigilo todas as informações confidenciais acessadas;</li>
+      <li>Não revelar, divulgar ou tornar públicas tais informações a terceiros não autorizados;</li>
+      <li>Utilizar as informações exclusivamente para o exercício de suas funções profissionais;</li>
+      <li>Adotar medidas necessárias para proteger a confidencialidade das informações;</li>
+      <li>Comunicar imediatamente ao gestor qualquer suspeita de violação ou uso indevido;</li>
+      <li>Não armazenar informações confidenciais em dispositivos pessoais ou apps não autorizados pelo Grupo.</li>
+    </ul>
+    <h4>4. Da Vigência</h4>
+    <p>As obrigações vigorarão durante todo o período de vínculo com o Grupo e por prazo indeterminado após o seu encerramento, no que se refere às informações acessadas durante o período de trabalho.</p>
+    <h4>5. Das Penalidades</h4>
+    <p>O descumprimento sujeitará o(a) Colaborador(a) às penalidades previstas na legislação civil e penal vigente, incluindo a possibilidade de rescisão por justa causa.</p>
+    <h4>6. Do Foro</h4>
+    <p>Para dirimir controvérsias oriundas deste Termo, fica eleito o Foro da Comarca de Blumenau/SC.</p>
+    <p><strong>Declaro que li e compreendi todas as cláusulas deste Termo, comprometendo-me a cumpri-las integralmente.</strong></p>`
+  },
+  { id:'tl', nome:'Termo de Ciência — LGPD (Lei 13.709/2018)', texto:`
+    <h4>Termo de Ciência e Responsabilidade — LGPD</h4>
+    <p>Pelo presente Termo, declaro estar ciente das obrigações decorrentes da <strong>Lei Geral de Proteção de Dados Pessoais (LGPD — Lei nº 13.709/2018)</strong> no exercício das minhas funções junto ao Grupo Inove Prime.</p>
+    <h4>1. Reconhecimento como Operador</h4>
+    <p>Reconheço que, no exercício de minhas atividades, atuo na condição de <strong>Operador de dados pessoais</strong>, tratando informações de titulares em nome das empresas do Grupo Inove Prime, na qualidade de Controladores.</p>
+    <h4>2. Definições Essenciais</h4>
+    <ul>
+      <li><strong>Dado Pessoal:</strong> qualquer informação que identifique uma pessoa natural (nome, CPF, endereço, e-mail, telefone, etc.);</li>
+      <li><strong>Dado Sensível:</strong> dados sobre saúde, diagnósticos (TEA), laudos, condição socioeconômica, dados de menores;</li>
+      <li><strong>Tratamento:</strong> qualquer operação com dados (coleta, armazenamento, uso, compartilhamento, eliminação).</li>
+    </ul>
+    <h4>3. Minhas Obrigações</h4>
+    <ul>
+      <li>Tratar dados pessoais exclusivamente no exercício de minhas funções;</li>
+      <li>Registrar informações apenas nos sistemas autorizados (Bitrix24, Datajuri e ferramentas homologadas);</li>
+      <li>Nunca armazenar dados em dispositivos pessoais, e-mails pessoais ou apps não autorizados;</li>
+      <li>Manter sigilo sobre todas as informações, mesmo após o encerramento do vínculo;</li>
+      <li>Comunicar imediatamente ao gestor qualquer incidente ou suspeita de vazamento de dados;</li>
+      <li>Respeitar os direitos dos titulares: acesso, correção, portabilidade e eliminação dos dados.</li>
+    </ul>
+    <h4>4. Consequências do Descumprimento</h4>
+    <p>Estou ciente de que o descumprimento pode acarretar:</p>
+    <ul>
+      <li>Responsabilidade civil pelos danos causados ao titular dos dados;</li>
+      <li>Sanções administrativas pela ANPD, incluindo multas de até 2% do faturamento, limitadas a R$ 50.000.000,00 por infração;</li>
+      <li>Responsabilidade penal, quando aplicável;</li>
+      <li>Rescisão do contrato de trabalho por justa causa.</li>
+    </ul>
+    <p><strong>Declaro que li, compreendi e concordo com todas as disposições deste Termo.</strong></p>`
+  },
+  { id:'te', nome:'Código de Ética e Conduta', texto:`
+    <h4>Termo de Ciência — Código de Ética e Conduta do Grupo Inove Prime</h4>
+    <p>Declaro que recebi, li e compreendi o Código de Ética e Conduta do Grupo Inove Prime, comprometendo-me a observar seus princípios no exercício de minhas atividades profissionais.</p>
+    <h4>1. Integridade e Honestidade</h4>
+    <p>Agir com transparência, lealdade e retidão em todas as relações profissionais — com clientes, colegas, parceiros e a sociedade. Jamais agir de forma desonesta, enganosa ou fraudulenta.</p>
+    <h4>2. Respeito e Dignidade</h4>
+    <p>Tratar todos com respeito, cortesia e dignidade, independentemente de origem, gênero, raça, religião, orientação sexual ou qualquer outra característica pessoal. <strong>Tolerância zero</strong> com assédio, discriminação ou qualquer forma de violência no ambiente de trabalho.</p>
+    <h4>3. Confidencialidade</h4>
+    <p>Manter sigilo absoluto sobre informações privilegiadas dos clientes e do Grupo, em conformidade com o Termo de Confidencialidade assinado.</p>
+    <h4>4. Conflito de Interesses</h4>
+    <p>Evitar situações em que interesses pessoais conflitem com os do Grupo ou dos clientes. Declarar ao(à) gestor(a) qualquer potencial conflito imediatamente ao seu conhecimento.</p>
+    <h4>5. Uso Responsável de Recursos</h4>
+    <p>Utilizar recursos do Grupo (equipamentos, sistemas, internet) exclusivamente para fins profissionais, com responsabilidade e economia.</p>
+    <h4>6. Comunicação Ética</h4>
+    <p>Manter comunicação profissional, respeitosa e verdadeira em todos os canais. Não utilizar canais do Grupo para divulgar conteúdo político, religioso, ofensivo ou inadequado.</p>
+    <h4>7. Relação com Clientes</h4>
+    <p>Atender os clientes com excelência e empatia. Não fazer promessas além do que pode ser cumprido. Manter o cliente sempre informado sobre o andamento de seu caso.</p>
+    <h4>8. Denúncia de Irregularidades</h4>
+    <p>Comunicar imediatamente ao(à) gestor(a) qualquer irregularidade, conduta antiética ou violação deste Código de que tiver conhecimento.</p>
+    <h4>Consequências</h4>
+    <p>O descumprimento pode resultar em advertência, suspensão ou rescisão por justa causa, sem prejuízo das responsabilidades civis e penais aplicáveis.</p>
+    <p><strong>Declaro que li, compreendi e me comprometo a cumprir integralmente o Código de Ética e Conduta do Grupo Inove Prime.</strong></p>`
+  },
+  { id:'ts', nome:'Política de Uso de Sistemas, Equipamentos e Dados', texto:`
+    <h4>Política de Uso de Sistemas, Equipamentos e Dados</h4>
+    <p>Declaro estar ciente e de acordo com as diretrizes estabelecidas pelo Grupo Inove Prime para o uso de sistemas, equipamentos e dados corporativos.</p>
+    <h4>1. Sistemas Autorizados</h4>
+    <p>Os sistemas oficiais são: Bitrix24, Datajuri, e-mail institucional (@gcj.adv.br), WhatsApp Business institucional e demais ferramentas homologadas pela gestão. O uso de sistemas não autorizados para fins profissionais é vedado.</p>
+    <h4>2. Credenciais de Acesso</h4>
+    <ul>
+      <li>As credenciais (usuário e senha) são de uso estritamente pessoal e intransferível;</li>
+      <li>É proibido compartilhar senhas com qualquer pessoa, incluindo colegas de trabalho;</li>
+      <li>O(A) colaborador(a) é responsável por todas as ações realizadas com suas credenciais;</li>
+      <li>Em caso de suspeita de comprometimento, acionar imediatamente o gestor ou TI para troca.</li>
+    </ul>
+    <h4>3. Equipamentos</h4>
+    <ul>
+      <li>Equipamentos fornecidos pelo Grupo devem ser utilizados exclusivamente para fins profissionais;</li>
+      <li>É vedada a instalação de programas não autorizados pelo TI;</li>
+      <li>Danos, perdas ou mau funcionamento devem ser comunicados imediatamente à gestão.</li>
+    </ul>
+    <h4>4. Internet e E-mail</h4>
+    <ul>
+      <li>O acesso à internet e ao e-mail deve ser para fins profissionais exclusivamente;</li>
+      <li>O e-mail institucional não deve ser usado para comunicações ou cadastros pessoais;</li>
+      <li>O Grupo reserva-se o direito de monitorar o uso dos sistemas corporativos.</li>
+    </ul>
+    <h4>5. Dados e Informações</h4>
+    <ul>
+      <li>Dados de clientes não devem ser copiados ou armazenados fora dos sistemas autorizados;</li>
+      <li>É vedado o envio de informações confidenciais por canais não autorizados;</li>
+      <li>Documentos físicos com dados pessoais devem ser descartados de forma segura (fragmentadora).</li>
+    </ul>
+    <h4>6. Redes Sociais</h4>
+    <ul>
+      <li>Não mencionar clientes, casos ou informações internas em redes sociais pessoais;</li>
+      <li>Não usar o nome ou marca do Grupo sem autorização prévia da gestão.</li>
+    </ul>
+    <h4>7. Devolução</h4>
+    <p>No encerramento do vínculo, todos os equipamentos, acessos e documentos devem ser devolvidos ao Grupo.</p>
+    <p><strong>Declaro que li, compreendi e concordo com esta Política de Uso.</strong></p>`
+  },
+  { id:'tr', nome:'Termo de Recebimento de Equipamentos e Materiais', texto:`
+    <h4>Termo de Recebimento de Equipamentos e Materiais</h4>
+    <p>Declaro que receberei, em bom estado de conservação, os equipamentos e materiais necessários para o exercício das minhas atividades junto ao Grupo Inove Prime, conforme relacionado pelo(a) gestor(a) no primeiro dia de trabalho.</p>
+    <h4>1. Conservação</h4>
+    <p>Comprometo-me a zelar pelo bom estado de conservação e funcionamento de todos os itens recebidos, utilizando-os exclusivamente para fins profissionais e dentro das normas da Política de Uso de Sistemas e Equipamentos do Grupo.</p>
+    <h4>2. Responsabilidade Financeira</h4>
+    <p>Estou ciente de que eventuais danos causados por negligência, imprudência ou uso inadequado poderão ser descontados da minha remuneração (nos limites legais) ou cobrados mediante ação judicial, conforme o caso.</p>
+    <h4>3. Devolução</h4>
+    <p>Comprometo-me a devolver todos os itens em perfeito estado ao encerramento do vínculo com o Grupo Inove Prime, ou quando assim solicitado pela gestão. Equipamentos danificados além do desgaste normal de uso serão de minha responsabilidade.</p>
+    <h4>4. Acesso Digital</h4>
+    <p>Os acessos, senhas e credenciais fornecidos são de uso estritamente pessoal e deverão ser revogados no encerramento do vínculo. Não é permitido manter qualquer acesso aos sistemas do Grupo após o desligamento.</p>
+    <h4>5. Relação de Itens</h4>
+    <p>A relação específica dos equipamentos e materiais será registrada pelo(a) gestor(a) no documento físico de Recebimento assinado no primeiro dia de trabalho.</p>
+    <p><em>Este termo digital registra a ciência das políticas de uso e responsabilidade. A listagem detalhada dos itens é assinada presencialmente no primeiro dia.</em></p>
+    <p><strong>Declaro que li e compreendi todas as condições deste Termo.</strong></p>`
+  },
+];
+
+function buildDocs() {
+  const wrap = document.getElementById('docs-wrap');
+  if (!wrap) return;
+  const dataInicio = perfil.dataInicio ? new Date(perfil.dataInicio + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+  DOCS.forEach(doc => {
+    const meta = getTermoMeta(doc.id);
+    const lido = !!meta;
+    const proto = lido ? meta.proto : gerarProtocolo(doc.id);
+    const el = document.createElement('div');
+    el.className = 'doc-item' + (lido ? ' lido' : '');
+    el.id = 'doc-' + doc.id;
+    el.innerHTML = `
+      <div class="doc-hdr" id="dochdr-${doc.id}" onclick="toggleDoc('${doc.id}')">
+        <span class="doc-ico" id="docico-${doc.id}">${lido ? '✅' : '📄'}</span>
+        <div class="doc-nome">${doc.nome}</div>
+        <span class="doc-badge ${lido ? 'ok' : 'p'}" id="docbadge-${doc.id}">${lido ? 'Lido ✓' : 'Pendente'}</span>
+        <span class="doc-caret" id="doccaret-${doc.id}">▼</span>
+      </div>
+      <div class="doc-body" id="docbody-${doc.id}">
+        <p class="scroll-hint" id="dochint-${doc.id}">${lido ? '✅ Documento já confirmado.' : '📖 Role até o final para liberar a confirmação'}</p>
+        <div class="doc-scroll" id="docscroll-${doc.id}" onscroll="checkDocScroll('${doc.id}')">
+          <div class="doc-meta-hdr">
+            <div class="doc-meta-titulo">${doc.nome}</div>
+            <table class="doc-meta-table">
+              <tr><td>Colaborador(a)</td><td><strong>${perfil.nome || '—'}</strong></td></tr>
+              <tr><td>Cargo</td><td>${perfil.cargo || '—'}</td></tr>
+              <tr><td>Empresa</td><td>${perfil.empresaNome || perfil.empresa || '—'}</td></tr>
+              <tr><td>Data de Início</td><td>${dataInicio}</td></tr>
+              <tr><td>Protocolo</td><td><strong id="proto-hdr-${doc.id}">${proto}</strong></td></tr>
+            </table>
+            <hr class="doc-meta-divider">
+          </div>
+          ${doc.texto}
+        </div>
+        <button class="btn btn-green${lido ? '' : ' btn-lock'}" id="docbtn-${doc.id}" onclick="confirmarDoc('${doc.id}')" style="width:100%;justify-content:center;margin-top:8px">
+          ${lido ? '✅ Confirmado' : '✓ Confirmo que li e compreendi este documento'}
+        </button>
+        <div class="doc-confirm-blk" id="confirm-blk-${doc.id}" ${lido ? 'style="display:block"' : ''}>
+          <div class="ctitulo">✅ CONFIRMAÇÃO DIGITAL REGISTRADA</div>
+          <p>📅 <strong>Data/Hora:</strong> <span class="confirm-ts">${lido ? (meta.tsDisplay || 'Confirmado anteriormente') : ''}</span></p>
+          <p>📝 <strong>Declaração:</strong> <em>"Declaro que li integralmente e compreendi este documento, concordando com todos os seus termos."</em></p>
+          <p>🔏 <strong>Assinatura Digital:</strong> <span class="confirm-nome">${(perfil.nome || '').toUpperCase()}</span> — Protocolo: <strong class="confirm-proto">${proto}</strong></p>
+        </div>
+      </div>`;
+    wrap.appendChild(el);
+  });
+  updateDocProgress();
+}
+
+function toggleDoc(id) {
+  const body = document.getElementById('docbody-' + id);
+  const hdr  = document.getElementById('dochdr-' + id);
+  body.classList.toggle('open');
+  hdr.classList.toggle('open');
+  if (body.classList.contains('open')) setTimeout(() => checkDocScroll(id), 120);
+}
+
+function checkDocScroll(id) {
+  if (termoCheck[id]) return;
+  const el = document.getElementById('docscroll-' + id);
+  if (!el) return;
+  if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+    const btn  = document.getElementById('docbtn-' + id);
+    const hint = document.getElementById('dochint-' + id);
+    if (btn)  btn.classList.remove('btn-lock');
+    if (hint) hint.textContent = '✅ Chegou ao final! Clique abaixo para confirmar.';
+  }
+}
+
+function confirmarDoc(id) {
+  const btn = document.getElementById('docbtn-' + id);
+  if (btn && btn.classList.contains('btn-lock')) return;
+
+  // Gera protocolo único e salva com timestamp
+  const proto = gerarProtocolo(id);
+  const agora = new Date();
+  const tsDisplay = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR');
+  termoCheck[id] = { confirmado: true, ts: agora.toISOString(), tsDisplay, proto };
+
+  const item  = document.getElementById('doc-' + id);
+  const ico   = document.getElementById('docico-' + id);
+  const badge = document.getElementById('docbadge-' + id);
+  const body  = document.getElementById('docbody-' + id);
+  const hdr   = document.getElementById('dochdr-' + id);
+  if (item)  item.classList.add('lido');
+  if (ico)   ico.textContent = '✅';
+  if (badge) { badge.className = 'doc-badge ok'; badge.textContent = 'Lido ✓'; }
+  if (btn)   { btn.textContent = '✅ Confirmado'; btn.classList.remove('btn-lock'); }
+
+  // Mostra bloco de confirmação com dados
+  const blk = document.getElementById('confirm-blk-' + id);
+  if (blk) {
+    const ts   = blk.querySelector('.confirm-ts');
+    const nome = blk.querySelector('.confirm-nome');
+    const prot = blk.querySelector('.confirm-proto');
+    const phdr = document.getElementById('proto-hdr-' + id);
+    if (ts)   ts.textContent   = tsDisplay;
+    if (nome) nome.textContent = (perfil.nome || '').toUpperCase();
+    if (prot) prot.textContent = proto;
+    if (phdr) phdr.textContent = proto;
+    blk.style.display = 'block';
+  }
+
+  setTimeout(() => { if (body) body.classList.remove('open'); if (hdr) hdr.classList.remove('open'); }, 900);
+  salvarLocal();
+  updateDocProgress();
+}
+
+function updateDocProgress() {
+  const total  = DOCS.length;
+  const feitos = DOCS.filter(d => termoCheck[d.id]).length;
+  const el  = document.getElementById('docs-prog');
+  const btn = document.getElementById('btn-proximo-docs');
+  const pdf = document.getElementById('pdf-btn-wrap');
+  if (el)  el.textContent = feitos === total ? '✅ Todos os documentos confirmados!' : `${feitos} de ${total} documentos confirmados`;
+  if (btn) {
+    const ok = feitos === total;
+    btn.classList.toggle('btn-lock', !ok);
+    btn.textContent = ok ? 'Próximo →' : `Leia todos os documentos (${feitos}/${total})`;
+  }
+  if (pdf) pdf.style.display = feitos === total ? 'block' : 'none';
+}
+
+// ── Roteiro de Treinamento ─────────────────────────────────────────────────────
+const ROTEIRO_BASE = [
+  { id:'r1',  label:'Recepção formal, tour pelas dependências e apresentação da equipe', resp:'Gestor(a)' },
+  { id:'r2',  label:'Entrega do kit de boas-vindas e apresentação do Plano de Integração', resp:'Gestor(a)' },
+  { id:'r3',  label:'Leitura do Manual Interno do Grupo Inove Prime', resp:'Colaborador(a)' },
+  { id:'r4',  label:'Leitura e confirmação digital dos 5 Termos de Integração (neste onboarding)', resp:'Colaborador(a)' },
+  { id:'r5',  label:'Assinatura física dos Termos de Integração com o(a) gestor(a)', resp:'Gestor(a) + Colaborador(a)' },
+  { id:'r6',  label:'Treinamento: ESG, LGPD e Código de Ética do Grupo', resp:'Gestor(a)' },
+  { id:'r7',  label:'Configuração do e-mail institucional e acesso inicial aos sistemas', resp:'Gestor(a) / TI' },
+  { id:'r8',  label:'Treinamento: E-mail e WhatsApp institucionais — protocolos e boas práticas', resp:'Gestor(a)', req:['E-mail Institucional','WhatsApp Institucional'] },
+  { id:'r9',  label:'Treinamento: Bitrix24 — CRM, tarefas, agenda e comunicação interna', resp:'Gestor(a)', req:['Bitrix24'] },
+  { id:'r10', label:'Treinamento: Datajuri — cadastro de processos, clientes e relatórios', resp:'Gestor(a)', req:['Datajuri'] },
+  { id:'r11', label:'Prática supervisionada — primeiras atividades assistidas pelo(a) gestor(a)', resp:'Gestor(a)' },
+  { id:'r12', label:'Check-in final: dúvidas, feedback e definição das metas dos primeiros 30 dias', resp:'Gestor(a)' },
+];
+
+function buildRoteiro() {
+  const wrap = document.getElementById('roteiro-wrap');
+  if (!wrap) return;
+  const sistemas = perfil.sistemas || [];
+  const items = ROTEIRO_BASE.filter(r => !r.req || r.req.length === 0 || r.req.some(s => sistemas.includes(s)));
+  window._ROTEIRO_ITEMS = items;
+  wrap.innerHTML = items.map((r, idx) => `
+    <div class="rot-item${roteiroCheck[r.id] ? ' done' : ''}" id="rot-${r.id}" onclick="toggleRoteiro('${r.id}')">
+      <div class="rot-num">${idx + 1}</div>
+      <div class="rot-chk" id="rotchk-${r.id}">${roteiroCheck[r.id] ? '✓' : ''}</div>
+      <div class="rot-txt">
+        <div class="rot-lbl">${r.label}</div>
+        <div class="rot-resp">Responsável: ${r.resp}</div>
+      </div>
+    </div>`).join('');
+  updateRoteiroProgress();
+}
+
+function toggleRoteiro(id) {
+  roteiroCheck[id] = !roteiroCheck[id];
+  const item = document.getElementById('rot-' + id);
+  const chk  = document.getElementById('rotchk-' + id);
+  if (item) item.classList.toggle('done', roteiroCheck[id]);
+  if (chk)  chk.textContent = roteiroCheck[id] ? '✓' : '';
+  salvarLocal();
+  updateRoteiroProgress();
+}
+
+function updateRoteiroProgress() {
+  const items = window._ROTEIRO_ITEMS || ROTEIRO_BASE;
+  const total  = items.length;
+  const feitos = items.filter(r => roteiroCheck[r.id]).length;
+  const pct    = total ? Math.round((feitos / total) * 100) : 0;
+  const el = document.getElementById('roteiro-prog');
+  if (el) el.textContent = feitos === total
+    ? '✅ Todos os módulos concluídos!'
+    : `${feitos} de ${total} módulos concluídos (${pct}%)`;
+}
+
+// ── Persistência ──────────────────────────────────────────────────────────────
+function salvarLocal() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ perfil, ativCheck, termoCheck, roteiroCheck })); } catch(e) {}
+}
+
+function carregarLocal() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.perfil && d.perfil.nome && !temPersonalizacao) {
+      perfil = d.perfil;
+      document.getElementById('inp-nome').value  = perfil.nome || '';
+      document.getElementById('inp-cargo').value = perfil.cargo || '';
+      updateHeaderInfo();
+    }
+    if (d.ativCheck) {
+      ativCheck = d.ativCheck;
+      Object.entries(ativCheck).forEach(([id, v]) => {
+        if (!v) return;
+        const it = document.getElementById('at-' + id);
+        const ch = document.getElementById('chk-' + id);
+        if (it) it.classList.add('done');
+        if (ch) ch.textContent = '✓';
+      });
+    }
+    if (d.termoCheck) {
+      termoCheck = d.termoCheck;
+      // buildDocs() já foi chamado antes — atualiza DOM com estado salvo
+      Object.entries(termoCheck).forEach(([id, v]) => {
+        if (!v) return;
+        const meta  = getTermoMeta(id);
+        const item  = document.getElementById('doc-' + id);
+        const ico   = document.getElementById('docico-' + id);
+        const badge = document.getElementById('docbadge-' + id);
+        const btn   = document.getElementById('docbtn-' + id);
+        const hint  = document.getElementById('dochint-' + id);
+        const blk   = document.getElementById('confirm-blk-' + id);
+        const phdr  = document.getElementById('proto-hdr-' + id);
+        if (item)  item.classList.add('lido');
+        if (ico)   ico.textContent = '✅';
+        if (badge) { badge.className = 'doc-badge ok'; badge.textContent = 'Lido ✓'; }
+        if (btn)   { btn.textContent = '✅ Confirmado'; btn.classList.remove('btn-lock'); }
+        if (hint)  hint.textContent = '✅ Documento já confirmado.';
+        // Restaura bloco de confirmação com protocolo e timestamp
+        if (blk && meta) {
+          const ts   = blk.querySelector('.confirm-ts');
+          const nome = blk.querySelector('.confirm-nome');
+          const prot = blk.querySelector('.confirm-proto');
+          if (ts)   ts.textContent   = meta.tsDisplay || 'Confirmado anteriormente';
+          if (nome) nome.textContent = (perfil.nome || '').toUpperCase();
+          if (prot) prot.textContent = meta.proto || gerarProtocolo(id);
+          if (phdr) phdr.textContent = meta.proto || gerarProtocolo(id);
+          blk.style.display = 'block';
+        }
+      });
+      updateDocProgress();
+    }
+    if (d.roteiroCheck) {
+      roteiroCheck = d.roteiroCheck;
+      // buildRoteiro() já foi chamado antes — atualiza DOM com estado salvo
+      Object.entries(roteiroCheck).forEach(([id, v]) => {
+        if (!v) return;
+        const item = document.getElementById('rot-' + id);
+        const chk  = document.getElementById('rotchk-' + id);
+        if (item) item.classList.add('done');
+        if (chk)  chk.textContent = '✓';
+      });
+      updateRoteiroProgress();
+    }
+  } catch(e) {}
+}
+
+// ── Prazo de Integração ───────────────────────────────────────────────────────
+function mostrarPrazoBadge(dataInicio, diasPrazo) {
+  const inicio = new Date(dataInicio + 'T00:00:00');
+  const limite = new Date(inicio);
+  limite.setDate(limite.getDate() + Number(diasPrazo));
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const diff = Math.ceil((limite - hoje) / 86400000);
+  const badge = document.getElementById('prazo-badge');
+  if (!badge) return;
+  badge.style.display = 'inline-block';
+  if (diff > 2)       { badge.className = 'pb-ok';   badge.textContent = `⏱️ ${diff} dias restantes`; }
+  else if (diff === 2){ badge.className = 'pb-warn';  badge.textContent = '⚠️ 2 dias restantes'; }
+  else if (diff === 1){ badge.className = 'pb-warn';  badge.textContent = '⚠️ Último dia!'; }
+  else if (diff === 0){ badge.className = 'pb-warn';  badge.textContent = '⚠️ Último dia!'; }
+  else                { badge.className = 'pb-late';  badge.textContent = `🔴 Prazo expirado`; }
+}
+
+// ── Avaliação por Estrelas ────────────────────────────────────────────────────
+const STAR_LABELS = ['', 'Ruim 😕', 'Regular 😐', 'Bom 🙂', 'Muito bom 😊', 'Excelente! 🌟'];
+let starSelected = 0;
+
+function selectStar(n) {
+  starSelected = n;
+  document.querySelectorAll('.star-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i < n);
+    btn.textContent = i < n ? '★' : '☆';
+  });
+  const lbl = document.getElementById('star-label');
+  if (lbl) lbl.textContent = STAR_LABELS[n] || '';
+}
+
+function hoverStar(n) {
+  document.querySelectorAll('.star-btn').forEach((btn, i) => {
+    btn.textContent = i < n ? '★' : '☆';
+  });
+}
+
+function unhoverStar() {
+  document.querySelectorAll('.star-btn').forEach((btn, i) => {
+    btn.textContent = i < starSelected ? '★' : '☆';
+  });
+}
+
+// ── Botão Finalizar ───────────────────────────────────────────────────────────
+function atualizarBtnFinalizar() {
+  const btn  = document.getElementById('btn-finalizar');
+  const nota = document.getElementById('fb-nota');
+  if (!btn) return;
+  const temEmail = perfil.emailGestor && EJS_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY';
+  if (temEmail) {
+    btn.textContent = '✅ Finalizar e Notificar Gestor';
+    if (nota) nota.style.display = 'block';
+  } else if (perfil.emailGestor) {
+    // E-mail configurado mas EmailJS ainda não foi configurado
+    btn.textContent = '✅ Finalizar Integração';
+    if (nota) { nota.style.display = 'block'; nota.textContent = 'ℹ️ Configure o EmailJS para envio automático ao gestor.'; }
+  } else {
+    btn.textContent = '✅ Finalizar Integração';
+    if (nota) nota.style.display = 'none';
+  }
+}
+
+// ── Enviar Relatório ao Gestor (EmailJS) ─────────────────────────────────────
+function enviarRelatorio() {
+  if (!starSelected) {
+    alert('Por favor, selecione uma avaliação (1–5 estrelas) antes de finalizar.');
+    return;
+  }
+  const duvidas      = document.getElementById('fb-duvidas').value.trim();
+  const expectativas = document.getElementById('fb-expectativas').value.trim();
+  const sugestoes    = document.getElementById('fb-sugestoes').value.trim();
+  const emailGestor  = perfil.emailGestor || '';
+
+  // Sem e-mail ou EmailJS não configurado → finaliza sem envio
+  if (!emailGestor || EJS_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
+    const sucMsg = document.getElementById('sucesso-msg');
+    if (sucMsg) sucMsg.textContent = 'Integração concluída com sucesso. Bem-vindo(a) à equipe!';
+    mostrarSucesso();
+    return;
+  }
+
+  // Calcula status do prazo
+  let prazoStatus = 'Sem prazo definido';
+  if (perfil.dataInicio && perfil.diasPrazo) {
+    const limite = new Date(perfil.dataInicio + 'T00:00:00');
+    limite.setDate(limite.getDate() + Number(perfil.diasPrazo));
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const diff = Math.ceil((limite - hoje) / 86400000);
+    prazoStatus = diff >= 0
+      ? `✅ Dentro do prazo (${diff} dias restantes)`
+      : `⚠️ Fora do prazo (${Math.abs(diff)} dias após o limite)`;
+  }
+
+  const docsFeitos = DOCS.filter(d => termoCheck[d.id]).length;
+  const rotItems   = window._ROTEIRO_ITEMS || ROTEIRO_BASE;
+  const rotFeitos  = rotItems.filter(r => roteiroCheck[r.id]).length;
+  const estrelas   = '★'.repeat(starSelected) + '☆'.repeat(5 - starSelected);
+
+  const btn = document.getElementById('btn-finalizar');
+  btn.textContent = '⏳ Enviando relatório…';
+  btn.disabled = true;
+
+  emailjs.send(EJS_SERVICE, EJS_TPLID, {
+    to_email:          emailGestor,
+    nome_colaborador:  perfil.nome         || '—',
+    cargo:             perfil.cargo        || '—',
+    empresa_nome:      perfil.empresaNome  || perfil.empresa || '—',
+    gestor_nome:       perfil.gestor       || '—',
+    data_finalizacao:  new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' }),
+    prazo_status:      prazoStatus,
+    avaliacao:         `${estrelas} (${starSelected}/5) — ${STAR_LABELS[starSelected]}`,
+    duvidas:           duvidas      || 'Nenhuma dúvida registrada.',
+    expectativas:      expectativas || 'Não informado.',
+    sugestoes:         sugestoes    || 'Nenhuma sugestão.',
+    docs_confirmados:  `${docsFeitos} de ${DOCS.length} documentos confirmados`,
+    roteiro_concluido: `${rotFeitos} de ${rotItems.length} módulos do roteiro concluídos`,
+  })
+  .then(() => {
+    mostrarSucesso();
+  })
+  .catch(err => {
+    console.error('EmailJS error:', err);
+    btn.textContent = '✅ Finalizar e Notificar Gestor';
+    btn.disabled = false;
+    if (confirm('Não foi possível enviar o e-mail automaticamente.\nDeseja enviar manualmente pelo seu cliente de e-mail?')) {
+      const subj = encodeURIComponent(`✅ Onboarding Concluído — ${perfil.nome}`);
+      const corpo = encodeURIComponent(
+        `Olá, ${perfil.gestor || 'Gestor(a)'}!\n\n` +
+        `${perfil.nome} (${perfil.cargo}) concluiu o onboarding em ${new Date().toLocaleDateString('pt-BR')}.\n\n` +
+        `AVALIAÇÃO: ${estrelas} (${starSelected}/5)\n` +
+        `PRAZO: ${prazoStatus}\n` +
+        `DOCUMENTOS: ${docsFeitos} de ${DOCS.length}\n` +
+        `ROTEIRO: ${rotFeitos} de ${rotItems.length}\n\n` +
+        `DÚVIDAS PENDENTES:\n${duvidas || 'Nenhuma'}\n\n` +
+        `EXPECTATIVAS (30 dias):\n${expectativas || 'Não informado'}\n\n` +
+        `SUGESTÕES:\n${sugestoes || 'Nenhuma'}\n`
+      );
+      window.open(`mailto:${emailGestor}?subject=${subj}&body=${corpo}`);
+      mostrarSucesso();
+    }
+  });
+}
+
+function mostrarSucesso() {
+  document.getElementById('feedback-form').style.display = 'none';
+  document.getElementById('conclusao-sucesso').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Protocolo único por documento ────────────────────────────────────────────
+function gerarProtocolo(docId) {
+  const ano = new Date().getFullYear();
+  const emp = (perfil.empresa || 'GRP').toUpperCase().slice(0, 3);
+  const siglas = { tc:'TC', tl:'LGPD', te:'ETICA', ts:'SIST', tr:'EQUIP' };
+  const sig = siglas[docId] || docId.toUpperCase();
+  const str = (perfil.nome || 'X') + (perfil.cargo || 'X') + docId + (perfil.dataInicio || '');
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = Math.imul(31, h) + str.charCodeAt(i) | 0; }
+  const hash = Math.abs(h).toString(16).toUpperCase().slice(-5).padStart(5, '0');
+  return `INV-${ano}-${emp}-${sig}-${hash}`;
+}
+
+// Retorna metadados do termoCheck (compatível com dados antigos booleanos)
+function getTermoMeta(id) {
+  const v = termoCheck[id];
+  if (!v) return null;
+  if (typeof v === 'object' && v.confirmado) return v;
+  // Compatibilidade retroativa com valor booleano true
+  return { confirmado: true, ts: null, tsDisplay: 'Confirmado anteriormente', proto: gerarProtocolo(id) };
+}
+
+// ── Bloqueio de Conclusão ─────────────────────────────────────────────────────
+function tentarConcluir() {
+  const docsOk    = DOCS.every(d => !!termoCheck[d.id]);
+  const rotItems  = window._ROTEIRO_ITEMS || ROTEIRO_BASE;
+  const roteiroOk = rotItems.every(r => !!roteiroCheck[r.id]);
+
+  const faltando = [];
+  if (!docsOk) {
+    const n = DOCS.filter(d => !termoCheck[d.id]).length;
+    faltando.push(`📄 ${n} documento${n>1?'s':''} ainda não confirmado${n>1?'s':''} — volte à <strong>Etapa 4 (Documentos)</strong>`);
+  }
+  if (!roteiroOk) {
+    const n = rotItems.filter(r => !roteiroCheck[r.id]).length;
+    faltando.push(`📋 ${n} módulo${n>1?'s':''} do roteiro ainda pendente${n>1?'s':''} — volte à <strong>Etapa 7 (Roteiro)</strong>`);
+  }
+
+  if (faltando.length > 0) {
+    const alerta = document.getElementById('concluir-alert');
+    if (alerta) {
+      alerta.innerHTML = '⚠️ <strong>Complete os itens abaixo antes de concluir:</strong><br>' + faltando.map(f => `• ${f}`).join('<br>');
+      alerta.style.display = 'block';
+      alerta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => { alerta.style.display = 'none'; }, 9000);
+    }
+    return;
+  }
+  goStep(9);
+}
+
+// ── Geração de PDF (comprovante de leitura) ───────────────────────────────────
+function gerarPDF() {
+  const dataInicio = perfil.dataInicio
+    ? new Date(perfil.dataInicio + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+  const hoje = new Date().toLocaleDateString('pt-BR');
+
+  let html = `
+    <div class="print-cover">
+      <h1>GRUPO INOVE PRIME</h1>
+      <h2>${(perfil.empresaNome || perfil.empresa || '').toUpperCase()}</h2>
+      <h3>COMPROVANTE DE LEITURA E CONFIRMAÇÃO DOS TERMOS DE INTEGRAÇÃO</h3>
+      <table class="print-info-table" style="max-width:420px;margin:0 auto">
+        <tr><td>Colaborador(a)</td><td><strong>${perfil.nome || '—'}</strong></td></tr>
+        <tr><td>Cargo</td><td>${perfil.cargo || '—'}</td></tr>
+        <tr><td>Empresa</td><td>${perfil.empresaNome || perfil.empresa || '—'}</td></tr>
+        <tr><td>Gestor(a)</td><td>${perfil.gestor || '—'}</td></tr>
+        <tr><td>Data de Início</td><td>${dataInicio}</td></tr>
+        <tr><td>Data de Geração</td><td>${hoje}</td></tr>
+        <tr><td>Documentos Confirmados</td><td><strong>${DOCS.filter(d=>termoCheck[d.id]).length} de ${DOCS.length}</strong></td></tr>
+      </table>
+      <p style="margin-top:16px;font-size:9px;color:#606062;max-width:500px;margin-left:auto;margin-right:auto">
+        Este comprovante registra a confirmação eletrônica de leitura dos termos internos do Grupo Inove Prime,
+        realizada pelo(a) colaborador(a) identificado(a) acima através do sistema de onboarding digital.
+        Os documentos físicos são assinados presencialmente com o(a) gestor(a) no primeiro dia.
+      </p>
+    </div>`;
+
+  DOCS.forEach(doc => {
+    const meta = getTermoMeta(doc.id);
+    if (!meta) return;
+    const proto     = meta.proto || gerarProtocolo(doc.id);
+    const tsDisplay = meta.tsDisplay || hoje;
+    html += `
+      <div class="print-doc">
+        <div class="print-doc-hdr">
+          <div class="print-empresa">GRUPO INOVE PRIME — ${(perfil.empresaNome || perfil.empresa || '').toUpperCase()}</div>
+          <div class="print-doc-titulo">${doc.nome.toUpperCase()}</div>
+          <table class="print-info-table">
+            <tr><td>Colaborador(a)</td><td><strong>${perfil.nome || '—'}</strong></td></tr>
+            <tr><td>Cargo</td><td>${perfil.cargo || '—'}</td></tr>
+            <tr><td>Empresa</td><td>${perfil.empresaNome || perfil.empresa || '—'}</td></tr>
+            <tr><td>Data de Início</td><td>${dataInicio}</td></tr>
+            <tr><td>Protocolo</td><td><strong>${proto}</strong></td></tr>
+          </table>
+          <hr style="border:1px solid #1F3763;margin:10px 0">
+        </div>
+        <div class="print-doc-body">${doc.texto}</div>
+        <div class="print-confirm-blk">
+          <div class="print-confirm-titulo">✅ CONFIRMAÇÃO DIGITAL DE LEITURA</div>
+          <p>📅 <strong>Data/Hora da Confirmação:</strong> ${tsDisplay}</p>
+          <p>📝 <strong>Declaração:</strong> <em>"Declaro que li integralmente e compreendi este documento, concordando com todos os seus termos e condições."</em></p>
+          <p>🔏 <strong>Assinatura Digital:</strong> ${(perfil.nome || '').toUpperCase()} — Protocolo: <strong>${proto}</strong></p>
+          <p style="margin-top:6px;font-size:9px;color:#4d7a38">
+            ⚠️ Este documento digital não substitui a assinatura física. Os originais são assinados presencialmente com o(a) gestor(a).
+          </p>
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('print-area').innerHTML = html;
+  window.print();
+}
+</script>
+</body>
+</html>

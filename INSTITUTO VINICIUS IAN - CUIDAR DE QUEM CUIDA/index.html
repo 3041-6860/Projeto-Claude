@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cuidar de Quem Cuida — Instituto Vinícius Ian</title>
+  <meta name="description" content="Inscreva-se no Cuidar de Quem Cuida — 30 de maio, Norte Shopping Blumenau. Um evento criado especialmente para mães atípicas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azul:        #0d2b6b;
+      --azul-claro:  #1a4499;
+      --azul-medio:  #1e56b8;
+      --azul-suave:  #dbeafe;
+      --azul-pale:   #f0f4ff;
+      --dourado:     #f59e0b;
+      --cinza-esc:   #1e293b;
+      --cinza:       #64748b;
+      --cinza-claro: #f0f4ff;
+      --branco:      #ffffff;
+      --borda:       #e2e8f0;
+      --radius:      1rem;
+      --radius-sm:   0.625rem;
+      --shadow:      0 4px 20px rgba(13,43,107,.08), 0 1px 4px rgba(0,0,0,.04);
+    }
+
+    body {
+      font-family: 'Nunito', 'Segoe UI', sans-serif;
+      background: linear-gradient(170deg, #f0f4ff 0%, #dbeafe 50%, #f0f4ff 100%);
+      min-height: 100vh;
+      color: var(--cinza-esc);
+      line-height: 1.6;
+    }
+
+    /* ─── Layout ────────────────────────────────────────────── */
+    .page {
+      max-width: 540px;
+      margin: 0 auto;
+      padding-bottom: 3rem;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(170deg, #0d2b6b 0%, #1a4499 50%, #1e56b8 100%);
+      color: white;
+      padding: 1.5rem 1.25rem 1.25rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute; bottom: -70px; right: -50px;
+      width: 200px; height: 200px; border-radius: 50%;
+      border: 45px solid rgba(255,255,255,.05);
+      pointer-events: none;
+    }
+    .header::after {
+      content: '';
+      position: absolute; top: -40px; left: -40px;
+      width: 150px; height: 150px; border-radius: 50%;
+      border: 30px solid rgba(245,158,11,.08);
+      pointer-events: none;
+    }
+
+    /* Logo + personagem lado a lado no mobile */
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .75rem;
+      position: relative; z-index: 1;
+      margin-bottom: .75rem;
+    }
+
+    .header-logo {
+      width: 120px;
+      flex-shrink: 0;
+    }
+
+    .header-personagem {
+      width: 90px;
+      filter: drop-shadow(0 6px 16px rgba(0,0,0,.3));
+      animation: flutuar 3s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes flutuar {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-7px); }
+    }
+
+    .header-titulo {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(1.45rem, 6vw, 2rem);
+      font-weight: 900;
+      letter-spacing: -.01em;
+      line-height: 1.15;
+      position: relative; z-index: 1;
+    }
+
+    .header-sub {
+      font-size: .9rem;
+      font-weight: 600;
+      opacity: .85;
+      margin-top: .3rem;
+      position: relative; z-index: 1;
+    }
+
+    /* ─── Cartão mãe atípica ────────────────────────────────── */
+    .card-mae {
+      background: linear-gradient(135deg, #fdf2f8 0%, #f5f3ff 55%, #eff6ff 100%);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.1rem;
+      border: 1.5px solid #e9d5ff;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Bloco visual SVG — mesma escala do personagem */
+    .mae-visual {
+      flex-shrink: 0;
+      width: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: flutuarMae 3.4s ease-in-out infinite;
+    }
+
+    @keyframes flutuarMae {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-7px); }
+    }
+
+    .mae-svg {
+      width: 90px;
+      height: auto;
+      filter: drop-shadow(0 6px 18px rgba(37,99,235,.22));
+    }
+
+    /* Texto do cartão */
+    .mae-quote {
+      font-size: .87rem;
+      color: #5b21b6;
+      line-height: 1.65;
+      font-weight: 700;
+      font-style: italic;
+      flex: 1;
+      position: relative;
+    }
+
+    .mae-quote::before {
+      content: '"';
+      font-size: 2.5rem;
+      color: #c084fc;
+      opacity: .35;
+      position: absolute;
+      top: -.6rem; left: -.3rem;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    .mae-chamada {
+      display: inline-block;
+      margin-top: .5rem;
+      background: linear-gradient(135deg, var(--azul), #7c3aed);
+      color: white;
+      border-radius: 99px;
+      padding: .3rem 1rem;
+      font-size: .78rem;
+      font-weight: 800;
+      font-style: normal;
+      letter-spacing: .02em;
+    }
+
+    /* ─── Corpo ──────────────────────────────────────────────── */
+    .corpo { padding: 1.25rem 1rem 0; }
+
+    /* ─── Caixa de info do evento ────────────────────────────── */
+    .evento-box {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.35rem 1.25rem 1rem;
+      margin-bottom: 1.25rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Borda arco-íris no topo da caixa */
+    .evento-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ec4899, #8b5cf6, #3b82f6, #06b6d4, #10b981);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    /* Frase de abertura */
+    .evento-lide {
+      font-size: .95rem;
+      color: #1e293b;
+      font-weight: 700;
+      line-height: 1.65;
+      margin-bottom: .85rem;
+    }
+
+    /* Label "O que te espera" */
+    .evento-oferece {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--azul-claro);
+      margin-bottom: .5rem;
+      padding: .2rem .9rem;
+      border: 1.5px solid var(--azul-suave);
+      border-radius: 99px;
+      background: var(--azul-pale);
+    }
+
+    /* Frase de fechamento */
+    .evento-fechamento {
+      font-size: .84rem;
+      color: #475569;
+      font-weight: 600;
+      font-style: italic;
+      line-height: 1.6;
+      padding: .55rem 1rem;
+      background: linear-gradient(90deg, transparent, rgba(219,234,254,.45), transparent);
+      border-radius: var(--radius-sm);
+      margin-top: .15rem;
+      margin-bottom: .85rem;
+    }
+
+    .faixa-intro {
+      background: linear-gradient(90deg, #f0f4ff 0%, #ede9fe 100%);
+      border-radius: var(--radius-sm);
+      padding: .85rem 1.1rem;
+      font-size: .88rem;
+      color: #3730A3;
+      margin-bottom: 1.25rem;
+      font-style: italic;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* ─── Cards de seção ─────────────────────────────────────── */
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem 1.25rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .secao-header {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: .75rem;
+      border-bottom: 2px solid var(--azul-suave);
+    }
+
+    .secao-icone {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--azul-claro), #6366f1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+
+    .secao-titulo {
+      font-size: .75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--azul);
+    }
+
+    /* ─── Campos ─────────────────────────────────────────────── */
+    .grupo { margin-bottom: 1.1rem; }
+    .grupo:last-child { margin-bottom: 0; }
+
+    label.rotulo {
+      display: block;
+      font-size: .8rem;
+      font-weight: 800;
+      color: var(--cinza);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: .4rem;
+    }
+
+    .obrigatorio::after { content: ' *'; color: #ef4444; }
+
+    /* Inputs grandes para toque — mobile first */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: .875rem 1rem;
+      border: 2px solid var(--borda);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;        /* ≥16px: evita zoom no iOS */
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      color: var(--cinza-esc);
+      background: #fafbff;
+      transition: border-color .18s, box-shadow .18s;
+      -webkit-appearance: none;
+      min-height: 52px;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--azul-claro);
+      box-shadow: 0 0 0 3px rgba(26,68,153,.15);
+      background: white;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .helper {
+      font-size: .8rem;
+      color: var(--cinza);
+      margin-top: .4rem;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    /* ─── Opções de rádio — grandes para toque ───────────────── */
+    .radio-lista {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      margin-top: .4rem;
+    }
+
+    .radio-opcao {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .875rem 1rem;
+      border: 2px solid var(--borda);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all .18s;
+      background: #fafbff;
+      min-height: 52px;
+      user-select: none;
+    }
+
+    .radio-opcao:active { background: var(--azul-pale); }
+    .radio-opcao.ativa  {
+      border-color: var(--azul-claro);
+      background: var(--azul-pale);
+    }
+
+    .radio-opcao input[type="radio"] {
+      width: 1.2rem; height: 1.2rem;
+      accent-color: var(--azul-claro);
+      cursor: pointer; flex-shrink: 0;
+    }
+
+    .radio-texto {
+      font-size: 1rem;
+      color: var(--cinza-esc);
+      font-weight: 700;
+    }
+
+    /* ─── Checkbox ───────────────────────────────────────────── */
+    .check-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: .85rem;
+      padding: 1rem 1.1rem;
+      border: 2px solid var(--borda);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all .18s;
+      background: #fafbff;
+      min-height: 52px;
+    }
+
+    .check-wrap:active { background: var(--azul-pale); }
+    .check-wrap.ativa  { border-color: var(--azul-claro); background: var(--azul-pale); }
+
+    .check-wrap input[type="checkbox"] {
+      width: 1.2rem; height: 1.2rem;
+      accent-color: var(--azul-claro);
+      cursor: pointer; flex-shrink: 0;
+      margin-top: .15rem;
+    }
+
+    .check-texto {
+      font-size: .93rem;
+      color: var(--cinza-esc);
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    /* ─── Caixas de aviso ────────────────────────────────────── */
+    .caixa {
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.1rem;
+      font-size: .88rem;
+      line-height: 1.65;
+      font-weight: 600;
+    }
+
+    .caixa-amarela {
+      background: #fffbeb;
+      border: 1.5px solid #fcd34d;
+      color: #92400e;
+    }
+
+    .caixa-azul {
+      background: var(--azul-pale);
+      border: 1.5px solid #93c5fd;
+      color: var(--azul);
+    }
+
+    .divider { height: 1px; background: var(--borda); margin: 1.1rem 0; }
+
+    /* ─── Botão ──────────────────────────────────────────────── */
+    .btn-enviar {
+      width: 100%;
+      padding: 1.1rem 2rem;
+      background: linear-gradient(135deg, var(--azul) 0%, var(--azul-medio) 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1.1rem;
+      font-weight: 900;
+      font-family: 'Nunito', sans-serif;
+      letter-spacing: .02em;
+      cursor: pointer;
+      transition: all .22s;
+      box-shadow: 0 4px 18px rgba(13,43,107,.35);
+      margin-top: .5rem;
+      min-height: 56px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-enviar:active:not(:disabled) {
+      transform: scale(.98);
+      box-shadow: 0 2px 10px rgba(13,43,107,.3);
+    }
+
+    .btn-enviar:disabled { opacity: .65; cursor: not-allowed; }
+
+    /* ─── Telas alternativas ─────────────────────────────────── */
+    .tela-alt {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 1.25rem 3rem;
+    }
+
+    .alt-emoji { font-size: 3rem; margin-bottom: 1rem; }
+
+    .alt-titulo {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--azul);
+      margin-bottom: .75rem;
+      line-height: 1.2;
+    }
+
+    .alt-msg {
+      color: var(--cinza);
+      font-size: .95rem;
+      line-height: 1.8;
+      font-weight: 600;
+    }
+
+    .rodape-card {
+      margin-top: 1.75rem;
+      background: var(--azul-pale);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      font-size: .82rem;
+      color: var(--azul);
+      line-height: 1.65;
+      font-weight: 700;
+    }
+    .rodape-card a { color: var(--azul-claro); text-decoration: none; }
+
+    /* ─── Rodapé da página ───────────────────────────────────── */
+    .rodape-pagina {
+      text-align: center;
+      padding: 1.5rem 1rem 0;
+      font-size: .8rem;
+      color: var(--cinza);
+      line-height: 1.7;
+      font-weight: 600;
+    }
+    .rodape-pagina a { color: var(--azul-claro); text-decoration: none; }
+
+    /* ─── Spinner ────────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: girar .7s linear infinite;
+      vertical-align: middle;
+      margin-right: .4rem;
+    }
+    @keyframes girar { to { transform: rotate(360deg); } }
+
+    /* ─── Animação de entrada dos cards ──────────────────────── */
+    .card, .evento-box, .card-mae {
+      animation: subir .4s ease both;
+    }
+    @keyframes subir {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Chips de atividade ────────────────────────────────── */
+    .atividades {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin: .75rem 0 1rem;
+      justify-content: center;
+    }
+    .chip {
+      background: var(--azul-pale);
+      color: var(--azul-claro);
+      border: 1.5px solid var(--azul-suave);
+      border-radius: 99px;
+      padding: .28rem .85rem;
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .01em;
+      white-space: nowrap;
+    }
+
+    /* ─── Grid de info do evento ────────────────────────────── */
+    .evento-info-lista {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .5rem;
+      margin-top: .85rem;
+      padding-top: .85rem;
+      border-top: 1px solid var(--borda);
+    }
+    .evento-info-lista li {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: .3rem;
+      padding: .65rem .5rem;
+      background: var(--azul-pale);
+      border-radius: var(--radius-sm);
+      font-size: .84rem;
+      color: var(--azul);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    /* Terceiro item ocupa as duas colunas */
+    .evento-info-lista li:last-child {
+      grid-column: 1 / -1;
+    }
+    .evento-info-lista .ei-icon {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    /* ─── Caixa de laudo reformatada ────────────────────────── */
+    .caixa-titulo {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .88rem;
+      font-weight: 900;
+      margin-bottom: .65rem;
+    }
+    .caixa p {
+      font-size: .86rem;
+      line-height: 1.65;
+      margin-bottom: .5rem;
+    }
+    .caixa p:last-child { margin-bottom: 0; }
+
+    /* ─── Tela de sucesso — blocos de info ──────────────────── */
+    .sucesso-blocos {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      margin: 1.1rem 0;
+      text-align: left;
+    }
+    .sucesso-bloco {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      background: var(--azul-pale);
+      border-radius: var(--radius-sm);
+      padding: .75rem 1rem;
+    }
+    .sb-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      margin-top: .05rem;
+    }
+    .sb-texto { font-size: .88rem; color: var(--azul); line-height: 1.6; font-weight: 600; }
+    .sb-texto strong { font-weight: 900; display: block; margin-bottom: .1rem; }
+
+    .sucesso-alerta {
+      background: #fffbeb;
+      border: 1.5px solid #fcd34d;
+      border-radius: var(--radius-sm);
+      padding: .75rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: .65rem;
+      font-size: .87rem;
+      color: #92400e;
+      font-weight: 700;
+      text-align: left;
+      margin-bottom: .6rem;
+    }
+
+    .sucesso-encerramento {
+      font-size: .88rem;
+      color: var(--cinza);
+      line-height: 1.7;
+      font-weight: 600;
+      text-align: center;
+      margin-top: .5rem;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       FORMULÁRIO EM ETAPAS
+    ═══════════════════════════════════════════════════════════ */
+
+    /* Esconde todos os passos; só .ativo aparece */
+    .passo { display: none; }
+    .passo.ativo {
+      display: block;
+      animation: entrarPasso .35s ease;
+    }
+    @keyframes entrarPasso {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Barra de progresso */
+    .progresso-wrap {
+      margin-bottom: 1.1rem;
+    }
+    .progresso-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .45rem;
+    }
+    .progresso-etapa {
+      font-size: .78rem;
+      font-weight: 900;
+      color: var(--azul-claro);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+    .progresso-pct {
+      font-size: .75rem;
+      font-weight: 800;
+      color: var(--cinza);
+    }
+    .progresso-trilha {
+      height: 7px;
+      background: var(--azul-suave);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progresso-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ec4899, #8b5cf6, #2563eb, #0891b2);
+      border-radius: 99px;
+      transition: width .45s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* Botões de navegação entre etapas */
+    .nav-passos {
+      display: flex;
+      gap: .75rem;
+      margin-top: 1.5rem;
+      align-items: stretch;
+    }
+    .btn-anterior {
+      background: none;
+      border: 2px solid var(--borda);
+      color: var(--cinza);
+      border-radius: var(--radius-sm);
+      padding: .75rem 1.1rem;
+      font-size: .9rem;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all .18s;
+      flex-shrink: 0;
+      min-height: 52px;
+    }
+    .btn-anterior:hover { border-color: var(--azul-claro); color: var(--azul-claro); }
+
+    .btn-proximo {
+      flex: 1;
+      background: linear-gradient(135deg, var(--azul-claro), #6366f1);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: .875rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 900;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      letter-spacing: .01em;
+      transition: opacity .18s, transform .15s;
+      min-height: 52px;
+    }
+    .btn-proximo:hover  { opacity: .92; transform: translateY(-1px); }
+    .btn-proximo:active { transform: translateY(0); }
+
+    /* Submit dentro do nav-passos ocupa o espaço todo */
+    .nav-passos .btn-enviar { flex: 1; margin-top: 0; }
+
+    /* ═══════════════════════════════════════════════════════════
+       CORES — variações por elemento
+    ═══════════════════════════════════════════════════════════ */
+
+    /* Chips — cada atividade com sua cor */
+    .atividades .chip:nth-child(1) { background:#f3e8ff; color:#7c3aed; border-color:#e9d5ff; } /* Massagem — roxo */
+    .atividades .chip:nth-child(2) { background:#fce7f3; color:#be185d; border-color:#fbcfe8; } /* Maquiagem — rosa */
+    .atividades .chip:nth-child(3) { background:#fef9c3; color:#854d0e; border-color:#fde68a; } /* Esfoliação — âmbar */
+    .atividades .chip:nth-child(4) { background:#dcfce7; color:#15803d; border-color:#bbf7d0; } /* Limpeza — verde */
+    .atividades .chip:nth-child(5) { background:#ccfbf1; color:#0f766e; border-color:#99f6e4; } /* Auriculoterapia — teal */
+    .atividades .chip:nth-child(6) { background:#ffedd5; color:#c2410c; border-color:#fed7aa; } /* Café — laranja */
+
+    /* Ícones de seção — gradiente diferente por módulo */
+    #formulario .card:nth-of-type(1) .secao-icone { background: linear-gradient(135deg,#db2777,#9333ea); }
+    #formulario .card:nth-of-type(2) .secao-icone { background: linear-gradient(135deg,#2563eb,#0891b2); }
+    #formulario .card:nth-of-type(3) .secao-icone { background: linear-gradient(135deg,#059669,#0891b2); }
+    #formulario .card:nth-of-type(4) .secao-icone { background: linear-gradient(135deg,#7c3aed,#db2777); }
+
+    /* Cards de info do evento — fundo pastel distinto */
+    .evento-info-lista li:nth-child(1) { background:#f3e8ff; color:#5b21b6; }
+    .evento-info-lista li:nth-child(2) { background:#dbeafe; color:#1d4ed8; }
+    .evento-info-lista li:nth-child(3) { background:#fce7f3; color:#9d174d; }
+
+    /* Blocos da tela de sucesso — fundos suaves distintos */
+    .sucesso-bloco:nth-child(1) { background:#eff6ff; }
+    .sucesso-bloco:nth-child(2) { background:#f5f3ff; }
+    .sucesso-bloco:nth-child(3) { background:#f0fdf4; }
+    .sucesso-bloco:nth-child(1) .sb-texto { color:#1d4ed8; }
+    .sucesso-bloco:nth-child(2) .sb-texto { color:#5b21b6; }
+    .sucesso-bloco:nth-child(3) .sb-texto { color:#065f46; }
+
+    /* ═══════════════════════════════════════════════════════════
+       RESPONSIVIDADE
+    ═══════════════════════════════════════════════════════════ */
+
+    /* ── Telas muito pequenas: < 360px ── */
+    @media (max-width: 359px) {
+      /* Header: logo e personagem um abaixo do outro */
+      .header-inner        { flex-direction: column; gap: .4rem; }
+      .header-logo         { width: 100px; }
+      .header-personagem   { width: 72px; }
+      .header-titulo       { font-size: 1.3rem; }
+      .header-sub          { font-size: .8rem; }
+
+      /* Cartão mãe: empilha verticalmente */
+      .card-mae            { flex-direction: column; align-items: center; text-align: center; }
+      .mae-visual          { width: 80px; }
+      .mae-quote::before   { display: none; }
+
+      /* Info evento: 1 coluna */
+      .evento-info-lista   { grid-template-columns: 1fr; }
+      .evento-info-lista li:last-child { grid-column: 1; }
+
+      /* Cards com menos padding */
+      .card                { padding: 1.1rem 1rem; }
+      .corpo               { padding: 1rem .75rem 0; }
+    }
+
+    /* ── Tablet e desktop: ≥ 560px ── */
+    @media (min-width: 560px) {
+      body { padding: 1.5rem 0; min-height: 100vh; }
+
+      /* Header maior e com mais respiro */
+      .header              { padding: 2rem 2rem 1.75rem; }
+      .header-logo         { width: 145px; }
+      .header-personagem   { width: 110px; }
+      .header-inner        { gap: 1.25rem; margin-bottom: 1rem; }
+
+      /* Corpo com mais espaçamento */
+      .corpo               { padding: 1.75rem 1.5rem 0; }
+      .card                { padding: 1.75rem 1.75rem; }
+      .evento-box          { padding: 1.6rem 1.75rem 1.25rem; }
+
+      /* Info do evento em 3 colunas */
+      .evento-info-lista   { grid-template-columns: 1fr 1fr 1fr; }
+      .evento-info-lista li:last-child { grid-column: auto; }
+
+      /* Rádios Nível 1/2/3 e Sim/Não lado a lado */
+      .radio-lista         { flex-direction: row; }
+      .radio-opcao         { flex: 1; justify-content: center; text-align: center; }
+
+      /* Texto um pouco maior */
+      .mae-quote           { font-size: .92rem; }
+      .evento-lide         { font-size: 1rem; }
+      .evento-fechamento   { font-size: .88rem; }
+    }
+
+    /* ── Desktop amplo: ≥ 700px ── */
+    @media (min-width: 700px) {
+      /* Formulário flutua sobre o fundo com sombra e bordas arredondadas */
+      .page {
+        margin: 2rem auto;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        box-shadow:
+          0 24px 64px rgba(13,43,107,.13),
+          0 6px 20px rgba(0,0,0,.07);
+      }
+
+      /* Rodapé com mais respiro */
+      .rodape-pagina { padding: 1.25rem; font-size: .88rem; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="header-inner">
+      <img src="logo.png" alt="Instituto Vinícius Ian" class="header-logo" />
+      <img src="personagem.png" alt="" class="header-personagem" aria-hidden="true" />
+    </div>
+    <h1 class="header-titulo">Cuidar de Quem Cuida 💙</h1>
+    <p class="header-sub">Você cuida todo dia. Hoje, a gente quer cuidar de você.</p>
+  </header>
+
+  <!-- ── Corpo ── -->
+  <div class="corpo">
+
+    <!-- Info do evento -->
+    <div class="evento-box">
+
+      <p class="evento-lide">
+        Um evento criado especialmente para <strong>mães atípicas</strong> 💙<br/>
+        Um dia inteiro de beleza, cuidado e acolhimento — só para você.
+      </p>
+
+      <p class="evento-oferece">✨ O que te espera no dia</p>
+
+      <div class="atividades">
+        <span class="chip">💆 Massagem</span>
+        <span class="chip">💄 Maquiagem</span>
+        <span class="chip">✨ Esfoliação</span>
+        <span class="chip">🌿 Limpeza de pele</span>
+        <span class="chip">👂 Auriculoterapia</span>
+        <span class="chip">☕ Café</span>
+      </div>
+
+      <p class="evento-fechamento">
+        Tudo preparado com carinho para você relaxar, se sentir celebrada e sair renovada. 🌿
+      </p>
+
+      <ul class="evento-info-lista">
+        <li>
+          <span class="ei-icon">📍</span>
+          <span><strong>Espaço Cultura</strong><br/>Norte Shopping<br/><small style="font-weight:600;opacity:.75;">(ao lado da Havan)</small></span>
+        </li>
+        <li>
+          <span class="ei-icon">🗓</span>
+          <span><strong>30 de maio</strong><br/>sábado · 13h–18h</span>
+        </li>
+        <li>
+          <span class="ei-icon">🎟️</span>
+          <span>Apenas <strong>50 vagas</strong> disponíveis</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Cartão mãe atípica -->
+    <div class="card-mae">
+
+      <!-- Visual SVG — mãe e filho (silhueta ilustrada) -->
+      <div class="mae-visual">
+        <svg class="mae-svg" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <radialGradient id="bgG" cx="45%" cy="35%" r="70%">
+              <stop offset="0%"   stop-color="#ede9fe"/>
+              <stop offset="100%" stop-color="#dbeafe"/>
+            </radialGradient>
+            <linearGradient id="mG" x1="0%" y1="0%" x2="80%" y2="120%">
+              <stop offset="0%"   stop-color="#6d28d9"/>
+              <stop offset="100%" stop-color="#1d4ed8"/>
+            </linearGradient>
+            <linearGradient id="cG" x1="0%" y1="0%" x2="80%" y2="120%">
+              <stop offset="0%"   stop-color="#2563eb"/>
+              <stop offset="100%" stop-color="#0891b2"/>
+            </linearGradient>
+            <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1.8" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Fundo suave -->
+          <circle cx="50" cy="50" r="47" fill="url(#bgG)"/>
+          <!-- Anel decorativo pontilhado -->
+          <circle cx="50" cy="50" r="45" fill="none"
+                  stroke="rgba(109,40,217,.2)" stroke-width="1.5" stroke-dasharray="3 2.5"/>
+
+          <!-- Peças de puzzle decorativas -->
+          <text x="4"  y="20" font-size="14" opacity=".85">🧩</text>
+          <text x="76" y="17" font-size="11" opacity=".75">🧩</text>
+
+          <!-- ── MÃE ── -->
+          <!-- Cabelo (arco sobre a cabeça) -->
+          <path d="M30 29 Q30 16 40 15 Q51 16 51 29"
+                fill="#4c1d95" opacity=".45"/>
+          <!-- Cabeça da mãe -->
+          <circle cx="40" cy="29" r="9" fill="url(#mG)" filter="url(#soft)"/>
+          <!-- Corpo / vestido (trapézio) -->
+          <path d="M30 38 L50 38 L56 68 L24 68 Z"
+                fill="url(#mG)" opacity=".82"/>
+          <!-- Braço estendido ao filho -->
+          <path d="M50 44 Q57 41 63 47"
+                stroke="#6d28d9" stroke-width="5"
+                fill="none" stroke-linecap="round" opacity=".78"/>
+
+          <!-- ── FILHO(A) ── -->
+          <!-- Cabeça do filho -->
+          <circle cx="65" cy="37" r="7" fill="url(#cG)" filter="url(#soft)"/>
+          <!-- Corpo (trapézio menor) -->
+          <path d="M58 46 L72 46 L75 68 L55 68 Z"
+                fill="url(#cG)" opacity=".72"/>
+          <!-- Braço alcançando a mãe -->
+          <path d="M58 50 Q54 46 50 46"
+                stroke="#2563eb" stroke-width="3.5"
+                fill="none" stroke-linecap="round" opacity=".68"/>
+
+          <!-- Coração pequeno entre as cabeças -->
+          <path d="M54 23 C54 23 47.5 19 47.5 15
+                   C47.5 12.5 49.5 11 51.5 11
+                   C52.8 11 53.7 11.9 54 13
+                   C54.3 11.9 55.2 11 56.5 11
+                   C58.5 11 60.5 12.5 60.5 15
+                   C60.5 19 54 23 54 23Z"
+                fill="#ec4899" opacity=".78"/>
+
+          <!-- Pílula ♾ TEA -->
+          <rect x="24" y="82" width="52" height="16" rx="8"
+                fill="url(#mG)" opacity=".12"/>
+          <text x="50" y="93.5" text-anchor="middle"
+                font-size="9" fill="#5b21b6" font-weight="900"
+                font-family="Nunito,Arial" letter-spacing="1.8" opacity=".9">♾ TEA</text>
+        </svg>
+      </div>
+
+      <!-- Frase -->
+      <p class="mae-quote">
+        Ser mãe atípica é entender e traduzir tudo sobre seu filho — mesmo quando o mundo não entende nada.
+        <span class="mae-chamada">Essa experiência é só sua 💙</span>
+      </p>
+
+    </div>
+
+    <!-- Formulário -->
+    <form id="formulario" novalidate>
+
+      <p class="faixa-intro">
+        🌿 Preencha com calma — cada informação nos ajuda a preparar esse dia com o carinho que você merece.
+      </p>
+
+      <!-- Barra de progresso -->
+      <div class="progresso-wrap">
+        <div class="progresso-header">
+          <span class="progresso-etapa">Etapa <span id="progresso-num">1</span> de 4</span>
+          <span class="progresso-pct" id="progresso-pct">25%</span>
+        </div>
+        <div class="progresso-trilha">
+          <div class="progresso-fill" id="progresso-fill" style="width:25%"></div>
+        </div>
+      </div>
+
+      <!-- ── Sobre Você ── -->
+      <div class="card passo ativo" id="passo1">
+        <div class="secao-header">
+          <div class="secao-icone">👩</div>
+          <h2 class="secao-titulo">Sobre Você</h2>
+        </div>
+
+        <div class="grupo">
+          <label class="rotulo obrigatorio" for="nome">Nome completo</label>
+          <input type="text" id="nome" name="nome"
+                 placeholder="Seu nome completo"
+                 autocomplete="name" required />
+        </div>
+
+        <div class="grupo">
+          <label class="rotulo obrigatorio" for="telefone">Telefone / WhatsApp</label>
+          <input type="tel" id="telefone" name="telefone"
+                 placeholder="(47) 99999-9999"
+                 autocomplete="tel" inputmode="tel" required />
+        </div>
+
+        <div class="grupo">
+          <label class="rotulo" for="email">E-mail</label>
+          <input type="email" id="email" name="email"
+                 placeholder="seu@email.com"
+                 autocomplete="email" inputmode="email" required />
+        </div>
+
+        <div class="grupo">
+          <label class="rotulo obrigatorio" for="cidade">Cidade</label>
+          <input type="text" id="cidade" name="cidade"
+                 placeholder="Sua cidade"
+                 autocomplete="address-level2" required />
+        </div>
+
+        <div class="grupo">
+          <label class="rotulo" for="nascimento">Data de nascimento</label>
+          <input type="text" id="nascimento" name="nascimento"
+                 placeholder="DD/MM/AAAA"
+                 inputmode="numeric" maxlength="10"
+                 autocomplete="bday" required />
+        </div>
+
+        <div class="nav-passos">
+          <button type="button" class="btn-proximo" onclick="proximo()">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ── Sobre o Filho(a) ── -->
+      <div class="card passo" id="passo2">
+        <div class="secao-header">
+          <div class="secao-icone">🧡</div>
+          <h2 class="secao-titulo">Sobre seu Filho(a)</h2>
+        </div>
+
+        <div class="grupo">
+          <label class="rotulo obrigatorio" for="filho_nome">Nome do filho(a) com TEA</label>
+          <input type="text" id="filho_nome" name="filho_nome"
+                 placeholder="Nome do seu filho(a)" required />
+        </div>
+
+        <div class="grupo">
+          <label class="rotulo">Nível de suporte</label>
+          <div class="radio-lista" role="radiogroup">
+            <label class="radio-opcao">
+              <input type="radio" name="nivel_suporte" value="Nível 1" />
+              <span class="radio-texto">Nível 1</span>
+            </label>
+            <label class="radio-opcao">
+              <input type="radio" name="nivel_suporte" value="Nível 2" />
+              <span class="radio-texto">Nível 2</span>
+            </label>
+            <label class="radio-opcao">
+              <input type="radio" name="nivel_suporte" value="Nível 3" />
+              <span class="radio-texto">Nível 3</span>
+            </label>
+          </div>
+          <p class="helper">
+            Não sabe de cabeça qual é o nível? Tudo bem. Essa informação costuma estar no laudo de diagnóstico. Se preferir, deixe em branco e informe no dia.
+          </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="caixa caixa-amarela">
+          <div class="caixa-titulo">📄 Comprovante de diagnóstico de TEA</div>
+          <p>No dia do evento, pedimos que você traga um documento que confirme o diagnóstico do seu filho(a) — pode ser o laudo médico, um relatório com CID ou outro documento equivalente.</p>
+          <p>Esse cuidado existe para garantir que cada vaga chegue a quem realmente precisa. Não é burocracia — é respeito por você e por todas as mães que fazem parte desse encontro. 💛</p>
+        </div>
+
+        <div class="nav-passos">
+          <button type="button" class="btn-anterior" onclick="anterior()">← Voltar</button>
+          <button type="button" class="btn-proximo" onclick="proximo()">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ── Sobre a Chegada ── -->
+      <div class="card passo" id="passo3">
+        <div class="secao-header">
+          <div class="secao-icone">🚗</div>
+          <h2 class="secao-titulo">Um Pouco Mais Sobre Sua Chegada</h2>
+        </div>
+
+        <div class="grupo">
+          <label class="rotulo">Você precisará trazer seu filho(a) junto no dia do evento?</label>
+          <div class="radio-lista" role="radiogroup">
+            <label class="radio-opcao">
+              <input type="radio" name="filho_junto" value="Sim" />
+              <span class="radio-texto">Sim</span>
+            </label>
+            <label class="radio-opcao">
+              <input type="radio" name="filho_junto" value="Não" />
+              <span class="radio-texto">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="caixa caixa-azul" id="msg_filho" style="display:none; margin-top:.75rem;">
+          <div class="caixa-titulo">💙 Fique tranquila!</div>
+          <p>Teremos uma equipe do <strong>Instituto Vinícius Ian</strong> na <strong>Sala Aconchego do Norte Shopping</strong> durante todo o evento — pronta para cuidar das crianças com atenção e carinho.</p>
+          <p>Você aproveita cada minuto da sua tarde sem se preocupar. 🌿</p>
+        </div>
+
+        <div class="grupo" style="margin-top:1.1rem;">
+          <label class="rotulo" for="observacoes">Há algo que você gostaria que soubéssemos antes de você chegar?</label>
+          <textarea id="observacoes" name="observacoes"
+            placeholder="Necessidades de mobilidade, alergias, preferências de acesso ou qualquer coisa que nos ajude a receber você melhor…"></textarea>
+        </div>
+
+        <div class="nav-passos">
+          <button type="button" class="btn-anterior" onclick="anterior()">← Voltar</button>
+          <button type="button" class="btn-proximo" onclick="proximo()">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ── Confirmação ── -->
+      <div class="card passo" id="passo4">
+        <div class="secao-header">
+          <div class="secao-icone">✅</div>
+          <h2 class="secao-titulo">Antes de Finalizar</h2>
+        </div>
+
+        <div class="grupo">
+          <label class="check-wrap" id="check_label">
+            <input type="checkbox" id="ciente_vagas" name="ciente_vagas" required />
+            <span class="check-texto">
+              Estou ciente de que as vagas são limitadas a <strong>50 participantes</strong> e que, caso eu precise cancelar minha presença, avisarei com antecedência para que outra mãe possa ocupar meu lugar.
+            </span>
+          </label>
+        </div>
+
+        <div class="nav-passos">
+          <button type="button" class="btn-anterior" onclick="anterior()">← Voltar</button>
+          <button type="submit" class="btn-enviar" id="btn_enviar">
+            Confirmar minha inscrição 💙
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+    <!-- ── Tela: Vagas Esgotadas ── -->
+    <div class="card tela-alt" id="tela_esgotada">
+      <div class="alt-emoji">😔</div>
+      <h2 class="alt-titulo">As vagas foram preenchidas</h2>
+      <p class="alt-msg">
+        Todas as vagas do evento já foram reservadas.<br /><br />
+        Se você já se inscreveu, fique de olho no WhatsApp — entraremos em contato um dia antes para confirmar sua presença.<br /><br />
+        Obrigada pelo interesse. Esperamos te ver em breve! 🌿
+      </p>
+      <div class="rodape-card">
+        Instituto Vinícius Ian<br />
+        <a href="https://instagram.com/institutoviniciusian" target="_blank">@institutoviniciusian</a>
+      </div>
+    </div>
+
+    <!-- ── Tela: Sucesso ── -->
+    <div class="card tela-alt" id="tela_sucesso">
+      <div class="alt-emoji">💙</div>
+      <h2 class="alt-titulo">Sua inscrição está confirmada!</h2>
+      <p class="alt-msg">Que alegria ter você com a gente!</p>
+
+      <div class="sucesso-blocos">
+        <div class="sucesso-bloco">
+          <span class="sb-icon">📍</span>
+          <div class="sb-texto">
+            <strong>Local do evento</strong>
+            Espaço Cultura — Norte Shopping Blumenau<br />
+            <span style="opacity:.8;">(ao lado da Havan)</span>
+          </div>
+        </div>
+        <div class="sucesso-bloco">
+          <span class="sb-icon">🗓</span>
+          <div class="sb-texto">
+            <strong>30 de maio, sábado · 13h às 18h</strong>
+            A recepção começa a partir das 13h — chegue com calma.
+          </div>
+        </div>
+        <div class="sucesso-bloco">
+          <span class="sb-icon">📱</span>
+          <div class="sb-texto">
+            <strong>Confirmação pelo WhatsApp</strong>
+            Um dia antes do evento entraremos em contato pelo WhatsApp para confirmar sua presença e te contar todos os detalhes.
+          </div>
+        </div>
+      </div>
+
+      <div class="sucesso-alerta">
+        <span style="font-size:1.2rem;">📄</span>
+        <span>Não esqueça de trazer o <strong>laudo ou comprovante</strong> do diagnóstico do seu filho(a). Será solicitado na entrada.</span>
+      </div>
+
+      <p class="sucesso-encerramento">
+        Você reservou um tempo para si mesma.<br />
+        Isso importa. A gente vai receber você com muito cuidado.<br />
+        <strong>Até lá 🌿</strong>
+      </p>
+
+      <div class="rodape-card">
+        Realização: <strong>Instituto Vinícius Ian</strong> · Apoio: Norte Shopping e Hemos Sabin<br />
+        <a href="https://instagram.com/institutoviniciusian" target="_blank">@institutoviniciusian</a> ·
+        <a href="https://www.institutoviniciusian.org.br" target="_blank">institutoviniciusian.org.br</a>
+      </div>
+    </div>
+
+  </div><!-- /corpo -->
+
+  <!-- Rodapé -->
+  <div class="rodape-pagina">
+    Realização: <strong>Instituto Vinícius Ian</strong><br />
+    Apoio: Norte Shopping &amp; Hemos Sabin
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  /* ════════════════════════════════════════════════
+     CONFIGURAÇÃO
+     Cole a URL do Google Apps Script após publicá-lo
+  ════════════════════════════════════════════════ */
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyrSPSP86g7m4P_5fFlnS6cSU4rP30NRfgT86kqBPR9tSPrdupngWDRIUJZc_F34V1/exec";
+  const LIMITE = 50;
+
+  /* ─── Elementos ─────────────────────────────────── */
+  const formEl       = document.getElementById("formulario");
+  const btnEl        = document.getElementById("btn_enviar");
+  const telaSucesso  = document.getElementById("tela_sucesso");
+  const telaEsgotada = document.getElementById("tela_esgotada");
+
+  /* ─── Verificar vagas ───────────────────────────── */
+  async function verificarVagas() {
+    if (!SCRIPT_URL) return { esgotado: false };
+    try {
+      const resp = await fetch(`${SCRIPT_URL}?action=count`, { redirect: "follow" });
+      return await resp.json();
+    } catch {
+      return { esgotado: false };
+    }
+  }
+
+  function mostrarEsgotada() {
+    formEl.style.display        = "none";
+    telaEsgotada.style.display  = "block";
+    telaSucesso.style.display   = "none";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /* ─── Verifica ao carregar ──────────────────────── */
+  (async () => {
+    const info = await verificarVagas();
+    if (info.esgotado) mostrarEsgotada();
+  })();
+
+  /* ─── Highlight de radios ───────────────────────── */
+  document.querySelectorAll(".radio-lista").forEach(lista => {
+    lista.addEventListener("change", () => {
+      lista.querySelectorAll(".radio-opcao").forEach(op =>
+        op.classList.toggle("ativa", op.querySelector("input").checked)
+      );
+    });
+  });
+
+  /* ─── Sala Aconchego ────────────────────────────── */
+  document.querySelectorAll('input[name="filho_junto"]').forEach(r => {
+    r.addEventListener("change", () => {
+      document.getElementById("msg_filho").style.display =
+        r.value === "Sim" ? "block" : "none";
+    });
+  });
+
+  /* ─── Checkbox highlight ────────────────────────── */
+  const checkEl    = document.getElementById("ciente_vagas");
+  const checkLabel = document.getElementById("check_label");
+  checkEl.addEventListener("change", () =>
+    checkLabel.classList.toggle("ativa", checkEl.checked)
+  );
+
+  /* ─── Máscara de telefone ───────────────────────── */
+  const telEl = document.getElementById("telefone");
+  telEl.addEventListener("input", () => {
+    let v = telEl.value.replace(/\D/g, "").slice(0, 11);
+    if      (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    else if (v.length > 6)  v = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3");
+    else if (v.length > 2)  v = v.replace(/^(\d{2})(\d{0,5})$/, "($1) $2");
+    telEl.value = v;
+  });
+
+  /* ─── Máscara data de nascimento ───────────────── */
+  (function () {
+    const campo = document.getElementById("nascimento");
+    campo.addEventListener("input", function () {
+      let v = this.value.replace(/\D/g, "").slice(0, 8);
+      if (v.length > 4)      v = v.slice(0,2) + "/" + v.slice(2,4) + "/" + v.slice(4);
+      else if (v.length > 2) v = v.slice(0,2) + "/" + v.slice(2);
+      this.value = v;
+    });
+  })();
+
+  /* ─── Navegação por etapas ──────────────────────── */
+  let passoAtual = 0;
+  const passos   = document.querySelectorAll(".passo");
+
+  function mostrarPasso(n) {
+    passos.forEach((p, i) => p.classList.toggle("ativo", i === n));
+
+    // Intro (evento + cartão mãe + frase) só aparece na etapa 1
+    ["evento-box", "card-mae", "faixa-intro"].forEach(cls => {
+      const el = document.querySelector("." + cls);
+      if (el) el.style.display = n === 0 ? "" : "none";
+    });
+
+    const pct = Math.round((n + 1) / passos.length * 100);
+    document.getElementById("progresso-fill").style.width = pct + "%";
+    document.getElementById("progresso-num").textContent  = n + 1;
+    document.getElementById("progresso-pct").textContent  = pct + "%";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  const camposPorPasso = [
+    ["nome", "telefone", "email", "cidade", "nascimento"],
+    ["filho_nome"],
+    [],
+    [],
+  ];
+
+  function dataValida(str) {
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return false;
+    const [d, m, y] = str.split("/").map(Number);
+    const dt = new Date(y, m - 1, d);
+    return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+  }
+
+  function validarPasso(n) {
+    let ok = true;
+    (camposPorPasso[n] || []).forEach(id => {
+      const el = document.getElementById(id);
+      if (id === "nascimento") {
+        const valido = el.value.trim() && dataValida(el.value.trim());
+        el.style.borderColor = valido ? "" : "#ef4444";
+        if (!valido) ok = false;
+      } else {
+        if (!el.value.trim()) { el.style.borderColor = "#ef4444"; ok = false; }
+        else                   { el.style.borderColor = ""; }
+      }
+    });
+    if (n === 3) {
+      if (!checkEl.checked) { checkLabel.style.borderColor = "#ef4444"; ok = false; }
+      else                   { checkLabel.style.borderColor = ""; }
+    }
+    return ok;
+  }
+
+  function proximo() {
+    if (!validarPasso(passoAtual)) {
+      const erro = passos[passoAtual].querySelector('[style*="ef4444"]');
+      if (erro) erro.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (passoAtual < passos.length - 1) {
+      passoAtual++;
+      mostrarPasso(passoAtual);
+    }
+  }
+
+  function anterior() {
+    if (passoAtual > 0) {
+      passoAtual--;
+      mostrarPasso(passoAtual);
+    }
+  }
+
+  /* ─── Envio ─────────────────────────────────────── */
+  formEl.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!validarPasso(3)) {
+      const erro = passos[3].querySelector('[style*="ef4444"]');
+      if (erro) erro.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    btnEl.disabled  = true;
+    btnEl.innerHTML = '<span class="spinner"></span> Verificando…';
+
+    const info = await verificarVagas();
+    if (info.esgotado) { mostrarEsgotada(); return; }
+
+    btnEl.innerHTML = '<span class="spinner"></span> Enviando…';
+
+    const dados = {
+      action:        "submit",
+      nome:          document.getElementById("nome").value.trim(),
+      telefone:      document.getElementById("telefone").value.trim(),
+      email:         document.getElementById("email").value.trim(),
+      cidade:        document.getElementById("cidade").value.trim(),
+      nascimento:    document.getElementById("nascimento").value,
+      filho_nome:    document.getElementById("filho_nome").value.trim(),
+      nivel_suporte: document.querySelector('input[name="nivel_suporte"]:checked')?.value ?? "",
+      filho_junto:   document.querySelector('input[name="filho_junto"]:checked')?.value ?? "",
+      observacoes:   document.getElementById("observacoes").value.trim(),
+    };
+
+    try {
+      if (SCRIPT_URL) {
+        const params = new URLSearchParams(dados);
+        const resp   = await fetch(`${SCRIPT_URL}?${params}`, { redirect: "follow" });
+        const result = await resp.json();
+        if (result.erro === "esgotado") { mostrarEsgotada(); return; }
+        if (result.erro) throw new Error(result.erro);
+      }
+
+      formEl.style.display      = "none";
+      telaSucesso.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    } catch (err) {
+      console.error(err);
+      btnEl.disabled  = false;
+      btnEl.innerHTML = "Confirmar minha inscrição 💙";
+      alert("Ocorreu um erro. Por favor, tente novamente.");
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Gerar Link de Onboarding · Grupo Inove Prime</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--navy:#1F3763;--navy-dark:#162b52;--green:#62974B;--green-light:#eaf3e5;--gray:#606062;--border:#E2E8EF;--light:#F5F7FA}
+    body{font-family:'Montserrat',Arial,sans-serif;background:var(--light);color:#111827;font-size:15px;min-height:100vh}
+
+    /* ── SENHA ── */
+    #senha-screen{
+      position:fixed;inset:0;background:var(--light);
+      display:flex;align-items:center;justify-content:center;z-index:999;
+    }
+    .senha-box{
+      background:#fff;border-radius:16px;width:380px;text-align:center;
+      padding:36px 36px 32px;
+      box-shadow:0 8px 32px rgba(31,55,99,.16);
+      border-top:5px solid var(--navy);
+    }
+    .senha-box .logo-wrap{margin-bottom:24px}
+    .senha-box .logo-wrap img{max-height:70px;max-width:260px;object-fit:contain}
+    .senha-box h2{font-size:17px;color:var(--navy);margin-bottom:4px;font-weight:700}
+    .senha-box p{font-size:12.5px;color:var(--gray);margin-bottom:20px}
+    .senha-inp-wrap{position:relative;margin-bottom:12px}
+    .senha-inp-wrap input{
+      width:100%;padding:12px 42px 12px 14px;border:2px solid var(--border);border-radius:8px;
+      font-size:15px;font-family:inherit;text-align:center;letter-spacing:3px;
+      outline:none;transition:border-color .2s
+    }
+    .senha-inp-wrap input:focus{border-color:var(--navy)}
+    .btn-olho{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray);font-size:16px;padding:4px;line-height:1;transition:color .15s}
+    .btn-olho:hover{color:var(--navy)}
+    #senha-erro{color:#c62828;font-size:12px;margin-bottom:12px;display:none}
+
+    /* ── LOGO MARCA (CSS — independe de imagem) ── */
+    .lm{display:inline-flex;flex-direction:column;line-height:1.15;gap:0}
+    .lm-grupo{font-size:9px;font-weight:700;letter-spacing:5px;margin-bottom:1px}
+    .lm-nome{font-weight:800;letter-spacing:-.5px;line-height:1}
+    .lm-prime{color:var(--green)}
+    .lm-tag{letter-spacing:2px;text-transform:uppercase;font-weight:500;margin-top:4px}
+    /* Tema escuro (fundo navy) */
+    .lm-dark .lm-grupo{color:rgba(255,255,255,.85);font-size:9px}
+    .lm-dark .lm-nome{color:#fff;font-size:22px}
+    .lm-dark .lm-prime{color:#7ecf5c}
+    .lm-dark .lm-tag{color:rgba(255,255,255,.75);font-size:7.5px}
+    /* Tema claro (fundo branco) */
+    .lm-light .lm-grupo{color:var(--navy);font-size:9px}
+    .lm-light .lm-nome{color:var(--navy);font-size:22px}
+    .lm-light .lm-prime{color:var(--green)}
+    .lm-light .lm-tag{color:var(--gray);font-size:7.5px}
+    /* Tamanho grande (login / hero) */
+    .lm-lg .lm-grupo{font-size:12px;letter-spacing:7px}
+    .lm-lg .lm-nome{font-size:34px}
+    .lm-lg .lm-tag{font-size:9.5px;letter-spacing:2.5px;margin-top:6px}
+
+    /* ── HEADER ── */
+    header{background:var(--navy);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+    header img{height:32px}
+    .header-tag{background:rgba(255,255,255,.15);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
+
+    /* ── LAYOUT ── */
+    .container{max-width:900px;margin:0 auto;padding:28px 20px 60px}
+
+    /* ── TÍTULOS ── */
+    .page-title{font-size:24px;font-weight:800;color:var(--navy);margin-bottom:4px}
+    .page-sub{font-size:14px;color:var(--gray);margin-bottom:28px}
+
+    /* ── CARD ── */
+    .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.07);margin-bottom:20px}
+    .card-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .card-title span{font-size:20px}
+
+    /* ── CAMPOS ── */
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+    .field input,.field select,.field textarea{
+      width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;
+      font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:#fff
+    }
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy)}
+    .field textarea{resize:vertical;min-height:80px;line-height:1.6}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+    /* ── SUGESTÕES SELECT ── */
+    .sugestao-wrap{background:var(--green-light);border:1.5px solid var(--green);border-radius:10px;padding:14px 16px;margin-bottom:22px}
+    .sugestao-wrap .tpl-label{font-size:12px;font-weight:700;color:#3d6330;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .sugestao-select{width:100%;padding:11px 13px;border:1.5px solid var(--green);border-radius:8px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#111827;cursor:pointer;transition:border-color .2s}
+    .sugestao-select:focus{border-color:#3d6330}
+
+    /* ── SEGURO DE VIDA ── */
+    #seguro-wrap{display:none;margin-top:20px;background:#fff8e1;border:1.5px solid #f9a825;border-radius:10px;padding:16px}
+    .seguro-title{font-size:13px;font-weight:700;color:#f57f17;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+    /* ── RESPONSABILIDADES ── */
+    #resp-lista{margin-bottom:10px}
+    .resp-item{display:flex;gap:8px;margin-bottom:6px;align-items:center}
+    .resp-item input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;outline:none}
+    .resp-item input:focus{border-color:var(--navy)}
+    .resp-del{width:28px;height:28px;border-radius:6px;border:none;background:#fee;color:#c62828;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .resp-del:hover{background:#fcc}
+    .add-resp{padding:7px 14px;border-radius:8px;border:1.5px dashed var(--border);background:#fff;color:var(--gray);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+    .add-resp:hover{border-color:var(--navy);color:var(--navy)}
+
+    /* ── SISTEMAS ── */
+    .sistemas-check{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+    .sis-opt{display:flex;align-items:center;gap:6px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;background:#fff}
+    .sis-opt:hover{border-color:var(--navy)}
+    .sis-opt input{accent-color:var(--navy)}
+    .sis-opt span{font-size:12.5px;font-weight:600;color:#111827}
+
+    /* ── BOTÃO GERAR ── */
+    .btn-gerar{
+      width:100%;padding:14px;border-radius:10px;border:none;
+      background:linear-gradient(135deg,var(--navy),#2a5298);
+      color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
+      transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px
+    }
+    .btn-gerar:hover{opacity:.88;transform:translateY(-1px)}
+
+    /* ── RESULTADO ── */
+    #resultado{display:none}
+    .link-box{
+      background:var(--light);border:2px solid var(--green);border-radius:10px;
+      padding:14px 16px;font-size:12px;color:var(--navy);word-break:break-all;
+      font-weight:600;margin-bottom:12px;line-height:1.6
+    }
+    .result-btns{display:flex;gap:10px;flex-wrap:wrap}
+    .btn-copy{padding:10px 20px;border-radius:8px;border:none;background:var(--green);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s}
+    .btn-preview{padding:10px 20px;border-radius:8px;border:1.5px solid var(--navy);background:#fff;color:var(--navy);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+    .btn-preview:hover{background:var(--navy);color:#fff}
+    .btn-novo{padding:10px 20px;border-radius:8px;border:1.5px solid var(--gray);background:#fff;color:var(--gray);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+    .btn-novo:hover{border-color:var(--navy);color:var(--navy)}
+    .btn-email{padding:10px 20px;border-radius:8px;border:none;background:#0077b6;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s}
+    .btn-email:hover{opacity:.85}
+    .email-hint{font-size:11px;color:var(--gray);margin-top:10px;padding:10px 12px;background:#f0f7ff;border-radius:8px;border-left:3px solid #0077b6}
+    .qr-wrap{text-align:center;margin-top:16px}
+    .qr-wrap img{border-radius:10px;border:2px solid var(--border)}
+    .qr-wrap p{font-size:11px;color:var(--gray);margin-top:6px}
+
+    /* ── HISTÓRIO ── */
+    #historico-lista .hist-item{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 14px;border-radius:8px;border:1px solid var(--border);
+      background:#fff;margin-bottom:8px;
+    }
+    .hist-info{flex:1}
+    .hist-nome{font-size:13px;font-weight:700;color:var(--navy)}
+    .hist-sub{font-size:11px;color:var(--gray)}
+    .hist-btns{display:flex;gap:6px}
+    .btn-sm{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--navy);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+    .btn-sm.del{color:#c62828;border-color:#fcc}
+    .btn-sm:hover{background:var(--light)}
+
+    .badge-empresa{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700}
+    .badge-gcj{background:#e8edf5;color:var(--navy)}
+    .badge-ivi{background:var(--green-light);color:#4d7a38}
+    .badge-jh{background:#fff3e0;color:#bf360c}
+
+    .copied{background:var(--navy)!important}
+
+    @media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}.result-btns{flex-direction:column}}
+  </style>
+</head>
+<body>
+
+<!-- ── TELA DE SENHA ────────────────────────────────────────────────────────── -->
+<div id="senha-screen">
+  <div class="senha-box">
+    <div class="logo-wrap">
+      <div class="lm lm-light lm-lg">
+        <span class="lm-grupo">G R U P O</span>
+        <span class="lm-nome">INOVE<span class="lm-prime">PRIME</span></span>
+        <span class="lm-tag">TRANSFORMANDO IDEIAS EM RESULTADOS</span>
+      </div>
+    </div>
+    <h2>Área Administrativa</h2>
+    <p>Digite a senha para acessar o painel de geração de links de onboarding.</p>
+    <div class="senha-inp-wrap">
+      <input type="password" id="inp-senha" placeholder="••••••••••"
+             onkeydown="if(event.key==='Enter') verificarSenha()" />
+      <button class="btn-olho" onclick="toggleSenha()" title="Mostrar senha" tabindex="-1">👁</button>
+    </div>
+    <div id="senha-erro">Senha incorreta. Tente novamente.</div>
+    <button onclick="verificarSenha()" style="width:100%;padding:12px;border-radius:8px;border:none;background:var(--navy);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s">
+      Entrar
+    </button>
+  </div>
+</div>
+
+<!-- ── HEADER ───────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="lm lm-dark">
+    <span class="lm-grupo">G R U P O</span>
+    <span class="lm-nome">INOVE<span class="lm-prime">PRIME</span></span>
+    <span class="lm-tag">TRANSFORMANDO IDEIAS EM RESULTADOS</span>
+  </div>
+  <span class="header-tag">⚙️ Painel Administrativo</span>
+</header>
+
+<!-- ── CONTEÚDO ─────────────────────────────────────────────────────────────── -->
+<div class="container">
+
+  <p class="page-title">Gerar Link de Onboarding</p>
+  <p class="page-sub">Preencha os dados do novo colaborador e clique em "Gerar Link". Envie o link gerado por WhatsApp ou e-mail antes do primeiro dia.</p>
+
+  <!-- Formulário -->
+  <div class="card" id="form-card">
+
+    <!-- Sugestões rápidas de cargo -->
+    <div class="sugestao-wrap">
+      <div class="tpl-label">⚡ Sugestão rápida de cargo <span style="font-weight:400;color:#5a7a4a">— opcional. Pré-preenche cargo e responsabilidades. Tudo pode ser editado livremente.</span></div>
+      <select class="sugestao-select" id="tpl-select" onchange="aplicarTemplateSel(this.value)">
+        <option value="">Selecionar sugestão de cargo…</option>
+        <optgroup label="⚖️ Área Jurídica">
+          <option value="advogado">Advogado(a)</option>
+          <option value="estagiario">Estagiário(a) de Direito</option>
+          <option value="paralegais">Paralegal / Assistente Jurídico(a)</option>
+        </optgroup>
+        <optgroup label="🗂️ Administrativo &amp; Atendimento">
+          <option value="assistente">Assistente Administrativo(a)</option>
+          <option value="atendente">Atendente / Recepcionista</option>
+          <option value="secretaria">Secretária(o) Executivo(a)</option>
+        </optgroup>
+        <optgroup label="📊 Comercial, Marketing &amp; Financeiro">
+          <option value="comercial">Analista Comercial / Vendas</option>
+          <option value="marketing">Analista de Marketing</option>
+          <option value="financeiro">Analista Financeiro(a)</option>
+        </optgroup>
+        <optgroup label="💚 Social &amp; Tecnologia">
+          <option value="social">Assistente Social (IVI)</option>
+          <option value="ti">Suporte de TI / Tecnologia</option>
+          <option value="rh">Analista de RH</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- Dados pessoais -->
+    <div class="card-title"><span>👤</span> Dados do Colaborador</div>
+    <div class="grid-2">
+      <div class="field"><label>Nome completo *</label><input id="f-nome" type="text" placeholder="Ex: Ana Paula Souza" /></div>
+      <div class="field"><label>Cargo / Função * <span style="font-weight:400;text-transform:none;letter-spacing:0">(digitar livremente)</span></label><input id="f-cargo" type="text" placeholder="Ex: Advogada Associada" oninput="verificarEstagiario()" /></div>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>CPF</label><input id="f-cpf" type="text" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" /></div>
+      <div class="field"><label>Data de Nascimento</label><input id="f-nascimento" type="date" /></div>
+      <div class="field"><label>RG (opcional)</label><input id="f-rg" type="text" placeholder="Ex: 1234567-0" /></div>
+    </div>
+    <div class="grid-3">
+      <div class="field">
+        <label>Empresa do Grupo *</label>
+        <select id="f-empresa">
+          <option value="">Selecione…</option>
+          <option value="GCJ">Gonçalves Consultoria Jurídica</option>
+          <option value="IVI">Instituto Vinícius Ian</option>
+          <option value="JH">Just Help</option>
+        </select>
+      </div>
+      <div class="field"><label>Gestor(a) Responsável *</label><input id="f-gestor" type="text" placeholder="Nome do gestor" /></div>
+      <div class="field"><label>Data de Início</label><input id="f-data" type="date" /></div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>📧 E-mail do(a) Gestor(a) <span style="font-weight:400;text-transform:none;letter-spacing:0">— receberá o relatório de conclusão</span></label>
+        <input id="f-email-gestor" type="email" placeholder="gestor@gcj.adv.br" />
+      </div>
+      <div class="field">
+        <label>⏱️ Prazo de Integração (dias)</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input id="f-prazo" type="number" value="7" min="1" max="90" style="max-width:100px" />
+          <span style="font-size:12px;color:var(--gray)">dias a partir do início</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>📧 E-mail institucional do colaborador</label><input id="f-email" type="email" placeholder="colaborador@gcj.adv.br" /></div>
+      <div class="field"><label>📱 WhatsApp / Telefone</label><input id="f-tel" type="tel" placeholder="(62) 99999-9999" /></div>
+    </div>
+
+    <!-- Seguro de vida (aparece apenas para estagiários) -->
+    <div id="seguro-wrap">
+      <div class="seguro-title">🛡️ Seguro de Vida do Estagiário — obrigatório por lei (Lei 11.788/2008)</div>
+      <div class="grid-3">
+        <div class="field"><label>Seguradora</label><input id="f-seg-seguradora" type="text" placeholder="Ex: Porto Seguro, Mapfre…" /></div>
+        <div class="field"><label>Nº da Apólice</label><input id="f-seg-apolice" type="text" placeholder="Ex: 00123456789" /></div>
+        <div class="field"><label>Vigência até</label><input id="f-seg-vigencia" type="date" /></div>
+      </div>
+    </div>
+
+    <!-- Responsabilidades -->
+    <div class="card-title" style="margin-top:8px"><span>📋</span> Responsabilidades do Cargo</div>
+    <div id="resp-lista"></div>
+    <button class="add-resp" onclick="addResp('')">+ Adicionar responsabilidade</button>
+
+    <!-- Sistemas -->
+    <div class="card-title" style="margin-top:20px"><span>💻</span> Sistemas que vai utilizar</div>
+    <div class="sistemas-check">
+      <label class="sis-opt"><input type="checkbox" id="sis-bitrix" checked /><span>🔵 Bitrix24</span></label>
+      <label class="sis-opt"><input type="checkbox" id="sis-datajuri" /><span>⚖️ Datajuri</span></label>
+      <label class="sis-opt"><input type="checkbox" id="sis-email" checked /><span>📧 E-mail Institucional</span></label>
+      <label class="sis-opt"><input type="checkbox" id="sis-whatsapp" /><span>💬 WhatsApp Institucional</span></label>
+    </div>
+
+    <!-- Observações -->
+    <div class="field" style="margin-top:20px">
+      <label>Observações / Orientações especiais (opcional)</label>
+      <textarea id="f-obs" placeholder="Ex: Foco inicial nos processos trabalhistas. Treinamento no Datajuri na quarta-feira com Carlos."></textarea>
+    </div>
+
+    <button class="btn-gerar" onclick="gerarLink()">
+      🔗 Gerar Link de Onboarding Personalizado
+    </button>
+  </div>
+
+  <!-- Resultado -->
+  <div class="card" id="resultado">
+    <div class="card-title"><span>✅</span> Link gerado com sucesso!</div>
+    <p style="font-size:12px;color:var(--gray);margin-bottom:12px">
+      Envie este link para <strong id="res-nome-label"></strong> antes do primeiro dia.
+    </p>
+    <div class="link-box" id="link-gerado"></div>
+    <div class="result-btns">
+      <button class="btn-copy" id="btn-copy" onclick="copiarLink()">📋 Copiar link</button>
+      <button class="btn-email" onclick="enviarEmail()">📧 Enviar por e-mail</button>
+      <button class="btn-preview" onclick="abrirPreview()">👁️ Visualizar</button>
+      <button class="btn-novo" onclick="novoLink()">+ Gerar outro link</button>
+    </div>
+    <p class="email-hint" id="email-hint" style="display:none"></p>
+    <div class="qr-wrap">
+      <img id="qr-img" src="" alt="QR Code" width="160" height="160" />
+      <p>QR Code — pode imprimir e entregar no primeiro dia</p>
+    </div>
+  </div>
+
+  <!-- Histórico -->
+  <div class="card">
+    <div class="card-title"><span>📂</span> Histórico de Links Gerados</div>
+    <div id="historico-lista">
+      <p style="font-size:12px;color:var(--gray);font-style:italic">Nenhum link gerado ainda nesta sessão.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Senha ─────────────────────────────────────────────────────────────────────
+// Para alterar a senha, mude o valor abaixo:
+const SENHA_ADMIN = 'Inove@2026';
+
+function toggleSenha() {
+  const inp = document.getElementById('inp-senha');
+  const btn = inp.nextElementSibling;
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+    btn.title = 'Ocultar senha';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+    btn.title = 'Mostrar senha';
+  }
+}
+
+function verificarSenha() {
+  const v = document.getElementById('inp-senha').value;
+  if (v === SENHA_ADMIN) {
+    document.getElementById('senha-screen').style.display = 'none';
+  } else {
+    document.getElementById('senha-erro').style.display = 'block';
+    document.getElementById('inp-senha').value = '';
+    document.getElementById('inp-senha').focus();
+  }
+}
+
+// ── Templates de cargo ────────────────────────────────────────────────────────
+const TEMPLATES = {
+  advogado: {
+    cargo: 'Advogado(a)',
+    sistemas: { bitrix: true, datajuri: true, email: true, whatsapp: false },
+    resps: [
+      'Atendimento, triagem e qualificação de novos clientes',
+      'Elaboração de petições, contratos, pareceres e recursos',
+      'Cadastro e acompanhamento de processos no Datajuri',
+      'Gestão e monitoramento de prazos processuais',
+      'Comunicação com clientes via Bitrix24 e e-mail institucional',
+      'Atualização e registro de atividades no CRM (Bitrix24)',
+      'Representação em audiências e diligências externas conforme designação',
+      'Cumprimento rigoroso das normas da OAB e do Código de Ética do Grupo',
+    ]
+  },
+  estagiario: {
+    cargo: 'Estagiário(a) de Direito',
+    sistemas: { bitrix: true, datajuri: true, email: true, whatsapp: false },
+    resps: [
+      'Auxílio na elaboração de minutas de petições e documentos jurídicos',
+      'Pesquisa jurisprudencial e doutrinária para fundamentação de casos',
+      'Organização e digitalização de documentos processuais',
+      'Atualização de dados nos sistemas sob supervisão do(a) advogado(a)',
+      'Atendimento inicial a clientes sob orientação do(a) supervisor(a)',
+      'Registro de horas e atividades conforme exigência do estágio',
+      'Participação em reuniões de equipe e treinamentos internos',
+    ]
+  },
+  assistente: {
+    cargo: 'Assistente Administrativo(a)',
+    sistemas: { bitrix: true, datajuri: false, email: true, whatsapp: true },
+    resps: [
+      'Recepção e triagem de contatos via telefone, WhatsApp e e-mail',
+      'Agendamento de consultas e reuniões no Bitrix24',
+      'Organização e arquivamento físico e digital de documentos',
+      'Suporte à equipe jurídica na preparação de documentos e expedientes',
+      'Controle de materiais de escritório e suprimentos',
+      'Atualização de cadastros e dados de clientes no CRM (Bitrix24)',
+      'Apoio em atividades financeiras e administrativas conforme orientação',
+    ]
+  },
+  atendente: {
+    cargo: 'Atendente / Recepcionista',
+    sistemas: { bitrix: true, datajuri: false, email: true, whatsapp: true },
+    resps: [
+      'Primeiro atendimento presencial e virtual de clientes com empatia e profissionalismo',
+      'Triagem e encaminhamento dos atendimentos à equipe responsável',
+      'Gestão da agenda de atendimentos via Bitrix24',
+      'Envio e recebimento de mensagens pelo WhatsApp institucional',
+      'Registro de informações dos clientes no sistema de CRM',
+      'Manutenção da organização e apresentação do espaço de recepção',
+      'Repasse de recados e comunicações internas à equipe',
+    ]
+  },
+  paralegais: {
+    cargo: 'Paralegal / Assistente Jurídico(a)',
+    sistemas: { bitrix: true, datajuri: true, email: true, whatsapp: false },
+    resps: [
+      'Apoio direto à equipe de advogados na gestão de processos e documentos',
+      'Organização e protocolo de petições, contratos e correspondências',
+      'Acompanhamento de andamentos processuais no Datajuri',
+      'Comunicação com cartórios, tribunais e órgãos externos',
+      'Elaboração de minutas e formatação de documentos jurídicos',
+      'Atualização de dados e registros no CRM (Bitrix24)',
+      'Suporte administrativo à equipe jurídica',
+    ]
+  },
+  secretaria: {
+    cargo: 'Secretária(o) Executivo(a)',
+    sistemas: { bitrix: true, datajuri: false, email: true, whatsapp: true },
+    resps: [
+      'Gestão da agenda e compromissos da diretoria e gestores',
+      'Organização e controle de correspondências e documentos institucionais',
+      'Preparação de reuniões, atas e apresentações',
+      'Recepção e triagem de ligações, e-mails e mensagens',
+      'Controle de arquivos físicos e digitais',
+      'Apoio na organização de eventos e viagens corporativas',
+      'Interface entre a diretoria e os demais setores do Grupo',
+    ]
+  },
+  comercial: {
+    cargo: 'Analista Comercial / Vendas',
+    sistemas: { bitrix: true, datajuri: false, email: true, whatsapp: true },
+    resps: [
+      'Prospecção e qualificação de novos clientes e parceiros',
+      'Gestão do funil de vendas e acompanhamento de leads no Bitrix24',
+      'Apresentação dos serviços do Grupo a potenciais clientes',
+      'Elaboração e envio de propostas comerciais',
+      'Follow-up ativo com prospects via WhatsApp, e-mail e telefone',
+      'Registro e atualização de contatos e oportunidades no CRM',
+      'Análise de métricas comerciais e elaboração de relatórios periódicos',
+      'Participação em eventos, feiras e ações de relacionamento',
+    ]
+  },
+  marketing: {
+    cargo: 'Analista de Marketing',
+    sistemas: { bitrix: true, datajuri: false, email: true, whatsapp: true },
+    resps: [
+      'Planejamento e execução de estratégias de marketing digital',
+      'Gestão das redes sociais do Grupo Inove Prime e suas empresas',
+      'Criação e edição de conteúdo (posts, stories, vídeos, e-mails)',
+      'Monitoramento de métricas e análise de desempenho das campanhas',
+      'Apoio na criação de materiais visuais e identidade de marca',
+      'Gestão de campanhas pagas (tráfego pago) conforme necessidade',
+      'Alinhamento das ações de marketing com a equipe comercial',
+      'Elaboração de relatórios mensais de resultados de marketing',
+    ]
+  },
+  financeiro: {
+    cargo: 'Analista Financeiro(a)',
+    sistemas: { bitrix: true, datajuri: false, email: true, whatsapp: false },
+    resps: [
+      'Controle do fluxo de caixa e contas a pagar/receber',
+      'Lançamentos e conciliação de transações financeiras',
+      'Emissão e gestão de notas fiscais e boletos',
+      'Apoio na elaboração de relatórios financeiros periódicos',
+      'Interface com contabilidade externa para prestação de contas',
+      'Controle e atualização de planilhas e registros financeiros',
+      'Monitoramento de inadimplência e contato para regularização',
+    ]
+  },
+  social: {
+    cargo: 'Assistente Social (IVI)',
+    sistemas: { bitrix: true, datajuri: false, email: true, whatsapp: true },
+    resps: [
+      'Acolhimento inicial das famílias atendidas pelo Instituto Vinícius Ian',
+      'Triagem e avaliação socioeconômica dos casos recebidos',
+      'Orientação às famílias sobre direitos, benefícios e serviços disponíveis',
+      'Articulação com a rede de serviços públicos (saúde, educação, assistência)',
+      'Apoio e encaminhamento dos casos à equipe jurídica quando necessário',
+      'Registro e acompanhamento dos atendimentos no sistema',
+      'Participação em eventos, campanhas de conscientização e ações do IVI',
+      'Elaboração de relatórios sociais e documentação de casos',
+    ]
+  },
+  ti: {
+    cargo: 'Suporte de TI / Tecnologia',
+    sistemas: { bitrix: true, datajuri: true, email: true, whatsapp: false },
+    resps: [
+      'Suporte técnico a colaboradores no uso dos sistemas e equipamentos',
+      'Configuração de e-mails, acessos e permissões para novos colaboradores',
+      'Manutenção preventiva e corretiva de computadores e periféricos',
+      'Gestão de senhas, contas e acessos aos sistemas do Grupo',
+      'Apoio na implantação e manutenção de ferramentas digitais',
+      'Monitoramento da segurança da informação e conformidade com a LGPD',
+      'Documentação de processos técnicos e manuais de uso',
+    ]
+  },
+  rh: {
+    cargo: 'Analista de RH',
+    sistemas: { bitrix: true, datajuri: false, email: true, whatsapp: true },
+    resps: [
+      'Recrutamento, seleção e onboarding de novos colaboradores',
+      'Gestão de contratos, documentação e registros de pessoal',
+      'Controle de frequência, férias, afastamentos e benefícios',
+      'Interface com o departamento pessoal / contabilidade para folha de pagamento',
+      'Apoio em avaliações de desempenho e planos de desenvolvimento',
+      'Organização de treinamentos e capacitações internas',
+      'Atendimento aos colaboradores sobre dúvidas trabalhistas e políticas internas',
+      'Elaboração de relatórios de indicadores de RH',
+    ]
+  }
+};
+
+function aplicarTemplateSel(key) {
+  if (!key) return;
+  const tpl = TEMPLATES[key];
+  if (!tpl) return;
+  document.getElementById('f-cargo').value = tpl.cargo;
+  document.getElementById('sis-bitrix').checked    = tpl.sistemas.bitrix;
+  document.getElementById('sis-datajuri').checked  = tpl.sistemas.datajuri;
+  document.getElementById('sis-email').checked     = tpl.sistemas.email;
+  document.getElementById('sis-whatsapp').checked  = tpl.sistemas.whatsapp;
+  const lista = document.getElementById('resp-lista');
+  lista.innerHTML = '';
+  tpl.resps.forEach(r => addResp(r));
+  verificarEstagiario();
+}
+
+// ── Seguro de vida (estagiário) ───────────────────────────────────────────────
+function verificarEstagiario() {
+  const cargo = document.getElementById('f-cargo').value.toLowerCase();
+  const ehEstagiario = cargo.includes('estagi');
+  document.getElementById('seguro-wrap').style.display = ehEstagiario ? 'block' : 'none';
+}
+
+// ── Máscara CPF ───────────────────────────────────────────────────────────────
+function mascaraCPF(inp) {
+  let v = inp.value.replace(/\D/g, '').slice(0, 11);
+  if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/, '$1.$2');
+  inp.value = v;
+}
+
+// ── Responsabilidades ─────────────────────────────────────────────────────────
+let respCount = 0;
+function addResp(valor) {
+  const id = 'resp-' + (++respCount);
+  const div = document.createElement('div');
+  div.className = 'resp-item';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" value="${valor}" placeholder="Ex: Elaboração de petições e contratos" />
+    <button class="resp-del" onclick="document.getElementById('${id}').remove()" title="Remover">×</button>
+  `;
+  document.getElementById('resp-lista').appendChild(div);
+  if (!valor) div.querySelector('input').focus();
+}
+
+// ── Gerar link ────────────────────────────────────────────────────────────────
+let linkAtual = '';
+
+function gerarLink() {
+  const nome   = document.getElementById('f-nome').value.trim();
+  const cargo  = document.getElementById('f-cargo').value.trim();
+  const emp    = document.getElementById('f-empresa').value;
+  const gestor = document.getElementById('f-gestor').value.trim();
+  if (!nome || !cargo || !emp || !gestor) {
+    alert('Preencha nome, cargo, empresa e gestor antes de gerar o link.');
+    return;
+  }
+
+  const resps = [...document.querySelectorAll('#resp-lista .resp-item input')]
+    .map(i => i.value.trim()).filter(Boolean);
+
+  const sistemas = [];
+  if (document.getElementById('sis-bitrix').checked)   sistemas.push('Bitrix24');
+  if (document.getElementById('sis-datajuri').checked)  sistemas.push('Datajuri');
+  if (document.getElementById('sis-email').checked)     sistemas.push('E-mail Institucional');
+  if (document.getElementById('sis-whatsapp').checked)  sistemas.push('WhatsApp Institucional');
+
+  // Seguro de vida (apenas para estagiários — vai no link)
+  const ehEstagiario = cargo.toLowerCase().includes('estagi');
+  const seguro = ehEstagiario ? {
+    seguradora: document.getElementById('f-seg-seguradora').value.trim(),
+    apolice:    document.getElementById('f-seg-apolice').value.trim(),
+    vigencia:   document.getElementById('f-seg-vigencia').value,
+  } : null;
+
+  const dados = {
+    nome, cargo,
+    empresa: emp,
+    empresaNome: { GCJ: 'Gonçalves Consultoria Jurídica', IVI: 'Instituto Vinícius Ian', JH: 'Just Help' }[emp],
+    gestor,
+    emailGestor: document.getElementById('f-email-gestor').value.trim(),
+    diasPrazo:   parseInt(document.getElementById('f-prazo').value) || 7,
+    dataInicio:   document.getElementById('f-data').value,
+    responsabilidades: resps,
+    sistemas,
+    observacoes:  document.getElementById('f-obs').value.trim(),
+    seguro,
+    geradoEm: new Date().toLocaleDateString('pt-BR'),
+    // cpf NÃO vai no link (privacidade) — fica só no histórico local
+  };
+
+  // Dados apenas para o histórico (não vão no link)
+  const dadosHistorico = {
+    ...dados,
+    cpf:        document.getElementById('f-cpf').value.trim(),
+    nascimento: document.getElementById('f-nascimento').value,
+    rg:         document.getElementById('f-rg').value.trim(),
+    email:      document.getElementById('f-email').value.trim(),
+    tel:        document.getElementById('f-tel').value.trim(),
+  };
+
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+  const base = window.location.origin + window.location.pathname.replace(/(\/index\.html)?$/, '') + '/onboarding.html';
+  linkAtual = `${base}?c=${encodeURIComponent(encoded)}`;
+
+  // Mostra resultado
+  document.getElementById('res-nome-label').textContent = nome;
+  document.getElementById('link-gerado').textContent = linkAtual;
+  document.getElementById('qr-img').src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(linkAtual)}`;
+  document.getElementById('resultado').style.display = 'block';
+  document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Salva no histórico (com CPF/RG/nascimento)
+  salvarHistorico(dadosHistorico, linkAtual);
+}
+
+function copiarLink() {
+  navigator.clipboard.writeText(linkAtual).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = '✅ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copiar link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function abrirPreview() {
+  window.open(linkAtual, '_blank');
+}
+
+function enviarEmail() {
+  const email = document.getElementById('f-email').value.trim();
+  const nome  = document.getElementById('f-nome').value.trim();
+  const hint  = document.getElementById('email-hint');
+  if (!email) {
+    hint.style.display = 'block';
+    hint.textContent = '⚠️ Preencha o campo "E-mail institucional" no formulário acima antes de enviar.';
+    hint.style.borderColor = '#c62828';
+    hint.style.background = '#fff5f5';
+    return;
+  }
+  const subject = encodeURIComponent('Bem-vindo(a) ao Grupo Inove Prime — Seu Onboarding');
+  const body = encodeURIComponent(
+    `Olá, ${nome}!\n\n` +
+    `É com muito prazer que te recebemos no Grupo Inove Prime! 🎉\n\n` +
+    `Preparamos um onboarding personalizado para você. Acesse o link abaixo antes do seu primeiro dia:\n\n` +
+    `${linkAtual}\n\n` +
+    `Lá você vai conhecer o Grupo, as empresas, os sistemas que utilizamos e o cronograma da sua primeira semana.\n\n` +
+    `Qualquer dúvida, estamos à disposição!\n\n` +
+    `Seja muito bem-vindo(a) à equipe.\n\n` +
+    `Grupo Inove Prime`
+  );
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  hint.style.display = 'block';
+  hint.style.borderColor = '#0077b6';
+  hint.style.background = '#f0f7ff';
+  hint.textContent = `✅ Seu cliente de e-mail foi aberto com a mensagem para ${email}. Confira e clique em Enviar.`;
+}
+
+function novoLink() {
+  document.getElementById('resultado').style.display = 'none';
+  document.getElementById('form-card').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('f-nome').value        = '';
+  document.getElementById('f-cargo').value       = '';
+  document.getElementById('f-cpf').value         = '';
+  document.getElementById('f-nascimento').value  = '';
+  document.getElementById('f-rg').value          = '';
+  document.getElementById('f-empresa').value     = '';
+  document.getElementById('f-gestor').value      = '';
+  document.getElementById('f-data').value        = '';
+  document.getElementById('f-email-gestor').value = '';
+  document.getElementById('f-prazo').value        = '7';
+  document.getElementById('f-email').value        = '';
+  document.getElementById('f-tel').value          = '';
+  document.getElementById('f-obs').value          = '';
+  document.getElementById('f-seg-seguradora').value = '';
+  document.getElementById('f-seg-apolice').value    = '';
+  document.getElementById('f-seg-vigencia').value   = '';
+  document.getElementById('email-hint').style.display  = 'none';
+  document.getElementById('seguro-wrap').style.display = 'none';
+  document.getElementById('resp-lista').innerHTML = '';
+  document.getElementById('tpl-select').value = '';
+  linkAtual = '';
+}
+
+// ── Histórico (localStorage) ──────────────────────────────────────────────────
+const HIST_KEY = 'inove_admin_historico';
+
+function salvarHistorico(dados, link) {
+  let hist = [];
+  try { hist = JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch(e) {}
+  hist.unshift({ ...dados, link });
+  if (hist.length > 20) hist = hist.slice(0, 20);
+  localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+  renderHistorico();
+}
+
+function renderHistorico() {
+  let hist = [];
+  try { hist = JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch(e) {}
+  const el = document.getElementById('historico-lista');
+  if (!hist.length) {
+    el.innerHTML = '<p style="font-size:12px;color:var(--gray);font-style:italic">Nenhum link gerado ainda.</p>';
+    return;
+  }
+  const empCls = { GCJ: 'badge-gcj', IVI: 'badge-ivi', JH: 'badge-jh' };
+  el.innerHTML = hist.map((h, i) => `
+    <div class="hist-item">
+      <div class="hist-info">
+        <div class="hist-nome">
+          ${h.nome}
+          <span class="badge-empresa ${empCls[h.empresa] || 'badge-gcj'}">${h.empresaNome || h.empresa}</span>
+        </div>
+        <div class="hist-sub">${h.cargo} · Gestor: ${h.gestor}${h.cpf ? ' · CPF: '+h.cpf : ''} · Gerado em ${h.geradoEm}</div>
+      </div>
+      <div class="hist-btns">
+        <button class="btn-sm" onclick="copiarHist(${i})">Copiar</button>
+        <button class="btn-sm" onclick="window.open(historico()[${i}].link,'_blank')">Abrir</button>
+        <button class="btn-sm del" onclick="excluirHist(${i})">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function historico() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch(e) { return []; }
+}
+
+function copiarHist(i) {
+  const h = historico()[i];
+  if (h) navigator.clipboard.writeText(h.link);
+}
+
+function excluirHist(i) {
+  const hist = historico();
+  hist.splice(i, 1);
+  localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+  renderHistorico();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  renderHistorico();
+  // Adiciona 3 campos em branco por padrão
+  addResp(''); addResp(''); addResp('');
+});
+</script>
+</body>
+</html>
