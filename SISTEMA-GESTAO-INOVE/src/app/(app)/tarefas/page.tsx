@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 
 /* ─── Types ──────────────────────────────────────────────────── */
-type Status   = 'A Fazer' | 'Em Andamento' | 'Em Revisão' | 'Concluído'
+type Status   = string
 type Priority = 'Urgente' | 'Alta' | 'Média' | 'Baixa'
 
 interface SubItem  { id: string; titulo: string; feita: boolean }
@@ -51,13 +51,16 @@ const TAG_CLR: Record<string, string> = {
   Cliente:    '#e65100', Interno:    '#6b7280', Marketing:  '#7c3aed',
   RH:         '#62974B', TI:         '#4a148c',
 }
-const STATUSES: Status[] = ['A Fazer', 'Em Andamento', 'Em Revisão', 'Concluído']
-const STATUS_CLR: Record<Status, string> = {
+const STATUSES_PADRAO: Status[] = ['A Fazer', 'Em Andamento', 'Em Revisão', 'Concluído']
+const STATUSES_PADRAO_SET = new Set(STATUSES_PADRAO)
+const CUSTOM_STATUS_COLORS = ['#06b6d4','#84cc16','#f97316','#ec4899','#a855f7','#14b8a6','#f43f5e','#0ea5e9']
+const STATUS_CLR_BASE: Record<string, string> = {
   'A Fazer':      '#6b7280',
   'Em Andamento': '#e65100',
   'Em Revisão':   '#1F3763',
   'Concluído':    '#62974B',
 }
+const STATUSES_STORAGE = 'inove-tarefas-statuses'
 const PRIO_CLS: Record<Priority, string> = {
   Urgente: 'badge badge-red',
   Alta:    'badge badge-orange',
@@ -98,21 +101,51 @@ function ProgBar({ done, total }: { done: number; total: number }) {
 
 /* ─── Componente principal ───────────────────────────────────── */
 export default function Tarefas() {
-  const [tasks,    setTasks]   = useState<Task[]>([])
-  const [view,     setView]    = useState<'Kanban' | 'Lista'>('Kanban')
-  const [open,     setOpen]    = useState(false)
-  const [editId,   setEditId]  = useState<string | null>(null)
-  const [form,     setForm]    = useState<Omit<Task, 'id'>>(blank())
-  const [mTab,     setMTab]    = useState(0)
-  const [newSub,   setNewSub]  = useState('')
-  const [newChk,   setNewChk]  = useState('')
-  const [fResp,    setFResp]   = useState('')
-  const [fPrio,    setFPrio]   = useState('')
-  const [fStatus,  setFStatus] = useState('')
+  const [tasks,          setTasks]          = useState<Task[]>([])
+  const [view,           setView]           = useState<'Kanban' | 'Lista'>('Kanban')
+  const [open,           setOpen]           = useState(false)
+  const [editId,         setEditId]         = useState<string | null>(null)
+  const [form,           setForm]           = useState<Omit<Task, 'id'>>(blank())
+  const [mTab,           setMTab]           = useState(0)
+  const [newSub,         setNewSub]         = useState('')
+  const [newChk,         setNewChk]         = useState('')
+  const [fResp,          setFResp]          = useState('')
+  const [fPrio,          setFPrio]          = useState('')
+  const [fStatus,        setFStatus]        = useState('')
+  const [statuses,       setStatuses]       = useState<Status[]>(STATUSES_PADRAO)
+  const [adicionandoFase, setAdicionandoFase] = useState(false)
+  const [novaFaseNome,   setNovaFaseNome]   = useState('')
 
   useEffect(() => {
-    try { const s = localStorage.getItem(STORAGE); if (s) setTasks(JSON.parse(s)) } catch {}
+    try {
+      const s = localStorage.getItem(STORAGE); if (s) setTasks(JSON.parse(s))
+      const ss = localStorage.getItem(STATUSES_STORAGE); if (ss) setStatuses(JSON.parse(ss))
+    } catch {}
   }, [])
+
+  function saveStatuses(next: Status[]) {
+    setStatuses(next)
+    try { localStorage.setItem(STATUSES_STORAGE, JSON.stringify(next)) } catch {}
+  }
+
+  function statusClr(s: string) {
+    if (STATUS_CLR_BASE[s]) return STATUS_CLR_BASE[s]
+    const idx = statuses.indexOf(s) - STATUSES_PADRAO.length
+    return CUSTOM_STATUS_COLORS[Math.max(0, idx) % CUSTOM_STATUS_COLORS.length]
+  }
+
+  function addStatus() {
+    const nome = novaFaseNome.trim()
+    if (!nome || statuses.includes(nome)) return
+    saveStatuses([...statuses, nome])
+    setNovaFaseNome(''); setAdicionandoFase(false)
+  }
+
+  function removeStatus(s: Status) {
+    if (STATUSES_PADRAO_SET.has(s)) return
+    persist(tasks.map(t => t.status === s ? { ...t, status: 'A Fazer' } : t))
+    saveStatuses(statuses.filter(x => x !== s))
+  }
 
   function persist(next: Task[]) {
     setTasks(next)
@@ -140,9 +173,9 @@ export default function Tarefas() {
   function moveTask(id: string, dir: 1 | -1) {
     persist(tasks.map(t => {
       if (t.id !== id) return t
-      const ci = STATUSES.indexOf(t.status)
-      const ni = Math.max(0, Math.min(STATUSES.length - 1, ci + dir))
-      return { ...t, status: STATUSES[ni] }
+      const ci = statuses.indexOf(t.status)
+      const ni = Math.max(0, Math.min(statuses.length - 1, ci + dir))
+      return { ...t, status: statuses[ni] }
     }))
   }
 
@@ -164,7 +197,7 @@ export default function Tarefas() {
     if (fStatus && t.status      !== fStatus) return false
     return true
   })
-  const counts   = STATUSES.map(s => filtered.filter(t => t.status === s).length)
+  const counts   = statuses.map(s => filtered.filter(t => t.status === s).length)
   const lateCount = filtered.filter(t => isLate(t)).length
 
   return (
@@ -196,12 +229,9 @@ export default function Tarefas() {
       {/* KPIs */}
       <div className="m-bar" style={{ marginBottom: 14 }}>
         {[
-          { label: 'Total',        val: String(filtered.length) },
-          { label: 'A Fazer',      val: String(counts[0]) },
-          { label: 'Em Andamento', val: String(counts[1]) },
-          { label: 'Em Revisão',   val: String(counts[2]) },
-          { label: 'Concluídas',   val: String(counts[3]) },
-          { label: 'Atrasadas',    val: String(lateCount)  },
+          { label: 'Total',    val: String(filtered.length) },
+          ...statuses.map((s, i) => ({ label: s, val: String(counts[i] ?? 0) })),
+          { label: 'Atrasadas', val: String(lateCount) },
         ].map((m, i, arr) => (
           <div key={m.label} className="d-contents">
             <div className="m-item">
@@ -230,7 +260,7 @@ export default function Tarefas() {
         <select className="feed-input" style={{ width: 170 }} value={fStatus} onChange={e => setFStatus(e.target.value)}
           title="Filtrar por status">
           <option value="">Todos os status</option>
-          {STATUSES.map(s => <option key={s}>{s}</option>)}
+          {statuses.map(s => <option key={s}>{s}</option>)}
         </select>
         {(fResp || fPrio || fStatus) && (
           <button type="button" className="btn btn-outline btn-sm"
@@ -242,16 +272,23 @@ export default function Tarefas() {
 
       {/* ── KANBAN ────────────────────────────────────────────── */}
       {view === 'Kanban' && (
-        <div className="kanban" style={{ gridTemplateColumns: `repeat(${STATUSES.length}, 1fr)` }}>
-          {STATUSES.map((status, ci) => {
+        <div style={{ display:'flex', gap:12, overflowX:'auto', alignItems:'flex-start', paddingBottom:8 }}>
+          {statuses.map((status, ci) => {
             const col = filtered.filter(t => t.status === status)
+            const isCustom = !STATUSES_PADRAO_SET.has(status)
+            const cor = statusClr(status)
             return (
-              <div key={status} className="k-col">
+              <div key={status} className="k-col" style={{ minWidth:220, flexShrink:0 }}>
                 <div className="k-col-head"
-                  style={{ borderTop: `3px solid ${STATUS_CLR[status]}`, paddingBottom: 4 }}>
-                  <div className="k-col-title" style={{ color: STATUS_CLR[status] }}>
+                  style={{ borderTop: `3px solid ${cor}`, paddingBottom: 4, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <div className="k-col-title" style={{ color: cor }}>
                     {status} <span className="k-count">{col.length}</span>
                   </div>
+                  {isCustom && (
+                    <button type="button" onClick={() => removeStatus(status)} title="Excluir fase"
+                      style={{ background:'none', border:'none', cursor:'pointer', color:'#9ca3af',
+                        fontSize:14, lineHeight:1, padding:'0 2px', flexShrink:0 }}>×</button>
+                  )}
                 </div>
 
                 {col.map(task => {
@@ -319,7 +356,7 @@ export default function Tarefas() {
                           <button type="button" className="btn btn-outline btn-sm"
                             onClick={() => moveTask(task.id, -1)}>← Voltar</button>
                         )}
-                        {ci < STATUSES.length - 1 && (
+                        {ci < statuses.length - 1 && (
                           <button type="button" className="btn btn-navy btn-sm"
                             onClick={() => moveTask(task.id, 1)}>Avançar →</button>
                         )}
@@ -333,6 +370,37 @@ export default function Tarefas() {
               </div>
             )
           })}
+
+          {/* + Nova fase */}
+          <div style={{ minWidth:180, flexShrink:0 }}>
+            {adicionandoFase ? (
+              <div style={{ background:'#fff', border:'1px solid var(--border)', borderRadius:8, padding:12 }}>
+                <input autoFocus value={novaFaseNome}
+                  onChange={e => setNovaFaseNome(e.target.value)}
+                  onKeyDown={e => { if (e.key==='Enter') addStatus(); if (e.key==='Escape') { setAdicionandoFase(false); setNovaFaseNome('') } }}
+                  placeholder="Nome da fase…"
+                  style={{ width:'100%', padding:'6px 8px', border:'1px solid var(--border)', borderRadius:6,
+                    fontSize:13, outline:'none', marginBottom:8, boxSizing:'border-box' }} />
+                <div style={{ display:'flex', gap:6 }}>
+                  <button type="button" className="btn btn-navy btn-sm" style={{ flex:1 }} onClick={addStatus}>
+                    Adicionar
+                  </button>
+                  <button type="button" className="btn btn-outline btn-sm"
+                    onClick={() => { setAdicionandoFase(false); setNovaFaseNome('') }}>✕</button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" onClick={() => setAdicionandoFase(true)}
+                style={{ width:'100%', height:56, border:'2px dashed #d1d5db', borderRadius:8,
+                  background:'transparent', color:'#6b7280', fontSize:13, cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                  transition:'all .15s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='var(--navy)'; (e.currentTarget as HTMLButtonElement).style.color='var(--navy)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor='#d1d5db'; (e.currentTarget as HTMLButtonElement).style.color='#6b7280' }}>
+                + Nova fase
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -375,7 +443,7 @@ export default function Tarefas() {
                     <td><span className={PRIO_CLS[task.prioridade]}>{task.prioridade}</span></td>
                     <td>
                       <span className="badge"
-                        style={{ background: STATUS_CLR[task.status], color: '#fff' }}>
+                        style={{ background: statusClr(task.status), color: '#fff' }}>
                         {task.status}
                       </span>
                     </td>
@@ -463,9 +531,9 @@ export default function Tarefas() {
                     <div>
                       <label className="modal-label">Status</label>
                       <select className="feed-input" value={form.status}
-                        onChange={e => F({ status: e.target.value as Status })}
+                        onChange={e => F({ status: e.target.value })}
                         title="Status da tarefa">
-                        {STATUSES.map(s => <option key={s}>{s}</option>)}
+                        {statuses.map(s => <option key={s}>{s}</option>)}
                       </select>
                     </div>
                     <div>

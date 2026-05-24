@@ -45,7 +45,7 @@ const INICIAL: Lead[] = [
   ]},
 ]
 
-const COLUNAS = [
+const COLUNAS_PADRAO = [
   {key:'Novo',       label:'Novo',       cor:'#3b82f6'},
   {key:'Qualificado',label:'Qualificado',cor:'#8b5cf6'},
   {key:'Proposta',   label:'Proposta',   cor:'#f59e0b'},
@@ -53,6 +53,8 @@ const COLUNAS = [
   {key:'Ganho',      label:'Ganho ✓',    cor:'#10b981'},
   {key:'Perdido',    label:'Perdido',    cor:'#6b7280'},
 ]
+const KEYS_PADRAO = new Set(COLUNAS_PADRAO.map(c=>c.key))
+const CORES_NOVAS = ['#06b6d4','#84cc16','#f97316','#ec4899','#a855f7','#14b8a6','#f43f5e','#0ea5e9']
 
 const ORIGENS = ['WhatsApp','Indicação','Site','LinkedIn','Google','Instagram','Outros']
 const RESPONSAVEIS = ['Ana Lima','Carlos Souza','Maria Santos','João Pereira']
@@ -70,6 +72,9 @@ function corAvatar(n:string){ const cores=['#3b82f6','#8b5cf6','#10b981','#f59e0
 /* ───── componente principal ───── */
 export default function CrmLeads() {
   const [leads, setLeads] = useState<Lead[]>([])
+  const [colunas, setColunas] = useState(COLUNAS_PADRAO)
+  const [adicionandoFase, setAdicionandoFase] = useState(false)
+  const [novaFaseNome, setNovaFaseNome] = useState('')
   const [view, setView] = useState<'kanban'|'lista'>('kanban')
   const [filtroStatus, setFiltroStatus] = useState('')
   const [filtroOrigem, setFiltroOrigem] = useState('')
@@ -87,9 +92,26 @@ export default function CrmLeads() {
   useEffect(()=>{
     const s = localStorage.getItem('inove-crm-leads')
     setLeads(s ? JSON.parse(s) : INICIAL)
+    const c = localStorage.getItem('inove-crm-colunas')
+    if(c) setColunas(JSON.parse(c))
   },[])
 
   function save(data:Lead[]){ setLeads(data); localStorage.setItem('inove-crm-leads',JSON.stringify(data)) }
+  function saveColunas(data:typeof COLUNAS_PADRAO){ setColunas(data); localStorage.setItem('inove-crm-colunas',JSON.stringify(data)) }
+
+  function adicionarFase(){
+    const nome = novaFaseNome.trim()
+    if(!nome) return
+    const cor = CORES_NOVAS[(colunas.length - COLUNAS_PADRAO.length) % CORES_NOVAS.length]
+    saveColunas([...colunas, {key:nome, label:nome, cor}])
+    setNovaFaseNome('')
+    setAdicionandoFase(false)
+  }
+
+  function excluirFase(key:string){
+    if(KEYS_PADRAO.has(key)) return
+    saveColunas(colunas.filter(c=>c.key!==key))
+  }
 
   const leadsFiltrados = leads.filter(l=>{
     if(filtroStatus && l.status!==filtroStatus) return false
@@ -145,7 +167,7 @@ export default function CrmLeads() {
         <input value={busca} onChange={e=>setBusca(e.target.value)} placeholder="🔍 Buscar…" style={{border:'1px solid var(--border)',borderRadius:7,padding:'6px 12px',fontSize:12,width:200,outline:'none'}}/>
         <select value={filtroStatus} onChange={e=>setFiltroStatus(e.target.value)} style={{border:'1px solid var(--border)',borderRadius:7,padding:'6px 10px',fontSize:12,outline:'none'}}>
           <option value="">Todos status</option>
-          {COLUNAS.map(c=><option key={c.key}>{c.key}</option>)}
+          {colunas.map(c=><option key={c.key}>{c.key}</option>)}
         </select>
         <select value={filtroOrigem} onChange={e=>setFiltroOrigem(e.target.value)} style={{border:'1px solid var(--border)',borderRadius:7,padding:'6px 10px',fontSize:12,outline:'none'}}>
           <option value="">Todas origens</option>
@@ -173,7 +195,7 @@ export default function CrmLeads() {
         {[
           {label:'Pipeline total', val:'R$ '+totalPipeline.toLocaleString('pt-BR'), cor:'var(--navy)'},
           {label:'Total', val:String(leads.length), cor:'#6b7280'},
-          ...COLUNAS.map(c=>({label:c.label, val:String(leads.filter(l=>l.status===c.key).length), cor:c.cor}))
+          ...colunas.map(c=>({label:c.label, val:String(leads.filter(l=>l.status===c.key).length), cor:c.cor}))
         ].map(m=>(
           <div key={m.label} style={{flex:1,background:'white',padding:'10px 14px',textAlign:'center'}}>
             <div style={{fontSize:10,color:'#888',marginBottom:3}}>{m.label}</div>
@@ -185,7 +207,7 @@ export default function CrmLeads() {
       {/* ── KANBAN ── */}
       {view==='kanban' && (
         <div style={{display:'flex',gap:10,overflowX:'auto',flex:1,alignItems:'flex-start',paddingBottom:8}}>
-          {COLUNAS.map(col=>{
+          {colunas.map(col=>{
             const cards = leadsFiltrados.filter(l=>l.status===col.key)
             const tot = cards.reduce((s,l)=>s+(parseFloat(l.valor)||0),0)
             return (
@@ -195,7 +217,16 @@ export default function CrmLeads() {
                   <div style={{height:4,background:col.cor}}/>
                   <div style={{padding:'8px 12px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                     <span style={{fontSize:12,fontWeight:700,color:'var(--navy)'}}>{col.label}</span>
-                    <span style={{background:col.cor+'20',color:col.cor,borderRadius:12,padding:'2px 8px',fontSize:11,fontWeight:700}}>{cards.length}</span>
+                    <div style={{display:'flex',alignItems:'center',gap:6}}>
+                      <span style={{background:col.cor+'20',color:col.cor,borderRadius:12,padding:'2px 8px',fontSize:11,fontWeight:700}}>{cards.length}</span>
+                      {!KEYS_PADRAO.has(col.key) && (
+                        <button onClick={()=>excluirFase(col.key)} title="Excluir fase" style={{background:'transparent',border:'none',cursor:'pointer',color:'#d1d5db',padding:2,display:'flex',alignItems:'center'}}
+                          onMouseEnter={e=>(e.currentTarget.style.color='#ef4444')}
+                          onMouseLeave={e=>(e.currentTarget.style.color='#d1d5db')}>
+                          <X size={12}/>
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div style={{padding:'0 12px 8px',fontSize:10,color:'#888'}}>{fmtValor(String(tot))}</div>
                 </div>
@@ -238,6 +269,28 @@ export default function CrmLeads() {
               </div>
             )
           })}
+
+          {/* ── + NOVA FASE ── */}
+          <div style={{minWidth:220,flexShrink:0}}>
+            {adicionandoFase ? (
+              <div style={{background:'white',border:'1px solid var(--border)',borderRadius:8,padding:12,display:'flex',flexDirection:'column',gap:8}}>
+                <input autoFocus value={novaFaseNome} onChange={e=>setNovaFaseNome(e.target.value)}
+                  onKeyDown={e=>{if(e.key==='Enter')adicionarFase();if(e.key==='Escape')setAdicionandoFase(false)}}
+                  placeholder="Nome da fase…" style={{border:'1px solid var(--border)',borderRadius:6,padding:'7px 10px',fontSize:12,outline:'none',width:'100%',boxSizing:'border-box'}}/>
+                <div style={{display:'flex',gap:6}}>
+                  <button onClick={adicionarFase} style={{flex:1,background:'var(--navy)',color:'white',border:'none',borderRadius:6,padding:'6px',fontSize:11,fontWeight:600,cursor:'pointer'}}>Adicionar</button>
+                  <button onClick={()=>{setAdicionandoFase(false);setNovaFaseNome('')}} style={{background:'white',border:'1px solid var(--border)',borderRadius:6,padding:'6px 10px',fontSize:11,cursor:'pointer',color:'#6b7280'}}><X size={12}/></button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={()=>setAdicionandoFase(true)}
+                style={{width:'100%',background:'transparent',border:'2px dashed #d1d5db',borderRadius:8,padding:'14px 12px',fontSize:12,color:'#9ca3af',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,transition:'all .15s'}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--navy)';e.currentTarget.style.color='var(--navy)'}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor='#d1d5db';e.currentTarget.style.color='#9ca3af'}}>
+                <Plus size={14}/> Nova fase
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -270,7 +323,7 @@ export default function CrmLeads() {
                   <td style={{padding:'10px 12px',color:'#374151'}}>{l.empresa}</td>
                   <td style={{padding:'10px 12px',fontWeight:700,color:'#10b981'}}>{fmtValor(l.valor)}</td>
                   <td style={{padding:'10px 12px'}}>
-                    <span style={{background:COLUNAS.find(c=>c.key===l.status)?.cor+'20',color:COLUNAS.find(c=>c.key===l.status)?.cor,borderRadius:12,padding:'3px 10px',fontSize:11,fontWeight:600}}>{l.status}</span>
+                    <span style={{background:(colunas.find(c=>c.key===l.status)?.cor??'#6b7280')+'20',color:colunas.find(c=>c.key===l.status)?.cor??'#6b7280',borderRadius:12,padding:'3px 10px',fontSize:11,fontWeight:600}}>{l.status}</span>
                   </td>
                   <td style={{padding:'10px 12px'}}>
                     <span style={{background:origemCor[l.origem]+'20',color:origemCor[l.origem],borderRadius:12,padding:'3px 10px',fontSize:11,fontWeight:600}}>{l.origem}</span>
@@ -307,7 +360,7 @@ export default function CrmLeads() {
 
             {/* mover status */}
             <div style={{padding:'12px 20px',borderBottom:'1px solid var(--border)',display:'flex',gap:4,flexWrap:'wrap',flexShrink:0}}>
-              {COLUNAS.map(c=>(
+              {colunas.map(c=>(
                 <button key={c.key} onClick={()=>moverStatus(leadAberto.id,c.key)}
                   style={{padding:'4px 12px',borderRadius:14,border:'none',cursor:'pointer',fontSize:11,fontWeight:600,
                     background:leadAberto.status===c.key?c.cor:'#f3f4f6',
@@ -440,7 +493,7 @@ export default function CrmLeads() {
               {[
                 {label:'Origem',key:'origem',opts:ORIGENS},
                 {label:'Responsável',key:'responsavel',opts:RESPONSAVEIS},
-                {label:'Status inicial',key:'status',opts:COLUNAS.map(c=>c.key)},
+                {label:'Status inicial',key:'status',opts:colunas.map(c=>c.key)},
               ].map(({label,key,opts})=>(
                 <div key={key}>
                   <label style={{fontSize:11,fontWeight:600,color:'#374151',display:'block',marginBottom:4}}>{label}</label>
