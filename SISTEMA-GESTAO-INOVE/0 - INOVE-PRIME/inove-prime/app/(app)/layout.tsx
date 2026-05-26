@@ -1,16 +1,21 @@
 import { cookies } from 'next/headers'
-import TopNav from "@/components/TopNav";
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
+import TopNav from "@/components/TopNav"
+import Header from "@/components/Header"
+import Sidebar from "@/components/Sidebar"
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const store = await cookies()
+  const store   = await cookies()
   const session = store.get('inove-session')
+
+  // Padrão: admin com acesso total
   let user = { name: 'Administrador', email: 'admin', role: 'admin' }
+
   if (session) {
     try {
       user = JSON.parse(Buffer.from(session.value, 'base64').toString())
-    } catch {}
+    } catch {
+      // Sessão inválida — mantém fallback acima
+    }
   }
 
   return (
@@ -18,11 +23,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <TopNav user={user} />
       <Header />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+        {/* Passa role para a Sidebar filtrar o menu */}
+        <Sidebar role={user.role} />
         <main className="flex-1 overflow-y-auto p-5">
           {children}
         </main>
       </div>
     </div>
-  );
+  )
 }
