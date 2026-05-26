@@ -160,7 +160,7 @@ export default function Organograma() {
 
             {/* Resumo por departamento */}
             {depts.length > 0 && (
-              <div className={`grid grid-cols-${Math.min(depts.length, 5)} gap-2.5 mt-4`}>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(depts.length, 5)}, 1fr)`, gap: 10, marginTop: 16 }}>
                 {depts.map(([dept, membros]) => (
                   <div key={dept} className="card" style={{ borderTop: `3px solid ${corDept(dept)}`, textAlign: 'center' }}>
                     <p style={{ fontSize: 20 }}>{iconeDept(dept)}</p>
