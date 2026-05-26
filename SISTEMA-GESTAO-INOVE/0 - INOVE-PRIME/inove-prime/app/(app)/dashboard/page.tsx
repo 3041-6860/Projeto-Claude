@@ -4,24 +4,24 @@ import FeedClient from "@/components/FeedClient";
 import DashBanner from "@/components/DashBanner";
 
 const metricas1 = [
-  { label: "Faturamento",   value: "R$ 2,4M", hint: "Receita consolidada mai/26",   progress: 72, valClass: "val-green", colorKey: "green" },
-  { label: "Despesas",      value: "R$ 1,1M", hint: "Custo operacional mai/26",     progress: 45, valClass: "val-gray",  colorKey: "gray"  },
-  { label: "Resultado",     value: "R$ 1,3M", hint: "Margem líquida do período",    progress: 54, valClass: "val-navy",  colorKey: "navy"  },
-  { label: "Colaboradores", value: "48",       hint: "Ativos em todas as unidades",  progress: 85, valClass: "val-navy",  colorKey: "navy"  },
+  { label: "Faturamento",   value: "—", hint: "Cadastre lançamentos no Financeiro", progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Despesas",      value: "—", hint: "Cadastre lançamentos no Financeiro", progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Resultado",     value: "—", hint: "Calculado após lançamentos",         progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Colaboradores", value: "—", hint: "Cadastre colaboradores no RH",       progress: 0, valClass: "val-gray", colorKey: "gray" },
 ];
 
 const metricas2 = [
-  { label: "Clientes Ativos", value: "—",  hint: "Aguardando integração CRM",    progress: 0,  valClass: "val-gray", colorKey: "gray" },
-  { label: "Contratos",       value: "—",  hint: "Aguardando integração",        progress: 0,  valClass: "val-gray", colorKey: "gray" },
-  { label: "Tarefas",         value: "34", hint: "Pendentes — 6 com prazo hoje", progress: 40, valClass: "val-gray", colorKey: "gray" },
-  { label: "Reuniões Hoje",   value: "3",  hint: "Próxima: 14h · Sala A",        progress: 30, valClass: "val-navy", colorKey: "navy" },
+  { label: "Clientes Ativos", value: "—", hint: "Cadastre leads no CRM",          progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Contratos",       value: "—", hint: "Aguardando módulo Documentos",   progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Tarefas",         value: "—", hint: "Cadastre tarefas no módulo",     progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Reuniões Hoje",   value: "—", hint: "Cadastre eventos no Calendário", progress: 0, valClass: "val-gray", colorKey: "gray" },
 ];
 
 const metricas3 = [
-  { label: "NPS / Satisfação",  value: "—",  hint: "Aguardando integração", progress: 0,  valClass: "val-gray", colorKey: "gray" },
-  { label: "Campanhas Ativas",  value: "12", hint: "Marketing — mai/26",    progress: 60, valClass: "val-navy", colorKey: "navy" },
-  { label: "Tickets em Aberto", value: "—",  hint: "Aguardando integração", progress: 0,  valClass: "val-gray", colorKey: "gray" },
-  { label: "Projetos Ativos",   value: "—",  hint: "Aguardando integração", progress: 0,  valClass: "val-gray", colorKey: "gray" },
+  { label: "NPS / Satisfação",  value: "—", hint: "Aguardando integração",              progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Campanhas Ativas",  value: "—", hint: "Cadastre campanhas no Marketing",    progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Tickets em Aberto", value: "—", hint: "Aguardando integração",              progress: 0, valClass: "val-gray", colorKey: "gray" },
+  { label: "Projetos Ativos",   value: "—", hint: "Aguardando integração",              progress: 0, valClass: "val-gray", colorKey: "gray" },
 ];
 
 // Cada módulo com sua cor sólida exclusiva
@@ -34,11 +34,8 @@ const modules = [
   { icon: "📣", label: "Marketing",   hint: "Campanhas e leads",        href: "/marketing",  cls: "dash-mod-teal"   },
 ];
 
-const comunicados = [
-  { alertClass: "alert alert-navy",   icon: "📌", bold: "Reunião de diretoria",  text: " — Sex, 23/05 às 14h · Sala A" },
-  { alertClass: "alert alert-green",  icon: "✅", bold: "Novo colaborador",       text: " incorporado à equipe de Financeiro" },
-  { alertClass: "alert alert-orange", icon: "⚠️", bold: "Renovação de licença", text: " de software vence em 5 dias" },
-];
+// Comunicados começam vazios — adicionar via Feed ou módulo de comunicados
+const comunicados: { alertClass: string; icon: string; bold: string; text: string }[] = [];
 
 function cardClasses(c: { value: string; colorKey: string }) {
   const base = `card card-top-${c.colorKey}`
@@ -121,9 +118,13 @@ export default async function Dashboard() {
             <div className="card-header card-header-orange">
               📢 &nbsp; Comunicados
             </div>
-            {comunicados.map((c, i) => (
+            {comunicados.length === 0 ? (
+              <p className="text-sm text-gray-400 py-3 text-center">
+                Nenhum comunicado no momento.
+              </p>
+            ) : comunicados.map((c, i) => (
               <div key={i} className={c.alertClass}>
-                <span className="flex-shrink-0">{c.icon}</span>
+                <span className="shrink-0">{c.icon}</span>
                 <span>
                   {c.bold && <b>{c.bold}</b>}
                   {c.text}

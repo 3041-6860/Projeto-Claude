@@ -32,54 +32,8 @@ interface Post {
 
 const STORAGE_KEY = 'inove-feed-posts'
 
-const MOCK_POSTS: Post[] = [
-  {
-    id: '1',
-    type: 'evento',
-    author: 'Sandra Otto',
-    initials: 'SO',
-    avatarClass: 'feed-avatar feed-avatar-green',
-    content: 'Audiência agendada — comparecer com documentos originais.',
-    eventTitle: 'Polyana / Facebook — Audiência de Instrução',
-    eventDate: 'Quinta-feira, 9 de julho de 2026 às 14h00',
-    timestamp: 'Ontem, 8:05',
-    likes: 2,
-    views: 5,
-    liked: false,
-    comments: [
-      { id: 'c1', author: 'Rodrigo Gonçalves', initials: 'RG', content: 'Confirmado. Já incluí na agenda.', timestamp: 'Ontem, 9:12' },
-    ],
-    showComments: false,
-  },
-  {
-    id: '2',
-    type: 'mensagem',
-    author: 'Rodrigo Gonçalves',
-    initials: 'RG',
-    avatarClass: 'feed-avatar feed-avatar-navy',
-    content: '⚠️ Prazo FATAL em 3 dias — Processo 0034567. Quem fica responsável pela contestação?',
-    timestamp: 'Hoje, 7:30',
-    likes: 1,
-    views: 8,
-    liked: false,
-    comments: [],
-    showComments: false,
-  },
-  {
-    id: '3',
-    type: 'mensagem',
-    author: 'Sandra Otto',
-    initials: 'SO',
-    avatarClass: 'feed-avatar feed-avatar-green',
-    content: '✅ Módulo Financeiro atualizado com integração PIX automático. Testem no ambiente de homologação.',
-    timestamp: 'Hoje, 10:15',
-    likes: 3,
-    views: 12,
-    liked: false,
-    comments: [],
-    showComments: false,
-  },
-]
+// Feed começa vazio — posts serão criados pela equipe em uso real
+const MOCK_POSTS: Post[] = []
 
 export default function FeedClient() {
   const [posts, setPosts] = useState<Post[]>([])

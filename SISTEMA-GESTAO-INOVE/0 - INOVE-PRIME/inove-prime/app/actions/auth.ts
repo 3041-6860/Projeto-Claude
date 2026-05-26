@@ -4,31 +4,25 @@ import { redirect } from 'next/navigation'
 
 // ─── Usuários do sistema ──────────────────────────────────────────────────────
 // PERFIS DISPONÍVEIS:
-//   admin      → Acesso total
+//   admin      → Acesso total (todas as telas + configurações)
 //   gestor     → Gestão completa (sem Configurações)
 //   rh         → Módulo RH + tarefas + comunicação
 //   juridico   → Processos + documentos + negócios + tarefas
 //   comercial  → CRM + negócios + marketing + tarefas
 //   financeiro → Financeiro + dashboard + tarefas
+//
+// ➕ PARA ADICIONAR NOVO COLABORADOR: copie um bloco abaixo e ajuste os campos.
+//    Escolha o 'role' de acordo com o departamento do usuário.
+
 const USERS = [
-  // ── Administradores ──
-  { email: 'admin',             password: '1234',           name: 'Administrador',      role: 'admin'      },
-  { email: 'admin@gcj.adv.br', password: 'Inove2026!',    name: 'Administrador GCJ',  role: 'admin'      }, // BUG CORRIGIDO: era 'admin@gcj.adv.br'
+  // ── Administradores ──────────────────────────────────────────────────────────
+  { email: 'admin',             password: '1234',          name: 'Administrador',     role: 'admin' },
+  { email: 'admin@gcj.adv.br', password: 'Inove2026!',   name: 'Administrador GCJ', role: 'admin' },
+  { email: 'sandra',            password: 'Sandra2026!',  name: 'Sandra Otto',        role: 'admin' },
+  { email: 'rodrigo',           password: 'Rodrigo2026!', name: 'Rodrigo Gonçalves', role: 'admin' },
 
-  // ── Gestão ──
-  { email: 'gestor',            password: 'gestor1234',     name: 'Gestor',             role: 'gestor'     },
-
-  // ── RH ──
-  { email: 'rh',                password: 'rh1234',         name: 'Equipe RH',          role: 'rh'         },
-
-  // ── Jurídico ──
-  { email: 'juridico',          password: 'juridico1234',   name: 'Equipe Jurídica',    role: 'juridico'   },
-
-  // ── Comercial ──
-  { email: 'comercial',         password: 'comercial1234',  name: 'Equipe Comercial',   role: 'comercial'  },
-
-  // ── Financeiro ──
-  { email: 'financeiro',        password: 'fin1234',        name: 'Equipe Financeiro',  role: 'financeiro' },
+  // ── Adicionar novos colaboradores abaixo ──────────────────────────────────────
+  // { email: 'nome.sobrenome', password: 'Senha2026!', name: 'Nome Completo', role: 'gestor' },
 ]
 
 // ─── Login ────────────────────────────────────────────────────────────────────
