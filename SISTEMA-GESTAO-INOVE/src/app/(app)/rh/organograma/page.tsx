@@ -1,92 +1,71 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-/* ─── Estrutura hierárquica ──────────────────────────────── */
-const ceo = {
-  nome: 'Guilherme C. Junqueira',
-  cargo: 'Sócio Principal / CEO',
-  dept: 'Diretoria',
-  adm: '01/03/2020',
-  email: 'guilherme@gcj.adv.br',
+const RH_STORAGE = 'inove-rh-colaboradores-v1'
+
+interface Colaborador {
+  nome: string; cargo: string; dept: string
+  adm: string; status: string; ferias: boolean; ativo: boolean
 }
 
-const departamentos = [
-  {
-    nome: 'Jurídico',
-    icone: '⚖️',
-    cor: '#1F3763',
-    gerente: 'Fernanda Oliveira',
-    cargo_gerente: 'Advogada Sênior',
-    total: 22,
-    membros: [
-      { nome: 'Fernanda Oliveira',  cargo: 'Advogada Sênior',    tipo: 'CLT',     adm: '15/08/2021' },
-      { nome: 'Ana Paula Souza',    cargo: 'Advogada Associada', tipo: 'CLT',     adm: '02/01/2023' },
-      { nome: 'Bruno Alves',        cargo: 'Advogado Associado', tipo: 'CLT',     adm: '08/07/2022' },
-      { nome: 'Patrícia Nunes',     cargo: 'Assistente Jurídico',tipo: 'CLT',     adm: '11/09/2024' },
-      { nome: 'André Martins',      cargo: 'Estagiário',         tipo: 'Estágio', adm: '01/02/2026' },
-      { nome: '+ 17 colaboradores', cargo: '',                   tipo: '',        adm: '' },
-    ],
-  },
-  {
-    nome: 'Comercial',
-    icone: '💼',
-    cor: '#e65100',
-    gerente: 'Carlos Eduardo Lima',
-    cargo_gerente: 'Gerente Comercial',
-    total: 3,
-    membros: [
-      { nome: 'Carlos Eduardo Lima', cargo: 'Gerente Comercial', tipo: 'CLT', adm: '10/06/2019' },
-      { nome: 'Vaga em aberto',      cargo: 'Analista Comercial',tipo: '',    adm: '' },
-      { nome: 'Vaga em aberto',      cargo: 'SDR',               tipo: '',    adm: '' },
-    ],
-  },
-  {
-    nome: 'Financeiro',
-    icone: '💰',
-    cor: '#0059b3',
-    gerente: 'Mariana Santos',
-    cargo_gerente: 'Analista Financeira',
-    total: 2,
-    membros: [
-      { nome: 'Mariana Santos',    cargo: 'Analista Financeira', tipo: 'CLT', adm: '20/11/2022' },
-      { nome: 'Vaga em aberto',   cargo: 'Aux. Financeiro',      tipo: '',    adm: '' },
-    ],
-  },
-  {
-    nome: 'TI',
-    icone: '💻',
-    cor: '#4a148c',
-    gerente: 'Roberto Carvalho',
-    cargo_gerente: 'Técnico de TI',
-    total: 1,
-    membros: [
-      { nome: 'Roberto Carvalho', cargo: 'Técnico de TI', tipo: 'CLT', adm: '05/04/2023' },
-    ],
-  },
-  {
-    nome: 'Administrativo',
-    icone: '🗂️',
-    cor: '#62974B',
-    gerente: 'Operacional GCJ',
-    cargo_gerente: 'Operacional',
-    total: 2,
-    membros: [
-      { nome: 'Operacional GCJ',  cargo: 'Operacional',  tipo: 'CLT', adm: '01/01/2021' },
-      { nome: 'Vaga em aberto',   cargo: 'Recepcionista', tipo: '',   adm: '' },
-    ],
-  },
-]
+const DEPT_CORES: Record<string, string> = {
+  'Jurídico':      '#1F3763',
+  'Comercial':     '#e65100',
+  'Financeiro':    '#0059b3',
+  'TI':            '#4a148c',
+  'Administrativo':'#62974B',
+  'RH':            '#9c27b0',
+  'Marketing':     '#d81b60',
+}
+
+const DEPT_ICONS: Record<string, string> = {
+  'Jurídico':      '⚖️',
+  'Comercial':     '💼',
+  'Financeiro':    '💰',
+  'TI':            '💻',
+  'Administrativo':'🗂️',
+  'RH':            '👥',
+  'Marketing':     '📣',
+}
+
+function corDept(dept: string) { return DEPT_CORES[dept] ?? '#6b7280' }
+function iconeDept(dept: string) { return DEPT_ICONS[dept] ?? '🏢' }
+
+function initials(nome: string) {
+  return nome.split(' ').filter(n => n.length > 1).map(n => n[0]).slice(0, 2).join('').toUpperCase() || '?'
+}
 
 function Avatar({ nome, size = 36, bg = 'var(--navy)' }: { nome: string; size?: number; bg?: string }) {
-  const initials = nome.split(' ').filter(n => n.length > 1).map(n => n[0]).slice(0, 2).join('')
   return (
-    <div style={{ width: size, height: size, borderRadius: '50%', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: size * 0.28, fontWeight: 700, flexShrink: 0 }}>
-      {initials || '?'}
+    <div style={{
+      width: size, height: size, borderRadius: '50%', background: bg,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      color: '#fff', fontSize: size * 0.28, fontWeight: 700, flexShrink: 0
+    }}>
+      {initials(nome)}
     </div>
   )
 }
 
 export default function Organograma() {
+  const [colaboradores, setColaboradores] = useState<Colaborador[]>([])
+
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem(RH_STORAGE)
+      if (s) setColaboradores((JSON.parse(s) as Colaborador[]).filter(c => c.ativo))
+    } catch {}
+  }, [])
+
+  // Agrupar por departamento
+  const deptMap = new Map<string, Colaborador[]>()
+  for (const c of colaboradores) {
+    if (!deptMap.has(c.dept)) deptMap.set(c.dept, [])
+    deptMap.get(c.dept)!.push(c)
+  }
+  const depts = [...deptMap.entries()]
+
   return (
     <div className="dash-wrap">
 
@@ -101,7 +80,11 @@ export default function Organograma() {
       <div className="pg-toolbar">
         <div>
           <p className="pg-title">Organograma</p>
-          <p className="pg-sub">Estrutura hierárquica da empresa · {departamentos.reduce((a, d) => a + d.total, 0) + 1} colaboradores</p>
+          <p className="pg-sub">
+            {colaboradores.length > 0
+              ? `${colaboradores.length} colaborador${colaboradores.length !== 1 ? 'es' : ''} ativo${colaboradores.length !== 1 ? 's' : ''} · ${depts.length} departamento${depts.length !== 1 ? 's' : ''}`
+              : 'Nenhum colaborador cadastrado ainda'}
+          </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button type="button" className="btn btn-outline btn-sm">📤 Exportar PDF</button>
@@ -109,109 +92,88 @@ export default function Organograma() {
         </div>
       </div>
 
-      {/* Árvore hierárquica */}
-      <div style={{ overflowX: 'auto', paddingBottom: 20 }}>
-        <div style={{ minWidth: 900 }}>
+      {/* Estado vazio */}
+      {colaboradores.length === 0 && (
+        <div style={{
+          textAlign: 'center', padding: '80px 20px',
+          border: '2px dashed var(--border)', borderRadius: 12,
+          color: '#9ca3af',
+        }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🏢</div>
+          <p style={{ fontSize: 16, fontWeight: 600, color: '#374151', marginBottom: 8 }}>
+            Organograma vazio
+          </p>
+          <p style={{ fontSize: 13, marginBottom: 20 }}>
+            Admita colaboradores no módulo de RH para montar a estrutura da empresa automaticamente.
+          </p>
+          <Link href="/rh" className="btn btn-navy">+ Admitir colaborador</Link>
+        </div>
+      )}
 
-          {/* CEO */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 0 }}>
-            <div style={{ background: 'linear-gradient(135deg, #1F3763, #2a5298)', borderRadius: 12, padding: '16px 24px', minWidth: 260, textAlign: 'center', boxShadow: '0 4px 16px rgba(31,55,99,.25)', position: 'relative' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                <Avatar nome={ceo.nome} size={48} bg="rgba(255,255,255,.2)" />
-                <div>
-                  <p style={{ color: '#fff', fontWeight: 700, fontSize: 14, margin: 0 }}>{ceo.nome}</p>
-                  <p style={{ color: 'rgba(255,255,255,.8)', fontSize: 12, marginTop: 2 }}>{ceo.cargo}</p>
-                  <span style={{ display: 'inline-block', marginTop: 6, padding: '2px 10px', borderRadius: 8, background: 'rgba(98,151,75,.35)', color: '#b8e0a0', fontSize: 11, fontWeight: 600 }}>CEO · Diretoria</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Organograma dinâmico */}
+      {colaboradores.length > 0 && (
+        <div style={{ overflowX: 'auto', paddingBottom: 20 }}>
+          <div style={{ minWidth: Math.max(600, depts.length * 220) }}>
 
-          {/* Conector CEO → Departamentos */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ width: 2, height: 28, background: 'var(--border)' }} />
-          </div>
-          <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: 0 }}>
-            <div style={{ width: `${departamentos.length * 200 - 100}px`, height: 2, background: 'var(--border)', maxWidth: '90%' }} />
-          </div>
+            {/* Barra de departamentos */}
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+              {depts.map(([dept, membros]) => (
+                <div key={dept} style={{ minWidth: 200, maxWidth: 240, flexShrink: 0 }}>
+                  <div style={{ borderRadius: 10, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,.08)', border: '1px solid var(--border)' }}>
 
-          {/* Departamentos */}
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', alignItems: 'flex-start', flexWrap: 'nowrap', overflowX: 'auto' }}>
-            {departamentos.map((d) => (
-              <div key={d.nome} style={{ minWidth: 190, maxWidth: 210, flexShrink: 0 }}>
-
-                {/* Conector vertical */}
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 0 }}>
-                  <div style={{ width: 2, height: 24, background: 'var(--border)' }} />
-                </div>
-
-                {/* Card do departamento */}
-                <div style={{ borderRadius: 10, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,.08)', border: '1px solid var(--border)' }}>
-
-                  {/* Header colorido */}
-                  <div style={{ background: d.cor, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 18 }}>{d.icone}</span>
-                    <div>
-                      <p style={{ color: '#fff', fontWeight: 700, fontSize: 13, margin: 0 }}>{d.nome}</p>
-                      <p style={{ color: 'rgba(255,255,255,.75)', fontSize: 11, marginTop: 1 }}>{d.total} colaboradores</p>
-                    </div>
-                  </div>
-
-                  {/* Gerente */}
-                  <div style={{ background: '#fff', padding: '10px 14px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Avatar nome={d.gerente} size={28} bg={d.cor} />
-                    <div>
-                      <p style={{ fontSize: 12, fontWeight: 700, color: '#374151', margin: 0 }}>{d.gerente}</p>
-                      <p style={{ fontSize: 11, color: 'var(--gray)', marginTop: 1 }}>{d.cargo_gerente}</p>
-                    </div>
-                  </div>
-
-                  {/* Membros */}
-                  <div style={{ background: '#fff' }}>
-                    {d.membros.slice(1).map((m, i) => (
-                      <div key={i} style={{ padding: '8px 14px', borderBottom: i < d.membros.length - 2 ? '1px solid var(--border)' : 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
-                        {m.tipo ? (
-                          <>
-                            <Avatar nome={m.nome} size={22} bg={m.tipo === 'Estágio' ? '#62974B' : '#6b7280'} />
-                            <div style={{ minWidth: 0 }}>
-                              <p style={{ fontSize: 11, fontWeight: 600, color: '#374151', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.nome}</p>
-                              <p style={{ fontSize: 10, color: 'var(--gray)', marginTop: 1 }}>{m.cargo}</p>
-                            </div>
-                          </>
-                        ) : m.nome.startsWith('+') ? (
-                          <p style={{ fontSize: 11, color: 'var(--gray)', margin: 0, fontStyle: 'italic' }}>{m.nome}</p>
-                        ) : (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <div style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px dashed #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              <span style={{ fontSize: 10, color: '#ccc' }}>+</span>
-                            </div>
-                            <div>
-                              <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, fontStyle: 'italic' }}>{m.cargo}</p>
-                              <p style={{ fontSize: 10, color: '#c6ddd4' }}>Vaga em aberto</p>
-                            </div>
-                          </div>
-                        )}
+                    {/* Header colorido */}
+                    <div style={{ background: corDept(dept), padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 18 }}>{iconeDept(dept)}</span>
+                      <div>
+                        <p style={{ color: '#fff', fontWeight: 700, fontSize: 13, margin: 0 }}>{dept}</p>
+                        <p style={{ color: 'rgba(255,255,255,.75)', fontSize: 11, marginTop: 1 }}>
+                          {membros.length} colaborador{membros.length !== 1 ? 'es' : ''}
+                        </p>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Membros */}
+                    <div style={{ background: '#fff' }}>
+                      {membros.map((m, i) => (
+                        <div key={m.nome} style={{
+                          padding: '8px 14px',
+                          borderBottom: i < membros.length - 1 ? '1px solid var(--border)' : 'none',
+                          display: 'flex', alignItems: 'center', gap: 8,
+                        }}>
+                          <Avatar nome={m.nome} size={28} bg={corDept(dept)} />
+                          <div style={{ minWidth: 0 }}>
+                            <p style={{ fontSize: 12, fontWeight: 600, color: '#374151', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.nome}</p>
+                            <p style={{ fontSize: 10, color: 'var(--gray)', marginTop: 1 }}>
+                              {m.cargo}
+                              {m.status === 'Estágio' && (
+                                <span style={{ marginLeft: 4, background: '#dcfce7', color: '#059669', borderRadius: 4, padding: '1px 5px', fontSize: 9, fontWeight: 700 }}>ESTÁGIO</span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* Resumo */}
-          <div className="grid grid-cols-5 gap-2.5 mt-4">
-            {departamentos.map(d => (
-              <div key={d.nome} className="card" style={{ borderTop: `3px solid ${d.cor}`, textAlign: 'center' }}>
-                <p style={{ fontSize: 20 }}>{d.icone}</p>
-                <p className="card-label">{d.nome}</p>
-                <p className="card-val" style={{ fontSize: 22, color: d.cor }}>{d.total}</p>
-                <p className="card-hint">colaboradores</p>
+            {/* Resumo por departamento */}
+            {depts.length > 0 && (
+              <div className={`grid grid-cols-${Math.min(depts.length, 5)} gap-2.5 mt-4`}>
+                {depts.map(([dept, membros]) => (
+                  <div key={dept} className="card" style={{ borderTop: `3px solid ${corDept(dept)}`, textAlign: 'center' }}>
+                    <p style={{ fontSize: 20 }}>{iconeDept(dept)}</p>
+                    <p className="card-label">{dept}</p>
+                    <p className="card-val" style={{ fontSize: 22, color: corDept(dept) }}>{membros.length}</p>
+                    <p className="card-hint">colaborador{membros.length !== 1 ? 'es' : ''}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

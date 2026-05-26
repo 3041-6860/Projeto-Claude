@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 /* ─── Tipos ──────────────────────────────────────────────── */
@@ -8,9 +8,7 @@ interface Colaborador {
   adm: string; status: string; ferias: boolean; ativo: boolean
 }
 
-/* ─── Dados iniciais ─────────────────────────────────────── */
-// RH começa vazio — colaboradores serão admitidos pela equipe em uso real
-const inicial: Colaborador[] = []
+const RH_STORAGE = 'inove-rh-colaboradores-v1'
 
 const depts    = ['Jurídico', 'Comercial', 'Financeiro', 'TI', 'Administrativo']
 const perfis   = ['Administrador', 'Operacional', 'Jurídico', 'Comercial', 'Financeiro']
@@ -44,7 +42,7 @@ const selectStyle = { ...inputStyle, background: '#fff', cursor: 'pointer' }
 
 /* ─── Página ─────────────────────────────────────────────── */
 export default function RH() {
-  const [lista, setLista]               = useState<Colaborador[]>(inicial)
+  const [lista, setLista]               = useState<Colaborador[]>([])
   const [filtDept, setFiltDept]         = useState('')
   const [filtStatus, setFiltStatus]     = useState('')
   const [busca, setBusca]               = useState('')
@@ -73,6 +71,18 @@ export default function RH() {
   const [dObs, setDObs]                 = useState('')
   const [dChecklist, setDChecklist]     = useState<string[]>([])
 
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem(RH_STORAGE)
+      if (s) setLista(JSON.parse(s))
+    } catch {}
+  }, [])
+
+  function salvar(data: Colaborador[]) {
+    setLista(data)
+    try { localStorage.setItem(RH_STORAGE, JSON.stringify(data)) } catch {}
+  }
+
   const ativos = lista.filter(c => c.ativo)
   const filtrados = ativos.filter(c =>
     (!filtDept   || c.dept === filtDept) &&
@@ -83,14 +93,14 @@ export default function RH() {
   function admitir() {
     if (!admNome || !admCargo || !admDept || !admDataAdm) return
     const novo: Colaborador = { nome: admNome, cargo: admCargo, dept: admDept, adm: admDataAdm, status: admContrato === 'Estágio' ? 'Estágio' : 'Ativo', ferias: false, ativo: true }
-    setLista(prev => [...prev, novo])
+    salvar([...lista, novo])
     setModalAdm(false)
     setAdmNome(''); setAdmCargo(''); setAdmDept(''); setAdmDataAdm(''); setAdmEmail(''); setAdmCPF(''); setAdmNasc(''); setAdmSalario(''); setAdmPerfil(''); setAdmBeneficios([])
   }
 
   function dispensar() {
     if (!modalDeslig || !dMotivo || !dData) return
-    setLista(prev => prev.map(c => c.nome === modalDeslig.nome ? { ...c, ativo: false, status: 'Desligado' } : c))
+    salvar(lista.map(c => c.nome === modalDeslig.nome ? { ...c, ativo: false, status: 'Desligado' } : c))
     setModalDeslig(null)
     setDMotivo(''); setDData(''); setDObs(''); setDChecklist([])
   }
