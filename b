@@ -6,6 +6,7 @@ rm -rf /var/www/inove-prime/.next >> $LOG 2>&1
 rm -f /var/www/package-lock.json >> $LOG 2>&1
 cp -rf /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/app/. /var/www/inove-prime/app/ >> $LOG 2>&1
 cp -rf /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/components/. /var/www/inove-prime/components/ >> $LOG 2>&1
+cp -rf /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/public/. /var/www/inove-prime/public/ >> $LOG 2>&1
 cd /var/www/inove-prime >> $LOG 2>&1
 npm run build >> $LOG 2>&1
 pm2 restart inove-prime >> $LOG 2>&1
