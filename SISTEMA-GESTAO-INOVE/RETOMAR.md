@@ -1,5 +1,5 @@
 # 📋 Retomada — Inove Prime
-**Atualizado em:** 26/05/2026  
+**Atualizado em:** 26/05/2026 — noite  
 **Sistema:** https://sistema.gcj.adv.br  
 **Repositório:** https://github.com/3041-6860/Projeto-Claude  
 
@@ -7,28 +7,17 @@
 
 ## 🚨 ATENÇÃO — Como fazer deploy
 
-### ✅ Deploy automático (GitHub Actions)
-Basta fazer `push` para o GitHub — o sistema atualiza sozinho em ~3 min.
-
-```
-git add -A && git commit -m "msg" && git push
-```
-
-O GitHub Actions conecta via SSH no VPS (170.187.131.141) e roda `bash b`.
-
-### 🔧 Deploy manual (fallback — se o automático falhar)
-No terminal do cPanel VPS ou SSH:
+### ✅ Deploy manual (método que funciona agora)
+No terminal SSH do servidor:
 
 ```bash
 cd /root/inove-deploy
 git pull origin main
 bash b
-cat /tmp/deploy.log
+cat /tmp/deploy.log   # aguardar PRONTO (~3 min)
 ```
 
-Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
-
-> ⚠️ Se aparecer erro "local changes would be overwritten": `git checkout b && git pull origin main && bash b`
+> ⚠️ GitHub Actions está configurado para o IP errado (`170.187.131.141`). O servidor real é `129.121.39.150`. Usar deploy manual por enquanto.
 
 ---
 
@@ -37,9 +26,10 @@ Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
 | | |
 |--|--|
 | **Site** | https://sistema.gcj.adv.br |
-| **IP SSH** | 170.187.131.141 |
+| **IP SSH** | 129.121.39.150 |
+| **Porta SSH** | **22022** (não é 22!) |
 | **Usuário SSH** | root |
-| **Senha SSH** | Gcj@admim2026 |
+| **Senha SSH** | Gcj2026admin! |
 | **Painel Hostgator** | https://www.hostgator.com.br → login → Meus Produtos → VPS |
 | **App dir** | /var/www/inove-prime |
 | **Repo deploy** | /root/inove-deploy |
@@ -54,31 +44,36 @@ Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
 
 | Usuário | Senha | Perfil |
 |---------|-------|--------|
-| `admin` ou `admin@gcj.adv.br` | `Inove2026!` | Administrador |
-| `sandra` | `sandra1234` | RH |
-| `rodrigo` | `rodrigo1234` | Gestor Comercial |
+| `admin` | `1234` | Administrador |
+| `admin@gcj.adv.br` | `Inove2026!` | Administrador GCJ |
+| `sandra` | `Sandra2026!` | Sandra Otto (RH) |
+| `rodrigo` | `Rodrigo2026!` | Rodrigo Gonçalves (Comercial) |
 
-> Os 3 usuários reais: **Administrador**, **Sandra Otto (RH)**, **Rodrigo Gonçalves (Comercial)**
+> ⚠️ **ATENÇÃO:** `admin` + `Inove2026!` **NÃO funciona**. A senha do `admin` simples é `1234`.
 
 ---
 
-## ✅ O QUE FOI FEITO NESTA SESSÃO (26/05/2026 — tarde)
+## 🔴 TAREFA PRIORITÁRIA AMANHÃ
 
-### 🛠️ Infraestrutura
-- [x] **VPS recuperado** — terminal estava travado/congelado, reiniciado pelo painel Hostgator
-- [x] **Domínio `sistema.gcj.adv.br` corrigido** — nginx tinha `inoveprime.com.br` como server_name, corrigido com `sed`
-- [x] **HTTPS/SSL configurado** — Certbot/Let's Encrypt instalado e ativo para `sistema.gcj.adv.br`
-- [x] **GitHub Actions funcionando** — secret `VPS_PASS` atualizado com senha correta (`Gcj@admim2026`)
-- [x] **Script deploy `b` atualizado** — adicionado `cp -rf src/public/ → /var/www/inove-prime/public/`
+### Módulo Jurídico não aparece no menu lateral
 
-### 🎨 Visual
-- [x] **Logo login corrigida** — removido base64 embutido, agora referencia `/logo-color.png` direto
-- [x] `src/public/logo-color.png` e `logo-nav.png` adicionados ao projeto
+**Diagnóstico:** O código está correto, deployado e compilado no servidor. O problema é o **cookie de sessão antigo** — foi criado antes do sistema de roles estar ativo.
 
-### 🧹 Remoção de dados falsos (mock data)
-- [x] **Ponto Eletrônico** — removidos 9 funcionários falsos, agora lê `inove-ponto-v1` do localStorage
-- [x] **Configurações** — removidos 5 usuários falsos, substituídos pelos 3 reais; logs de acesso zerados
-- [x] **Organograma** — corrigida classe Tailwind dinâmica que quebrava em produção
+**Solução rápida (30 segundos):**
+1. Entrar em https://sistema.gcj.adv.br
+2. Clicar em **Meu Perfil → Sair** (logout)
+3. Fazer login com `admin` / `1234`
+4. O módulo **Jurídico** deve aparecer na sidebar
+
+**Se ainda não aparecer:**
+- F12 → Application → Storage → **Clear site data**
+- Fazer login novamente
+
+**Verificar após o login:**
+- [ ] Seção "Jurídico" aparece no menu lateral
+- [ ] Olhinho (👁️) aparece no campo senha da tela de login
+- [ ] Clicar em "Jurídico" abre o dashboard do módulo
+- [ ] Submenus (Processos, Clientes, Prazos...) aparecem ao entrar na seção
 
 ---
 
@@ -87,11 +82,11 @@ Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
 ### 🏠 Dashboard
 - Banner dinâmico (Bom dia/Boa tarde/Boa noite), data por extenso, nome do usuário
 - 12 KPIs em 3 linhas (aguardando dados reais)
-- Acesso Rápido com 6 módulos, Comunicados
+- Acesso Rápido com 6 módulos, Comunicados / Feed da Equipe
 
 ### ⏰ Barra Superior (TopNav)
 - Relógio ao vivo (HH:MM, atualiza a cada segundo)
-- Ponto virtual no dropdown do avatar (Entrada/Almoço/Retorno/Saída com hora automática)
+- Ponto virtual no dropdown do avatar
 - Controle de permissão: gestor autoriza registros pendentes
 - Foto de perfil no avatar
 
@@ -99,7 +94,7 @@ Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
 - Upload de foto (localStorage), campos editáveis, Cartão Ponto (últimos 7 dias)
 
 ### 👥 CRM / Leads (`/crm/leads`)
-- Kanban Bitrix24, fases dinâmicas, painel lateral com timeline, filtros
+- Kanban estilo Bitrix24, fases dinâmicas, painel lateral com timeline, filtros
 
 ### 💼 Negócios / Pipelines (`/negocios`)
 - 3 pipelines: GCJ Jurídico, IVI Negócios, Grupo Inove — fases dinâmicas
@@ -112,27 +107,27 @@ Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
 
 ### 👥 RH (`/rh`)
 - Colaboradores, Onboarding, Ponto Eletrônico, Férias, Organograma, Relatórios
-- **Todos sem dados falsos** — leem do localStorage
+- Todos sem dados falsos — leem do localStorage
 
 ### 📣 Marketing (`/marketing`)
 - Kanban de campanhas
 
 ### ⚙️ Configurações (`/configuracoes`)
 - 7 abas, matriz de permissões (14 módulos × 5 perfis)
-- **Usuários reais** (sem fake data), logs de acesso zerados
+- Usuários reais (sem fake data)
 
 ### 🔐 Auth
-- Login com `logo-color.png`, session cookie com `role`, controle de acesso por perfil
+- Login com `logo-color.png`
+- Olhinho show/hide senha ← **adicionado hoje**
+- Session cookie com `role`, controle de acesso por perfil
 
-### ⚖️ DataJuri — Módulo GCJ Jurídico (`/datajuri`) ← **NOVO (26/05/2026 tarde)**
-
-- Integrado como módulo protegido dentro do Inove Prime
-- Acesso restrito: apenas `admin` e `juridico` (guard no layout)
-- **20 páginas** integradas: Dashboard, Processos (CRUD + detalhe + novo), Clientes, Prazos, Agenda, Tarefas, Financeiro/Honorários, Documentos, Contratos, Serviços, Relatórios, Baixa, Admin (escritório/equipe/config)
-- **API DataJud** (`/api/datajud`) — consulta ao CNJ por número de processo
-- **Sub-navegação** na Sidebar com seção "GCJ Jurídico" e sub-itens expansíveis
-- **Matrix de permissões** em Configurações: Administrador=full, Jurídico=full, demais=none
-- localStorage keys DataJuri: `datajuri_processos_lista`, `datajuri_clientes_lista`, etc.
+### ⚖️ Jurídico (`/datajuri`) — módulo GCJ Jurídico
+- 21 páginas: Dashboard, Processos (CRUD + detalhe + novo), Clientes, Prazos,
+  Agenda, Tarefas, Financeiro/Honorários, Documentos, Contratos, Serviços,
+  Relatórios, Baixa, Admin (escritório/equipe/config)
+- API DataJud (`/api/datajud`) — consulta ao CNJ por número de processo
+- Sub-navegação na Sidebar com seção "Jurídico" e sub-itens expansíveis
+- Acesso restrito: apenas `admin` e `juridico`
 
 ---
 
@@ -161,14 +156,10 @@ Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
 ### 💬 Mensagens (`/mensagens`)
 - [ ] Chat em tempo real, grupos por departamento
 
-### ⚖️ Processos Jurídicos (`/processos`)
-- [ ] Cadastro completo, controle de prazos e alertas
-
-### 🔐 Infraestrutura — Futuro
+### 🔧 Infraestrutura — Corrigir
+- [ ] **GitHub Actions** — atualizar secret `VPS_HOST` para `129.121.39.150` e `VPS_PORT` para `22022`
 - [ ] **Migrar localStorage → Supabase** (dados persistem entre dispositivos)
 - [ ] Notificações push / e-mail
-- [ ] Logs de auditoria reais
-- [ ] Backup automático
 
 ---
 
@@ -176,56 +167,36 @@ Aguardar `PRONTO` no log (~3 min). Depois: **Ctrl+Shift+R** no browser.
 
 ```
 y:/PROJETO CODEX/Projeto-Claude/
-├── SISTEMA-GESTAO-INOVE/src/     ← código principal (dev)
+├── SISTEMA-GESTAO-INOVE/src/     ← código principal (EDITAR AQUI)
 │   ├── app/
-│   │   ├── (app)/                ← rotas protegidas
+│   │   ├── (app)/
 │   │   │   ├── dashboard/
 │   │   │   ├── crm/leads/
 │   │   │   ├── negocios/
 │   │   │   ├── tarefas/
 │   │   │   ├── financeiro/
 │   │   │   ├── rh/
-│   │   │   │   ├── ponto/        ← localStorage: inove-ponto-v1
-│   │   │   │   ├── ferias/
-│   │   │   │   ├── organograma/
-│   │   │   │   └── relatorios/
 │   │   │   ├── marketing/
 │   │   │   ├── configuracoes/
-│   │   │   └── perfil/
+│   │   │   ├── perfil/
+│   │   │   └── datajuri/         ← módulo Jurídico
+│   │   ├── api/datajud/          ← consulta CNJ
 │   │   ├── login/
-│   │   └── actions/auth.ts
+│   │   └── actions/auth.ts       ← logins e senhas
 │   ├── components/               ← TopNav, Sidebar, etc.
+│   ├── lib/datajuri/             ← storage do módulo Jurídico
 │   └── public/                   ← logo-color.png, logo-nav.png
-├── 0 - INOVE-PRIME/inove-prime/  ← cópia idêntica para o VPS
-│   ├── app/                      ← espelho de src/app/
-│   ├── components/
-│   └── public/
 └── b                             ← script de deploy no VPS
 ```
-
-### localStorage keys usadas:
-| Chave | Módulo |
-|-------|--------|
-| `inove-ponto-v1` | Ponto Eletrônico |
-| `inove-rh-colaboradores-v1` | RH Colaboradores |
-| `inove-crm-leads-v2` | CRM Leads |
-| `inove-negocios-v1` | Negócios/Pipelines |
-| `inove-tarefas-v2` | Tarefas |
-| `inove-financeiro-v1` | Financeiro |
-| `inove-ferias-v1` | Férias & Ausências |
-| `inove-comunicados-v1` | Comunicados |
-| `inove-perfil-{email}` | Meu Perfil (por usuário) |
-| `inove-ponto-pendente-v1` | Ponto pendente TopNav |
 
 ---
 
 ## 🔄 Como retomar na próxima sessão
 
-1. **Verificar se o deploy automático está ativo** → Abrir GitHub → Actions → ver se há ✅ verde no último commit
-2. **Testar o sistema** → https://sistema.gcj.adv.br → login `admin` / `Inove2026!`
-3. **Se algo não carregou** → SSH no VPS → `cd /root/inove-deploy && git pull origin main && bash b`
-4. **Escolher próximo módulo** (sugestão: Financeiro avançado)
+1. **Verificar o módulo Jurídico** → logout + login com `admin` / `1234`
+2. **Se precisar deployar** → SSH `root@129.121.39.150 -p 22022` → `cd /root/inove-deploy && git pull origin main && bash b`
+3. **Escolher próximo módulo** (sugestão: Financeiro avançado)
 
 ---
 
-*Atualizado pela sessão de desenvolvimento — 26/05/2026*
+*Atualizado pela sessão de desenvolvimento — 26/05/2026 noite*
