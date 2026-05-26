@@ -66,13 +66,21 @@ const sections = [
   },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  role?: string;
+}
+
+export default function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
+  const canSeeJuridico = role === 'admin' || role === 'juridico';
 
   return (
     <aside className="app-sidebar flex-shrink-0 flex flex-col h-full overflow-y-auto">
       <nav className="flex-1 py-2">
-        {sections.map((section, si) => (
+        {sections.map((section, si) => {
+          // Esconde seção Jurídico para usuários sem permissão
+          if (section.label === "Jurídico" && !canSeeJuridico) return null;
+          return (
           <div key={section.label}>
             {si > 0 && <div className="sb-sep" />}
             <p className="sb-label">{section.label}</p>
@@ -93,7 +101,8 @@ export default function Sidebar() {
               );
             })}
           </div>
-        ))}
+          );
+        })}
       </nav>
     </aside>
   );
