@@ -10,6 +10,7 @@ cp -rf /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/public/. /var/www/inove-prime
 mkdir -p /var/www/inove-prime/lib >> $LOG 2>&1
 cp -rf /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/lib/. /var/www/inove-prime/lib/ >> $LOG 2>&1
 cp -f /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/middleware.ts /var/www/inove-prime/middleware.ts >> $LOG 2>&1
+cp -f /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/next.config.ts /var/www/inove-prime/next.config.ts >> $LOG 2>&1
 cd /var/www/inove-prime >> $LOG 2>&1
 npm run build >> $LOG 2>&1
 pm2 restart inove-prime >> $LOG 2>&1
