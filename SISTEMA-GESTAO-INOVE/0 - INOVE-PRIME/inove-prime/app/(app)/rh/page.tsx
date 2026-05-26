@@ -9,16 +9,8 @@ interface Colaborador {
 }
 
 /* ─── Dados iniciais ─────────────────────────────────────── */
-const inicial: Colaborador[] = [
-  { nome: 'Guilherme C. Junqueira', cargo: 'Advogado Sênior',    dept: 'Jurídico',   adm: '01/03/2020', status: 'Ativo',   ferias: false, ativo: true },
-  { nome: 'Fernanda Oliveira',      cargo: 'Advogada Plena',      dept: 'Jurídico',   adm: '15/08/2021', status: 'Ativo',   ferias: false, ativo: true },
-  { nome: 'Ana Paula Souza',        cargo: 'Advogada Associada',  dept: 'Jurídico',   adm: '02/01/2023', status: 'Ativo',   ferias: true,  ativo: true },
-  { nome: 'Carlos Eduardo Lima',    cargo: 'Gerente Comercial',   dept: 'Comercial',  adm: '10/06/2019', status: 'Ativo',   ferias: false, ativo: true },
-  { nome: 'Mariana Santos',         cargo: 'Analista Financeira', dept: 'Financeiro', adm: '20/11/2022', status: 'Ativo',   ferias: true,  ativo: true },
-  { nome: 'Roberto Carvalho',       cargo: 'Técnico de TI',       dept: 'TI',         adm: '05/04/2023', status: 'Ativo',   ferias: false, ativo: true },
-  { nome: 'Patrícia Nunes',         cargo: 'Assistente Jurídico', dept: 'Jurídico',   adm: '11/09/2024', status: 'Ativo',   ferias: false, ativo: true },
-  { nome: 'André Martins',          cargo: 'Estagiário',          dept: 'Jurídico',   adm: '01/02/2026', status: 'Estágio', ferias: false, ativo: true },
-]
+// RH começa vazio — colaboradores serão admitidos pela equipe em uso real
+const inicial: Colaborador[] = []
 
 const depts    = ['Jurídico', 'Comercial', 'Financeiro', 'TI', 'Administrativo']
 const perfis   = ['Administrador', 'Operacional', 'Jurídico', 'Comercial', 'Financeiro']
@@ -117,7 +109,7 @@ export default function RH() {
       <div className="pg-toolbar">
         <div>
           <p className="pg-title">RH — Colaboradores</p>
-          <p className="pg-sub">{ativos.length} colaboradores ativos · 3 férias pendentes de aprovação</p>
+          <p className="pg-sub">{ativos.length} colaboradores ativos</p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <Link href="/rh/ponto"        className="btn btn-outline btn-sm">🕐 Ponto</Link>
@@ -132,8 +124,8 @@ export default function RH() {
         {[
           { label: 'Total',      val: String(ativos.length), hint: 'Colaboradores ativos',    valClass: 'val-navy'  },
           { label: 'Jurídico',   val: String(ativos.filter(c => c.dept === 'Jurídico').length), hint: 'Advogados e estagiários', valClass: 'val-navy' },
-          { label: 'Férias',     val: '3',   hint: 'Pendentes de aprovação',  valClass: 'val-green' },
-          { label: 'Folha/mês', val: '52K', hint: 'Total bruto mai/26',      valClass: 'val-gray'  },
+          { label: 'Férias',     val: '—',   hint: 'Pendentes de aprovação',  valClass: 'val-gray' },
+          { label: 'Folha/mês', val: '—',   hint: 'Cadastre colaboradores',   valClass: 'val-gray'  },
         ].map((c) => (
           <div key={c.label} className="card">
             <p className="card-label">{c.label}</p>
@@ -141,11 +133,6 @@ export default function RH() {
             <p className="card-hint">{c.hint}</p>
           </div>
         ))}
-      </div>
-
-      <div className="alert alert-orange mb-3">
-        <span>⚠️</span>
-        <span>3 solicitações de férias aguardam aprovação da diretoria — Ana Paula Souza, Mariana Santos e Bruno Alves.</span>
       </div>
 
       {/* Filtros */}

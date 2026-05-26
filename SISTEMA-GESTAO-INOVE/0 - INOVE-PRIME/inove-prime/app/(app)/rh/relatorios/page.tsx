@@ -17,17 +17,12 @@ interface Task {
 
 /* ─── Referência de colaboradores ───────────────────────────── */
 const COLAB = [
-  'Guilherme C. Junqueira', 'Fernanda Oliveira', 'Ana Paula Souza',
-  'Bruno Alves', 'Carlos Eduardo Lima', 'Mariana Santos', 'Roberto Carvalho',
+  'Administrador', 'Sandra Otto', 'Rodrigo Gonçalves',
 ]
 const EMP: Record<string, { cargo: string; dept: string; cor: string }> = {
-  'Guilherme C. Junqueira': { cargo: 'Sócio Principal / CEO',  dept: 'Diretoria',  cor: '#1F3763' },
-  'Fernanda Oliveira':      { cargo: 'Advogada Sênior',        dept: 'Jurídico',   cor: '#1F3763' },
-  'Ana Paula Souza':        { cargo: 'Advogada Associada',     dept: 'Jurídico',   cor: '#1F3763' },
-  'Bruno Alves':            { cargo: 'Advogado Associado',     dept: 'Jurídico',   cor: '#1F3763' },
-  'Carlos Eduardo Lima':    { cargo: 'Gerente Comercial',      dept: 'Comercial',  cor: '#e65100' },
-  'Mariana Santos':         { cargo: 'Analista Financeira',    dept: 'Financeiro', cor: '#0059b3' },
-  'Roberto Carvalho':       { cargo: 'Técnico de TI',          dept: 'TI',         cor: '#4a148c' },
+  'Administrador':     { cargo: 'Administrador',  dept: 'Diretoria',  cor: '#1e3a5f' },
+  'Sandra Otto':       { cargo: 'Administradora', dept: 'Diretoria',  cor: '#059669' },
+  'Rodrigo Gonçalves': { cargo: 'Administrador',  dept: 'Diretoria',  cor: '#7c3aed' },
 }
 
 /* ─── Constantes ─────────────────────────────────────────────── */

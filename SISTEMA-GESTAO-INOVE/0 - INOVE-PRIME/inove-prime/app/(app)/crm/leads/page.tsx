@@ -15,35 +15,8 @@ interface Lead {
 }
 
 /* ───── dados iniciais ───── */
-const INICIAL: Lead[] = [
-  { id:'1', nome:'Maria Aparecida Santos', empresa:'Confeitaria Doce Arte', email:'maria@docearte.com.br', fone:'(11) 98765-4321', status:'Novo', origem:'WhatsApp', dataCriacao:'20/05/26', valor:'8000', responsavel:'Ana Lima', descricao:'Interessada em assessoria jurídica para abertura de ME.', tags:['PF','Urgente'], cidade:'São Paulo', cargo:'Proprietária', atividades:[
-    {id:'a1',tipo:'nota',texto:'Primeira conversa pelo WhatsApp. Cliente tem urgência para formalizar.',data:'20/05/26 09:15',autor:'Ana Lima'},
-    {id:'a2',tipo:'ligacao',texto:'Ligação realizada. Agendada reunião para quarta.',data:'21/05/26 14:00',autor:'Ana Lima',concluida:true},
-  ]},
-  { id:'2', nome:'João Carlos Pereira', empresa:'Transportes JCP Ltda', email:'joao@jcptrans.com.br', fone:'(41) 99001-2233', status:'Qualificado', origem:'Indicação', dataCriacao:'19/05/26', valor:'55000', responsavel:'Carlos Souza', descricao:'Empresa de transporte com 12 funcionários. Precisa de gestão trabalhista.', tags:['PJ','Alto Valor'], cidade:'Curitiba', cargo:'Diretor', atividades:[
-    {id:'b1',tipo:'nota',texto:'Indicação do cliente Roberto Costa. Empresa sólida.',data:'19/05/26 10:00',autor:'Carlos Souza'},
-    {id:'b2',tipo:'email',texto:'Email enviado com apresentação dos serviços.',data:'20/05/26 08:30',autor:'Carlos Souza',concluida:true},
-    {id:'b3',tipo:'tarefa',texto:'Preparar proposta comercial completa',data:'22/05/26',autor:'Carlos Souza',concluida:false},
-  ]},
-  { id:'3', nome:'Fernanda Oliveira Lima', empresa:'Clínica Saúde & Vida', email:'fernanda@saudevida.med', fone:'(21) 97654-8800', status:'Proposta', origem:'Site', dataCriacao:'18/05/26', valor:'12000', responsavel:'Ana Lima', descricao:'Clínica médica buscando adequação a normas regulatórias.', tags:['PJ','Saúde'], cidade:'Rio de Janeiro', cargo:'Diretora Médica', atividades:[
-    {id:'c1',tipo:'email',texto:'Proposta enviada por email. Aguardando retorno.',data:'20/05/26 11:00',autor:'Ana Lima',concluida:true},
-  ]},
-  { id:'4', nome:'Roberto Almeida Costa', empresa:'Construtora Almeida SA', email:'roberto@almeida.eng.br', fone:'(31) 98881-5500', status:'Negociação', origem:'LinkedIn', dataCriacao:'17/05/26', valor:'85000', responsavel:'Carlos Souza', descricao:'Grande construtora. Contrato anual de consultoria jurídica.', tags:['PJ','Contrato Anual'], cidade:'Belo Horizonte', cargo:'CEO', atividades:[
-    {id:'d1',tipo:'ligacao',texto:'Reunião presencial realizada. Cliente muito interessado.',data:'18/05/26 15:00',autor:'Carlos Souza',concluida:true},
-    {id:'d2',tipo:'nota',texto:'Ajustar proposta: incluir cláusula de exclusividade.',data:'19/05/26 09:00',autor:'Carlos Souza'},
-    {id:'d3',tipo:'tarefa',texto:'Enviar contrato revisado',data:'23/05/26',autor:'Carlos Souza',concluida:false},
-  ]},
-  { id:'5', nome:'Camila Souza Ferreira', empresa:'Boutique Camila Moda', email:'camila@camilamoda.com', fone:'(85) 99123-7700', status:'Perdido', origem:'WhatsApp', dataCriacao:'15/05/26', valor:'22000', responsavel:'Ana Lima', descricao:'Optou por escritório local.', tags:['PJ'], cidade:'Fortaleza', cargo:'Sócia', atividades:[
-    {id:'e1',tipo:'nota',texto:'Cliente informou que contratou outro escritório.',data:'20/05/26 16:00',autor:'Ana Lima'},
-  ]},
-  { id:'6', nome:'André Luis Martins', empresa:'Agropecuária Martins', email:'andre@agromart.com.br', fone:'(67) 98765-1122', status:'Novo', origem:'Indicação', dataCriacao:'14/05/26', valor:'28000', responsavel:'Carlos Souza', descricao:'Fazendeiro com questões de regularização fundiária.', tags:['PF','Rural'], cidade:'Campo Grande', cargo:'Proprietário Rural', atividades:[]},
-  { id:'7', nome:'Patrícia Nunes Barbosa', empresa:'Escola Infantil Alegria', email:'patricia@alegria.edu.br', fone:'(62) 99887-3344', status:'Qualificado', origem:'Google', dataCriacao:'12/05/26', valor:'18000', responsavel:'Ana Lima', descricao:'Escola particular buscando adequação trabalhista e tributária.', tags:['PJ','Educação'], cidade:'Goiânia', cargo:'Diretora', atividades:[
-    {id:'f1',tipo:'email',texto:'Questionário de diagnóstico enviado.',data:'14/05/26 10:00',autor:'Ana Lima',concluida:true},
-  ]},
-  { id:'8', nome:'Carlos Eduardo Lima', empresa:'Rede Farmácias Saúde', email:'carlos@redesaude.com', fone:'(11) 97711-5500', status:'Ganho', origem:'LinkedIn', dataCriacao:'10/05/26', valor:'42000', responsavel:'Carlos Souza', descricao:'Contrato assinado. Parceria de longo prazo.', tags:['PJ','Recorrente'], cidade:'São Paulo', cargo:'Sócio-Diretor', atividades:[
-    {id:'g1',tipo:'nota',texto:'Contrato assinado! Início em 01/06.',data:'20/05/26 09:00',autor:'Carlos Souza'},
-  ]},
-]
+// CRM começa vazio — leads serão cadastrados pela equipe em uso real
+const INICIAL: Lead[] = []
 
 const COLUNAS_PADRAO = [
   {key:'Novo',       label:'Novo',       cor:'#3b82f6'},
@@ -57,7 +30,7 @@ const KEYS_PADRAO = new Set(COLUNAS_PADRAO.map(c=>c.key))
 const CORES_NOVAS = ['#06b6d4','#84cc16','#f97316','#ec4899','#a855f7','#14b8a6','#f43f5e','#0ea5e9']
 
 const ORIGENS = ['WhatsApp','Indicação','Site','LinkedIn','Google','Instagram','Outros']
-const RESPONSAVEIS = ['Ana Lima','Carlos Souza','Maria Santos','João Pereira']
+const RESPONSAVEIS = ['Administrador', 'Sandra Otto', 'Rodrigo Gonçalves']
 const TAGS_OPCOES = ['PF','PJ','Urgente','Alto Valor','Recorrente','Rural','Saúde','Educação']
 
 const origemCor: Record<string,string> = {
@@ -88,16 +61,16 @@ export default function CrmLeads() {
   const [editandoLead, setEditandoLead] = useState(false)
 
   // Formulário novo lead
-  const [form, setForm] = useState({ nome:'',empresa:'',email:'',fone:'',valor:'',origem:'WhatsApp',responsavel:'Ana Lima',status:'Novo',descricao:'',cidade:'',cargo:'',tags:[] as string[] })
+  const [form, setForm] = useState({ nome:'',empresa:'',email:'',fone:'',valor:'',origem:'WhatsApp',responsavel:'Administrador',status:'Novo',descricao:'',cidade:'',cargo:'',tags:[] as string[] })
 
   useEffect(()=>{
-    const s = localStorage.getItem('inove-crm-leads')
+    const s = localStorage.getItem('inove-crm-leads-v2')
     setLeads(s ? JSON.parse(s) : INICIAL)
     const c = localStorage.getItem('inove-crm-colunas')
     if(c) setColunas(JSON.parse(c))
   },[])
 
-  function save(data:Lead[]){ setLeads(data); localStorage.setItem('inove-crm-leads',JSON.stringify(data)) }
+  function save(data:Lead[]){ setLeads(data); localStorage.setItem('inove-crm-leads-v2',JSON.stringify(data)) }
   function saveColunas(data:typeof COLUNAS_PADRAO){ setColunas(data); localStorage.setItem('inove-crm-colunas',JSON.stringify(data)) }
 
   function confirmarFase(){

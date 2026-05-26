@@ -28,37 +28,10 @@ interface Saldo {
   alerta: boolean
 }
 
-/* ─── Mock — Solicitações ────────────────────────────────── */
-const solicitacoes: Solicitacao[] = [
-  { id: 1, nome: 'Ana Paula Souza',        dept: 'Jurídico',   cargo: 'Advogada Associada',  inicio: '20/05/2026', fim: '03/06/2026', dias: 15, solicitado: '05/05/2026', status: 'Aprovado',  obs: '' },
-  { id: 2, nome: 'Mariana Santos',         dept: 'Financeiro', cargo: 'Analista Financeira', inicio: '01/06/2026', fim: '14/06/2026', dias: 14, solicitado: '10/05/2026', status: 'Pendente',  obs: '' },
-  { id: 3, nome: 'Bruno Alves',            dept: 'Jurídico',   cargo: 'Advogado Associado',  inicio: '15/06/2026', fim: '28/06/2026', dias: 14, solicitado: '12/05/2026', status: 'Pendente',  obs: '' },
-  { id: 4, nome: 'Carlos Eduardo Lima',    dept: 'Comercial',  cargo: 'Gerente Comercial',   inicio: '01/07/2026', fim: '20/07/2026', dias: 20, solicitado: '15/05/2026', status: 'Pendente',  obs: '' },
-  { id: 5, nome: 'Roberto Carvalho',       dept: 'TI',         cargo: 'Técnico de TI',       inicio: '04/08/2026', fim: '17/08/2026', dias: 14, solicitado: '20/05/2026', status: 'Aprovado',  obs: '' },
-  { id: 6, nome: 'Patrícia Nunes',         dept: 'Jurídico',   cargo: 'Assistente Jurídico', inicio: '01/09/2026', fim: '07/09/2026', dias:  7, solicitado: '22/05/2026', status: 'Recusado',  obs: 'Período de alta demanda — reagendar para outubro' },
-  { id: 7, nome: 'Fernanda Oliveira',      dept: 'Jurídico',   cargo: 'Advogada Plena',      inicio: '15/09/2026', fim: '28/09/2026', dias: 14, solicitado: '23/05/2026', status: 'Pendente',  obs: '' },
-]
-
-/* ─── Mock — Saldos ──────────────────────────────────────── */
-const saldos: Saldo[] = [
-  { nome: 'Guilherme C. Junqueira', dept: 'Jurídico',   direito: 30, gozado: 10, saldo: 20, vencimento: '01/03/2027', alerta: false },
-  { nome: 'Fernanda Oliveira',      dept: 'Jurídico',   direito: 30, gozado: 15, saldo: 15, vencimento: '15/08/2026', alerta: true  },
-  { nome: 'Ana Paula Souza',        dept: 'Jurídico',   direito: 30, gozado: 15, saldo: 15, vencimento: '02/01/2027', alerta: false },
-  { nome: 'Carlos Eduardo Lima',    dept: 'Comercial',  direito: 30, gozado:  5, saldo: 25, vencimento: '10/06/2026', alerta: true  },
-  { nome: 'Mariana Santos',         dept: 'Financeiro', direito: 30, gozado: 20, saldo: 10, vencimento: '20/11/2026', alerta: false },
-  { nome: 'Roberto Carvalho',       dept: 'TI',         direito: 30, gozado: 14, saldo: 16, vencimento: '05/04/2027', alerta: false },
-  { nome: 'Patrícia Nunes',         dept: 'Jurídico',   direito: 30, gozado:  0, saldo: 30, vencimento: '11/09/2026', alerta: true  },
-  { nome: 'André Martins',          dept: 'Jurídico',   direito: 15, gozado:  0, saldo: 15, vencimento: '01/02/2027', alerta: false },
-]
-
-/* ─── Mock — Calendário ──────────────────────────────────── */
-const ferias_calendario = [
-  { nome: 'Ana Paula Souza',     inicio: 20, fim: 31, mes: 'Maio',  cor: '#e8edf5', borda: 'var(--navy)' },
-  { nome: 'Ana Paula Souza',     inicio:  1, fim:  3, mes: 'Junho', cor: '#e8edf5', borda: 'var(--navy)' },
-  { nome: 'Mariana Santos',      inicio:  1, fim: 14, mes: 'Junho', cor: '#eaf3e5', borda: 'var(--green)' },
-  { nome: 'Bruno Alves',         inicio: 15, fim: 28, mes: 'Junho', cor: '#fff3e0', borda: '#e65100' },
-  { nome: 'Carlos E. Lima',      inicio:  1, fim: 20, mes: 'Julho', cor: '#fce8e8', borda: '#c62828' },
-]
+/* ─── Dados iniciais — começam vazios, preenchidos pela equipe ── */
+const solicitacoes: Solicitacao[] = []
+const saldos: Saldo[] = []
+const ferias_calendario: { nome: string; inicio: number; fim: number; mes: string; cor: string; borda: string }[] = []
 
 /* ─── Helpers ────────────────────────────────────────────── */
 const statusBadge: Record<StatusSol, string> = {

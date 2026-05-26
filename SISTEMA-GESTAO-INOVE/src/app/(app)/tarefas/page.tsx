@@ -30,21 +30,11 @@ interface Task {
 
 /* ─── Dados de referência ────────────────────────────────────── */
 const COLAB = [
-  'Guilherme C. Junqueira', 'Fernanda Oliveira', 'Ana Paula Souza',
-  'Bruno Alves', 'Carlos Eduardo Lima', 'Mariana Santos', 'Roberto Carvalho',
+  'Administrador', 'Sandra Otto', 'Rodrigo Gonçalves',
 ]
-const LEADS = [
-  { id: 'l1', nome: 'Maria Silva',   empresa: 'Construtora ABC'  },
-  { id: 'l2', nome: 'João Pedro',    empresa: 'Tech Solutions'   },
-  { id: 'l3', nome: 'Ana Rodrigues', empresa: 'Farmácia Central' },
-  { id: 'l4', nome: 'Carlos Mendes', empresa: 'Indústria Forte'  },
-]
-const NEGOCIOS = [
-  { id: 'n1', nome: 'Assessoria Trabalhista — Construtora ABC', valor: 'R$ 8.500'  },
-  { id: 'n2', nome: 'Processo Cível — João Pedro',             valor: 'R$ 12.000' },
-  { id: 'n3', nome: 'Contrato Societário — Tech Solutions',    valor: 'R$ 5.200'  },
-  { id: 'n4', nome: 'Inventário — Carlos Mendes',              valor: 'R$ 18.000' },
-]
+// Leads e negócios são carregados do CRM em uso real
+const LEADS: { id: string; nome: string; empresa: string }[] = []
+const NEGOCIOS: { id: string; nome: string; valor: string }[] = []
 const TAGS = ['Jurídico', 'Financeiro', 'Urgente', 'Cliente', 'Interno', 'Marketing', 'RH', 'TI']
 const TAG_CLR: Record<string, string> = {
   Jurídico:   '#1F3763', Financeiro: '#0059b3', Urgente:    '#dc2626',

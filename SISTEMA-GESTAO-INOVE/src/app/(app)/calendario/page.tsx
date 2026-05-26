@@ -30,15 +30,10 @@ const DIAS   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 const MESES  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 const COLORS: Record<EventType, string> = { reuniao:'#1F3763', tarefa:'#62974B', prazo:'#c62828', audiencia:'#e65100', evento:'#6a1b9a' }
 const HOURS  = Array.from({ length: 13 }, (_, i) => i + 7)
-const KEY    = 'inove-calendario'
+const KEY    = 'inove-calendario-v2'
 
-const MOCK: CalEvent[] = [
-  { id:'1', titulo:'Reunião de Diretoria',      tipo:'reuniao',   data:'2026-05-22', horaInicio:'14:00', horaFim:'15:30', descricao:'Pauta: resultados Q1 e planejamento Q2', local:'Sala A',              participantes:'Sandra, Rodrigo',   allDay:false },
-  { id:'2', titulo:'Prazo — Renovação Licença', tipo:'prazo',     data:'2026-05-27', horaInicio:'18:00', horaFim:'18:00', descricao:'Vencimento da licença de software',        local:'',                   participantes:'',                  allDay:true  },
-  { id:'3', titulo:'Treinamento RH',            tipo:'evento',    data:'2026-05-29', horaInicio:'09:00', horaFim:'12:00', descricao:'Integração de novos colaboradores',         local:'Sala Treinamento',   participantes:'Equipe RH',         allDay:false },
-  { id:'4', titulo:'Entrega Rel. Financeiro',   tipo:'tarefa',    data:'2026-05-30', horaInicio:'17:00', horaFim:'17:00', descricao:'Fechamento mensal',                         local:'',                   participantes:'',                  allDay:false },
-  { id:'5', titulo:'Reunião com Marketing',     tipo:'reuniao',   data:'2026-06-03', horaInicio:'10:00', horaFim:'11:00', descricao:'Revisão das campanhas de junho',            local:'Online',             participantes:'Equipe Marketing',  allDay:false },
-]
+// Calendário começa vazio — eventos criados pela equipe em uso real
+const MOCK: CalEvent[] = []
 
 const EMPTY: Omit<CalEvent,'id'> = { titulo:'', tipo:'reuniao', data:'', horaInicio:'09:00', horaFim:'10:00', descricao:'', local:'', participantes:'', allDay:false }
 
