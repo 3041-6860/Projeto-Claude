@@ -81,6 +81,7 @@ const modulos = [
   { id: 'marketing',    label: 'Marketing',          icone: '📣', grupo: 'Módulos'      },
   { id: 'tarefas',      label: 'Tarefas',            icone: '✅', grupo: 'Módulos'      },
   { id: 'mensagens',    label: 'Mensagens',          icone: '💬', grupo: 'Comunicação'  },
+  { id: 'datajuri',     label: 'Jurídico',                icone: '⚖️', grupo: 'Jurídico'     },
   { id: 'configuracoes',label: 'Configurações',      icone: '⚙️', grupo: 'Sistema'      },
 ]
 
@@ -94,11 +95,11 @@ const niveisConfig: Record<Nivel, { label: string; emoji: string; bg: string; co
 }
 
 const permissoesDefault: Record<string, Record<string, Nivel>> = {
-  Administrador: { dashboard:'full', feed:'full', negocios:'full', crm:'full', calendario:'full', documentos:'full', financeiro:'full', rh:'full', rh_ponto:'full', rh_ferias:'full', marketing:'full', tarefas:'full', mensagens:'full', configuracoes:'full' },
-  Operacional:   { dashboard:'read', feed:'full', negocios:'edit', crm:'edit', calendario:'full', documentos:'full', financeiro:'full', rh:'read', rh_ponto:'read', rh_ferias:'read', marketing:'edit', tarefas:'full', mensagens:'full', configuracoes:'none' },
-  Jurídico:      { dashboard:'read', feed:'full', negocios:'edit', crm:'full', calendario:'full', documentos:'full', financeiro:'none', rh:'none', rh_ponto:'none', rh_ferias:'read', marketing:'none', tarefas:'full', mensagens:'full', configuracoes:'none' },
-  Comercial:     { dashboard:'read', feed:'full', negocios:'full', crm:'full', calendario:'read', documentos:'read', financeiro:'none', rh:'none', rh_ponto:'none', rh_ferias:'read', marketing:'full', tarefas:'edit', mensagens:'full', configuracoes:'none' },
-  Financeiro:    { dashboard:'read', feed:'read', negocios:'none', crm:'none', calendario:'read', documentos:'read', financeiro:'full', rh:'none', rh_ponto:'none', rh_ferias:'none', marketing:'none', tarefas:'read', mensagens:'full', configuracoes:'none' },
+  Administrador: { dashboard:'full', feed:'full', negocios:'full', crm:'full', calendario:'full', documentos:'full', financeiro:'full', rh:'full', rh_ponto:'full', rh_ferias:'full', marketing:'full', tarefas:'full', mensagens:'full', datajuri:'full', configuracoes:'full' },
+  Operacional:   { dashboard:'read', feed:'full', negocios:'edit', crm:'edit', calendario:'full', documentos:'full', financeiro:'full', rh:'read', rh_ponto:'read', rh_ferias:'read', marketing:'edit', tarefas:'full', mensagens:'full', datajuri:'none', configuracoes:'none' },
+  Jurídico:      { dashboard:'read', feed:'full', negocios:'edit', crm:'full', calendario:'full', documentos:'full', financeiro:'none', rh:'none', rh_ponto:'none', rh_ferias:'read', marketing:'none', tarefas:'full', mensagens:'full', datajuri:'full', configuracoes:'none' },
+  Comercial:     { dashboard:'read', feed:'full', negocios:'full', crm:'full', calendario:'read', documentos:'read', financeiro:'none', rh:'none', rh_ponto:'none', rh_ferias:'read', marketing:'full', tarefas:'edit', mensagens:'full', datajuri:'none', configuracoes:'none' },
+  Financeiro:    { dashboard:'read', feed:'read', negocios:'none', crm:'none', calendario:'read', documentos:'read', financeiro:'full', rh:'none', rh_ponto:'none', rh_ferias:'none', marketing:'none', tarefas:'read', mensagens:'full', datajuri:'none', configuracoes:'none' },
 }
 
 /* ─── Toggle helper ─────────────────────────────────────── */
@@ -625,7 +626,7 @@ export default function Configuracoes() {
 
             {/* Corpo com scroll */}
             <div style={{ overflowY: 'auto', flex: 1, padding: '4px 0' }}>
-              {['Principal', 'Módulos', 'Comunicação', 'Sistema'].map(grupo => {
+              {['Principal', 'Módulos', 'Jurídico', 'Comunicação', 'Sistema'].map(grupo => {
                 const modsGrupo = modulos.filter(m => m.grupo === grupo)
                 return (
                   <div key={grupo}>

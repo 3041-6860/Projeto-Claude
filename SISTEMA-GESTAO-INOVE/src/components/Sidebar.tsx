@@ -6,6 +6,7 @@ import {
   Home, Briefcase, Users, FileText,
   DollarSign, UserSquare2, Megaphone, MessageSquare,
   Settings, CheckSquare, Calendar, Rss, UserPlus, Clock, Palmtree, Network, BarChart2, User,
+  Scale, FolderOpen, Globe,
 } from "lucide-react";
 
 const sections = [
@@ -32,6 +33,22 @@ const sections = [
       { label: "↳ Relatórios", href: "/rh/relatorios",  icon: BarChart2, showOnlyUnder: "/rh" },
       { label: "Marketing",  href: "/marketing",   icon: Megaphone   },
       { label: "Tarefas",    href: "/tarefas",     icon: CheckSquare },
+    ],
+  },
+  {
+    label: "Jurídico",
+    items: [
+      { label: "Jurídico",            href: "/datajuri",                              icon: Scale       },
+      { label: "↳ Processos",         href: "/datajuri/processos",                    icon: FolderOpen,  showOnlyUnder: "/datajuri" },
+      { label: "↳ Clientes",          href: "/datajuri/clientes",                     icon: Users,       showOnlyUnder: "/datajuri" },
+      { label: "↳ Prazos",            href: "/datajuri/prazos",                       icon: Clock,       showOnlyUnder: "/datajuri" },
+      { label: "↳ Agenda",            href: "/datajuri/agenda",                       icon: Calendar,    showOnlyUnder: "/datajuri" },
+      { label: "↳ Tarefas",           href: "/datajuri/tarefas",                      icon: CheckSquare, showOnlyUnder: "/datajuri" },
+      { label: "↳ Financeiro",        href: "/datajuri/financeiro",                   icon: DollarSign,  showOnlyUnder: "/datajuri" },
+      { label: "↳ Documentos",        href: "/datajuri/documentos",                   icon: FileText,    showOnlyUnder: "/datajuri" },
+      { label: "↳ Contratos",         href: "/datajuri/contratos",                    icon: FileText,    showOnlyUnder: "/datajuri" },
+      { label: "↳ Relatórios",        href: "/datajuri/relatorios",                   icon: BarChart2,   showOnlyUnder: "/datajuri" },
+      { label: "↳ Consulta Internet", href: "/datajuri/processos/consulta-internet",  icon: Globe,       showOnlyUnder: "/datajuri" },
     ],
   },
   {
