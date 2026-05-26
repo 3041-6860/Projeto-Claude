@@ -30,7 +30,7 @@ interface Post {
   showComments: boolean
 }
 
-const STORAGE_KEY = 'inove-feed-posts'
+const STORAGE_KEY = 'inove-feed-posts-v2'
 
 // Feed começa vazio — posts serão criados pela equipe em uso real
 const MOCK_POSTS: Post[] = []
