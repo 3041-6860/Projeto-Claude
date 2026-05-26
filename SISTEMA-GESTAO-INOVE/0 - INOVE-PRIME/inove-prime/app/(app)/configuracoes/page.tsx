@@ -5,11 +5,9 @@ import { useState } from 'react'
 const tabs = ['Usuários', 'Perfis & Permissões', 'Integrações', 'Notificações', 'Aparência', 'Segurança', 'Sistema']
 
 const usuarios = [
-  { nome: 'Guilherme C. Junqueira', email: 'guilherme@gcj.adv.br',    perfil: 'Administrador', status: 'Ativo',    ultimo: '22/05/26 14:30' },
-  { nome: 'Operacional GCJ',        email: 'operacional@gcj.adv.br',   perfil: 'Operacional',   status: 'Ativo',    ultimo: '22/05/26 09:15' },
-  { nome: 'Fernanda Oliveira',      email: 'fernanda@gcj.adv.br',      perfil: 'Jurídico',      status: 'Ativo',    ultimo: '21/05/26 17:00' },
-  { nome: 'Ana Paula Souza',        email: 'ana.paula@gcj.adv.br',     perfil: 'Jurídico',      status: 'Ativo',    ultimo: '20/05/26 11:45' },
-  { nome: 'Carlos Eduardo Lima',    email: 'carlos.lima@inove.com.br', perfil: 'Comercial',     status: 'Ativo',    ultimo: '19/05/26 16:20' },
+  { nome: 'Administrador',       email: 'admin@gcj.adv.br',  perfil: 'Administrador', status: 'Ativo', ultimo: '—' },
+  { nome: 'Sandra Otto',         email: 'sandra',            perfil: 'Administrador', status: 'Ativo', ultimo: '—' },
+  { nome: 'Rodrigo Gonçalves',   email: 'rodrigo',           perfil: 'Administrador', status: 'Ativo', ultimo: '—' },
 ]
 
 const perfis = [
@@ -66,14 +64,7 @@ const notifGrupos = [
   },
 ]
 
-const logAcessos = [
-  { usuario: 'Guilherme C. Junqueira', acao: 'Login',         ip: '189.28.14.52',  data: '23/05/26 14:30', ok: true  },
-  { usuario: 'Operacional GCJ',        acao: 'Login',         ip: '189.28.14.53',  data: '23/05/26 09:15', ok: true  },
-  { usuario: 'Fernanda Oliveira',      acao: 'Login',         ip: '177.92.30.11',  data: '22/05/26 17:00', ok: true  },
-  { usuario: 'Desconhecido',           acao: 'Tentativa',     ip: '203.0.113.42',  data: '22/05/26 03:17', ok: false },
-  { usuario: 'Ana Paula Souza',        acao: 'Login',         ip: '189.28.15.80',  data: '21/05/26 11:45', ok: true  },
-  { usuario: 'Carlos Eduardo Lima',    acao: 'Logout',        ip: '189.28.14.52',  data: '20/05/26 18:00', ok: true  },
-]
+const logAcessos: { usuario: string; acao: string; ip: string; data: string; ok: boolean }[] = []
 
 /* ─── Módulos do sistema ─────────────────────────────────── */
 const modulos = [
