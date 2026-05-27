@@ -32,8 +32,9 @@ jobs:
           cp -rf SISTEMA-GESTAO-INOVE/src/components/. /tmp/build-project/components/
           mkdir -p /tmp/build-project/lib
           cp -rf SISTEMA-GESTAO-INOVE/src/lib/.        /tmp/build-project/lib/ 2>/dev/null || true
-          cp -f  SISTEMA-GESTAO-INOVE/src/middleware.ts  /tmp/build-project/middleware.ts
-          cp -f  SISTEMA-GESTAO-INOVE/src/next.config.ts /tmp/build-project/next.config.ts
+          cp -f  SISTEMA-GESTAO-INOVE/src/middleware.ts   /tmp/build-project/middleware.ts
+          cp -f  SISTEMA-GESTAO-INOVE/src/next.config.ts  /tmp/build-project/next.config.ts
+          cp -f  SISTEMA-GESTAO-INOVE/src/package.json    /tmp/build-project/package.json
 
           cd /tmp/build-project
 
