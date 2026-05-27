@@ -10,20 +10,88 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      # ── 1. BUILD no GitHub Actions (RAM ilimitada, sem OOM) ──
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'SISTEMA-GESTAO-INOVE/src/package.json'
+
+      - name: Instalar dependências e fazer build
+        working-directory: SISTEMA-GESTAO-INOVE/src
+        run: |
+          npm install
+          npm run build
+          echo "=== Build concluído ==="
+          ls -lh .next/standalone/ || echo "standalone dir não criado"
+
+      # ── 2. Empacotar o output standalone ──
+      - name: Empacotar artefato de deploy
+        working-directory: SISTEMA-GESTAO-INOVE/src
+        run: |
+          # standalone já inclui server.js + node_modules mínimos
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public .next/standalone/public
+          tar -czf /tmp/inove-deploy.tar.gz -C .next/standalone .
+          echo "Tamanho do pacote: $(du -sh /tmp/inove-deploy.tar.gz | cut -f1)"
+
+      # ── 3. Enviar pacote para o VPS e reiniciar ──
+      - name: Deploy no VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 129.121.39.150
           username: root
           password: ${{ secrets.VPS_PASS }}
           port: 22022
-          command_timeout: 20m
+          command_timeout: 5m
           script: |
-            cd /root/inove-deploy
-            git pull origin main
-            bash b
+            mkdir -p /var/www/inove-prime
+            echo "=== Parando PM2 ==="
+            pm2 stop inove-prime 2>/dev/null || true
+
+      - name: Enviar pacote via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 129.121.39.150
+          username: root
+          password: ${{ secrets.VPS_PASS }}
+          port: 22022
+          source: /tmp/inove-deploy.tar.gz
+          target: /tmp/
+
+      - name: Extrair e reiniciar
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 129.121.39.150
+          username: root
+          password: ${{ secrets.VPS_PASS }}
+          port: 22022
+          command_timeout: 3m
+          script: |
+            echo "=== Extraindo build ==="
+            rm -rf /var/www/inove-prime-new
+            mkdir -p /var/www/inove-prime-new
+            tar -xzf /tmp/inove-deploy.tar.gz -C /var/www/inove-prime-new
+
+            echo "=== Trocando versão ==="
+            rm -rf /var/www/inove-prime-old
+            mv /var/www/inove-prime /var/www/inove-prime-old 2>/dev/null || true
+            mv /var/www/inove-prime-new /var/www/inove-prime
+
+            echo "=== Iniciando PM2 ==="
+            pm2 delete inove-prime 2>/dev/null || true
+            PORT=3001 pm2 start /var/www/inove-prime/server.js --name "inove-prime"
+            pm2 save
+
+            echo "=== Aguardando app subir ==="
+            sleep 10
+            curl -sfL http://localhost:3001 > /dev/null \
+              && echo "=== APP OK na porta 3001 ===" \
+              || { echo "=== ERRO: App não respondeu ==="; pm2 logs inove-prime --lines 30 --nostream; exit 1; }
+
+            echo "=== DEPLOY CONCLUÍDO ==="
