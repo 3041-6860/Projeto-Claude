@@ -104,23 +104,25 @@ jobs:
             echo "Conteudo extraido:"
             ls -la /var/www/inove-prime/
 
+            echo "=== Criando ecosystem.config.json ==="
+            echo '{"apps":[{"name":"inove-prime","script":"./server.js","cwd":"/var/www/inove-prime","env":{"PORT":3001,"NODE_ENV":"production","HOSTNAME":"0.0.0.0"}}]}' \
+              > /var/www/inove-prime/ecosystem.config.json
+
             echo "=== Reiniciando PM2 ==="
             pm2 delete inove-prime 2>/dev/null || true
-
-            # export garante que PORT chegue ao processo filho via pm2
-            export PORT=3001
-            pm2 start /var/www/inove-prime/server.js --name "inove-prime"
+            pm2 start /var/www/inove-prime/ecosystem.config.json
             pm2 save --force
 
             echo "=== Status PM2 ==="
             pm2 list
 
-            echo "=== Aguardando app subir ==="
-            sleep 12
+            echo "=== Aguardando app subir (15s) ==="
+            sleep 15
 
             echo "=== Portas em uso ==="
-            ss -tlnp | grep -E "3001|3000" || true
+            ss -tlnp | grep -E "3001|3000" || echo "(nenhuma porta aberta)"
 
+            echo "=== Testando health ==="
             curl -sfL http://localhost:3001 > /dev/null \
               && echo "=== APP OK ===" \
               || { echo "=== FALHA: logs PM2 ==="; pm2 logs inove-prime --lines 50 --nostream; exit 1; }
