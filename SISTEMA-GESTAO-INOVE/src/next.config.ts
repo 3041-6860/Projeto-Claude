@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Gera bundle standalone: server.js + node_modules mínimos embutidos.
+  // Dispensa npm/node_modules no servidor — basta "node server.js"
+  output: "standalone",
 };
 
 export default nextConfig;
