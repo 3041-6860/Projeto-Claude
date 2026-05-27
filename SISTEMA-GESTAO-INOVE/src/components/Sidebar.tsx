@@ -7,7 +7,7 @@ import {
   Home, Briefcase, Users, FileText,
   DollarSign, UserSquare2, Megaphone, MessageSquare,
   Settings, CheckSquare, Calendar, Rss, UserPlus, Clock, Palmtree, Network, BarChart2, User,
-  Scale, FolderOpen, Globe, ChevronDown, ChevronRight,
+  Scale, ChevronDown, ChevronRight,
 } from "lucide-react";
 
 interface Child  { label: string; href: string; icon: React.ElementType }
@@ -48,21 +48,8 @@ const sections: Section[] = [
     label: "Jurídico",
     roleOnly: ["admin", "juridico"],
     items: [
-      {
-        label: "Jurídico", href: "/datajuri", icon: Scale,
-        children: [
-          { label: "Processos",         href: "/datajuri/processos",                   icon: FolderOpen  },
-          { label: "Clientes",          href: "/datajuri/clientes",                    icon: Users       },
-          { label: "Prazos",            href: "/datajuri/prazos",                      icon: Clock       },
-          { label: "Agenda",            href: "/datajuri/agenda",                      icon: Calendar    },
-          { label: "Tarefas",           href: "/datajuri/tarefas",                     icon: CheckSquare },
-          { label: "Financeiro",        href: "/datajuri/financeiro",                  icon: DollarSign  },
-          { label: "Documentos",        href: "/datajuri/documentos",                  icon: FileText    },
-          { label: "Contratos",         href: "/datajuri/contratos",                   icon: FileText    },
-          { label: "Relatórios",        href: "/datajuri/relatorios",                  icon: BarChart2   },
-          { label: "Consulta Internet", href: "/datajuri/processos/consulta-internet", icon: Globe       },
-        ],
-      },
+      // Sem filhos — navegação interna feita pelo JuridicoTopNav
+      { label: "Jurídico", href: "/datajuri", icon: Scale },
     ],
   },
   {

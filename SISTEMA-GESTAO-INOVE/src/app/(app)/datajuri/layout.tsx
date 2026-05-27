@@ -1,6 +1,7 @@
 import React from 'react'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import JuridicoTopNav from '@/components/JuridicoTopNav'
 
 export default async function DataJuriLayout({ children }: { children: React.ReactNode }) {
   const store = await cookies()
@@ -14,10 +15,16 @@ export default async function DataJuriLayout({ children }: { children: React.Rea
     } catch {}
   }
 
-  // Apenas admin e juridico têm acesso
   if (role !== 'admin' && role !== 'juridico') {
     redirect('/dashboard?acesso=negado')
   }
 
-  return <>{children}</>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <JuridicoTopNav />
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {children}
+      </div>
+    </div>
+  )
 }
