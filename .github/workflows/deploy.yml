@@ -14,7 +14,7 @@ jobs:
         with:
           host: 129.121.39.150
           username: root
-          password: ${{ secrets.VPS_PASS }}
+          key: ${{ secrets.VPS_KEY }}
           port: 22022
           command_timeout: 10m
           script: |
