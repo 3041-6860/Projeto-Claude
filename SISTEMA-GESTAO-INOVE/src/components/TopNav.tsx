@@ -121,15 +121,16 @@ function useProfilePhoto(email: string) {
 }
 
 // ── Nav items ──────────────────────────────────────────────
-const navItems = [
-  { label: "Painel",        href: "/dashboard"    },
-  { label: "CRM / Leads",   href: "/crm/leads"    },
-  { label: "Negócios",      href: "/negocios"     },
-  { label: "Financeiro",    href: "/financeiro"   },
-  { label: "RH",            href: "/rh"           },
-  { label: "Marketing",     href: "/marketing"    },
-  { label: "Messenger",     href: "/mensagens"    },
-  { label: "Configurações", href: "/configuracoes"},
+const ALL_NAV_ITEMS = [
+  { label: "Painel",        href: "/dashboard",    roles: null                     },
+  { label: "CRM / Leads",   href: "/crm/leads",    roles: null                     },
+  { label: "Negócios",      href: "/negocios",     roles: null                     },
+  { label: "Financeiro",    href: "/financeiro",   roles: null                     },
+  { label: "RH",            href: "/rh",           roles: null                     },
+  { label: "Jurídico",      href: "/datajuri",     roles: ["admin","juridico"]     },
+  { label: "Marketing",     href: "/marketing",    roles: null                     },
+  { label: "Messenger",     href: "/mensagens",    roles: null                     },
+  { label: "Configurações", href: "/configuracoes",roles: null                     },
 ];
 
 const PONTO_STEPS = [
@@ -232,7 +233,7 @@ export default function TopNav({ user }: TopNavProps) {
 
       {/* Links centrais */}
       <div className="flex flex-1">
-        {navItems.map((item) => {
+        {ALL_NAV_ITEMS.filter(item => !item.roles || item.roles.includes(role)).map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href !== "/dashboard" && pathname.startsWith(item.href));
