@@ -20,39 +20,52 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'SISTEMA-GESTAO-INOVE/src/package.json'
+          cache-dependency-path: 'SISTEMA-GESTAO-INOVE/0 - INOVE-PRIME/inove-prime/package-lock.json'
 
-      - name: Instalar dependências e fazer build
-        working-directory: SISTEMA-GESTAO-INOVE/src
+      - name: Preparar projeto e fazer build
         run: |
-          npm install
+          # Copiar a base completa do Next.js (package.json, node_modules config, etc.)
+          cp -r "SISTEMA-GESTAO-INOVE/0 - INOVE-PRIME/inove-prime/." /tmp/build-project/
+
+          # Sobrepor com os arquivos de src/ (versão mais recente — igual ao script b no servidor)
+          cp -rf SISTEMA-GESTAO-INOVE/src/app/.        /tmp/build-project/app/
+          cp -rf SISTEMA-GESTAO-INOVE/src/components/. /tmp/build-project/components/
+          cp -rf SISTEMA-GESTAO-INOVE/src/public/.     /tmp/build-project/public/
+          mkdir -p /tmp/build-project/lib
+          cp -rf SISTEMA-GESTAO-INOVE/src/lib/.        /tmp/build-project/lib/
+          cp -f  SISTEMA-GESTAO-INOVE/src/middleware.ts  /tmp/build-project/middleware.ts
+          cp -f  SISTEMA-GESTAO-INOVE/src/next.config.ts /tmp/build-project/next.config.ts
+
+          # Instalar e buildar
+          cd /tmp/build-project
+          npm ci
           npm run build
           echo "=== Build concluído ==="
-          ls -lh .next/standalone/ || echo "standalone dir não criado"
+          ls -lh .next/standalone/ 2>/dev/null && echo "standalone OK" || echo "AVISO: sem standalone"
 
       # ── 2. Empacotar o output standalone ──
       - name: Empacotar artefato de deploy
-        working-directory: SISTEMA-GESTAO-INOVE/src
         run: |
-          # standalone já inclui server.js + node_modules mínimos
-          cp -r .next/static .next/standalone/.next/static
-          cp -r public .next/standalone/public
-          tar -czf /tmp/inove-deploy.tar.gz -C .next/standalone .
+          cd /tmp/build-project/.next/standalone
+          # Copiar static e public para dentro do standalone (necessário para next start standalone)
+          cp -r /tmp/build-project/.next/static .next/static
+          cp -r /tmp/build-project/public public
+          # Criar pacote
+          tar -czf /tmp/inove-deploy.tar.gz .
           echo "Tamanho do pacote: $(du -sh /tmp/inove-deploy.tar.gz | cut -f1)"
 
-      # ── 3. Enviar pacote para o VPS e reiniciar ──
-      - name: Deploy no VPS
+      # ── 3. Parar PM2, enviar pacote, reiniciar ──
+      - name: Parar PM2 no VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 129.121.39.150
           username: root
           password: ${{ secrets.VPS_PASS }}
           port: 22022
-          command_timeout: 5m
+          command_timeout: 1m
           script: |
-            mkdir -p /var/www/inove-prime
-            echo "=== Parando PM2 ==="
             pm2 stop inove-prime 2>/dev/null || true
+            mkdir -p /var/www/inove-prime
 
       - name: Enviar pacote via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -64,7 +77,7 @@ jobs:
           source: /tmp/inove-deploy.tar.gz
           target: /tmp/
 
-      - name: Extrair e reiniciar
+      - name: Extrair e reiniciar PM2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 129.121.39.150
@@ -78,20 +91,20 @@ jobs:
             mkdir -p /var/www/inove-prime-new
             tar -xzf /tmp/inove-deploy.tar.gz -C /var/www/inove-prime-new
 
-            echo "=== Trocando versão ==="
+            echo "=== Ativando nova versão ==="
             rm -rf /var/www/inove-prime-old
             mv /var/www/inove-prime /var/www/inove-prime-old 2>/dev/null || true
             mv /var/www/inove-prime-new /var/www/inove-prime
 
-            echo "=== Iniciando PM2 ==="
+            echo "=== Reiniciando PM2 ==="
             pm2 delete inove-prime 2>/dev/null || true
             PORT=3001 pm2 start /var/www/inove-prime/server.js --name "inove-prime"
             pm2 save
 
-            echo "=== Aguardando app subir ==="
+            echo "=== Verificando app ==="
             sleep 10
             curl -sfL http://localhost:3001 > /dev/null \
               && echo "=== APP OK na porta 3001 ===" \
-              || { echo "=== ERRO: App não respondeu ==="; pm2 logs inove-prime --lines 30 --nostream; exit 1; }
+              || { echo "=== ERRO: App nao respondeu ==="; pm2 logs inove-prime --lines 30 --nostream; exit 1; }
 
-            echo "=== DEPLOY CONCLUÍDO ==="
+            echo "=== DEPLOY CONCLUIDO ==="
