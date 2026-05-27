@@ -12,10 +12,10 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 170.187.131.141
+          host: 129.121.39.150
           username: root
           password: ${{ secrets.VPS_PASS }}
-          port: 22
+          port: 22022
           command_timeout: 10m
           script: |
             cd /root/inove-deploy
