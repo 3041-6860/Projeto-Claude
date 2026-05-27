@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
 
-# Garante que só 1 deploy roda por vez — cancela o anterior se houver novo push
 concurrency:
   group: deploy-production
   cancel-in-progress: true
@@ -15,46 +14,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ── 1. BUILD no GitHub Actions (RAM ilimitada, sem OOM) ──
+      # ── 1. BUILD no GitHub Actions (RAM ilimitada) ──
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: 'SISTEMA-GESTAO-INOVE/0 - INOVE-PRIME/inove-prime/package-lock.json'
 
       - name: Preparar projeto e fazer build
         run: |
-          # Copiar a base completa do Next.js (package.json, node_modules config, etc.)
+          # Criar dir de build
+          mkdir -p /tmp/build-project
+
+          # Copiar base completa do projeto (package.json, configs, etc.)
           cp -r "SISTEMA-GESTAO-INOVE/0 - INOVE-PRIME/inove-prime/." /tmp/build-project/
 
-          # Sobrepor com os arquivos de src/ (versão mais recente — igual ao script b no servidor)
+          # Sobrepor com src/ (versão mais recente de app/, components/, etc.)
           cp -rf SISTEMA-GESTAO-INOVE/src/app/.        /tmp/build-project/app/
           cp -rf SISTEMA-GESTAO-INOVE/src/components/. /tmp/build-project/components/
-          cp -rf SISTEMA-GESTAO-INOVE/src/public/.     /tmp/build-project/public/
           mkdir -p /tmp/build-project/lib
-          cp -rf SISTEMA-GESTAO-INOVE/src/lib/.        /tmp/build-project/lib/
+          cp -rf SISTEMA-GESTAO-INOVE/src/lib/.        /tmp/build-project/lib/ 2>/dev/null || true
           cp -f  SISTEMA-GESTAO-INOVE/src/middleware.ts  /tmp/build-project/middleware.ts
           cp -f  SISTEMA-GESTAO-INOVE/src/next.config.ts /tmp/build-project/next.config.ts
 
-          # Instalar e buildar
           cd /tmp/build-project
-          npm ci
+
+          # Usar npm install (não ci) — instala binários nativos corretos para Linux
+          npm install --legacy-peer-deps
+
+          # Build (TypeScript e ESLint já ignorados no next.config.ts)
           npm run build
           echo "=== Build concluído ==="
-          ls -lh .next/standalone/ 2>/dev/null && echo "standalone OK" || echo "AVISO: sem standalone"
 
-      # ── 2. Empacotar o output standalone ──
-      - name: Empacotar artefato de deploy
+      # ── 2. Empacotar apenas o necessário (.next + public) ──
+      - name: Empacotar artefato
         run: |
-          cd /tmp/build-project/.next/standalone
-          # Copiar static e public para dentro do standalone (necessário para next start standalone)
-          cp -r /tmp/build-project/.next/static .next/static
-          cp -r /tmp/build-project/public public
-          # Criar pacote
-          tar -czf /tmp/inove-deploy.tar.gz .
-          echo "Tamanho do pacote: $(du -sh /tmp/inove-deploy.tar.gz | cut -f1)"
+          cd /tmp/build-project
+          tar -czf /tmp/inove-deploy.tar.gz .next public
+          echo "Tamanho: $(du -sh /tmp/inove-deploy.tar.gz | cut -f1)"
 
-      # ── 3. Parar PM2, enviar pacote, reiniciar ──
+      # ── 3. Parar PM2 ──
       - name: Parar PM2 no VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -67,7 +64,8 @@ jobs:
             pm2 stop inove-prime 2>/dev/null || true
             mkdir -p /var/www/inove-prime
 
-      - name: Enviar pacote via SCP
+      # ── 4. Enviar tarball ──
+      - name: Enviar build via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: 129.121.39.150
@@ -77,6 +75,7 @@ jobs:
           source: /tmp/inove-deploy.tar.gz
           target: /tmp/
 
+      # ── 5. Extrair e reiniciar — node_modules fica no lugar ──
       - name: Extrair e reiniciar PM2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -86,25 +85,17 @@ jobs:
           port: 22022
           command_timeout: 3m
           script: |
-            echo "=== Extraindo build ==="
-            rm -rf /var/www/inove-prime-new
-            mkdir -p /var/www/inove-prime-new
-            tar -xzf /tmp/inove-deploy.tar.gz -C /var/www/inove-prime-new
-
-            echo "=== Ativando nova versão ==="
-            rm -rf /var/www/inove-prime-old
-            mv /var/www/inove-prime /var/www/inove-prime-old 2>/dev/null || true
-            mv /var/www/inove-prime-new /var/www/inove-prime
+            echo "=== Extraindo build em /var/www/inove-prime ==="
+            tar -xzf /tmp/inove-deploy.tar.gz -C /var/www/inove-prime
 
             echo "=== Reiniciando PM2 ==="
             pm2 delete inove-prime 2>/dev/null || true
-            PORT=3001 pm2 start /var/www/inove-prime/server.js --name "inove-prime"
+            pm2 start npm --name "inove-prime" --cwd /var/www/inove-prime -- start
             pm2 save
 
-            echo "=== Verificando app ==="
-            sleep 10
+            echo "=== Aguardando app subir ==="
+            sleep 12
             curl -sfL http://localhost:3001 > /dev/null \
-              && echo "=== APP OK na porta 3001 ===" \
-              || { echo "=== ERRO: App nao respondeu ==="; pm2 logs inove-prime --lines 30 --nostream; exit 1; }
-
+              && echo "=== APP OK ===" \
+              || { pm2 logs inove-prime --lines 30 --nostream; exit 1; }
             echo "=== DEPLOY CONCLUIDO ==="
