@@ -22,7 +22,7 @@ jobs:
           username: root
           password: ${{ secrets.VPS_PASS }}
           port: 22022
-          command_timeout: 10m
+          command_timeout: 20m
           script: |
             cd /root/inove-deploy
             git pull origin main
