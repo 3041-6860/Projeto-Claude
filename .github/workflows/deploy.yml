@@ -55,9 +55,9 @@ jobs:
           cp -r .next/static   .next/standalone/.next/static
           cp -r public         .next/standalone/public
 
-          # Empacotar apenas o standalone (já tem server.js + node_modules mínimos)
-          tar -czf /tmp/inove-deploy.tar.gz -C .next/standalone .
-          echo "Tamanho: $(du -sh /tmp/inove-deploy.tar.gz | cut -f1)"
+          # Empacotar standalone — salvar NO WORKSPACE (scp-action não lê /tmp)
+          tar -czf "$GITHUB_WORKSPACE/inove-deploy.tar.gz" -C .next/standalone .
+          echo "Tamanho: $(du -sh $GITHUB_WORKSPACE/inove-deploy.tar.gz | cut -f1)"
 
       # ── 3. Parar PM2 e limpar diretório ──
       - name: Parar PM2 no VPS
@@ -81,7 +81,7 @@ jobs:
           username: root
           password: ${{ secrets.VPS_PASS }}
           port: 22022
-          source: /tmp/inove-deploy.tar.gz
+          source: inove-deploy.tar.gz
           target: /tmp/
 
       # ── 5. Extrair e reiniciar — sem npm, sem node_modules extra ──
@@ -94,8 +94,12 @@ jobs:
           port: 22022
           command_timeout: 3m
           script: |
+            echo "=== Localizando tarball ==="
+            TARBALL=$(find /tmp -name "inove-deploy.tar.gz" 2>/dev/null | head -1)
+            echo "Tarball: $TARBALL"
+
             echo "=== Extraindo standalone em /var/www/inove-prime ==="
-            tar -xzf /tmp/inove-deploy.tar.gz -C /var/www/inove-prime
+            tar -xzf "$TARBALL" -C /var/www/inove-prime
 
             echo "=== Reiniciando PM2 ==="
             pm2 delete inove-prime 2>/dev/null || true
