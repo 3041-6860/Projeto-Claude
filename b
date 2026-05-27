@@ -13,5 +13,8 @@ cp -f /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/middleware.ts /var/www/inove-p
 cp -f /root/inove-deploy/SISTEMA-GESTAO-INOVE/src/next.config.ts /var/www/inove-prime/next.config.ts >> $LOG 2>&1
 cd /var/www/inove-prime >> $LOG 2>&1
 npm run build >> $LOG 2>&1
-pm2 restart inove-prime >> $LOG 2>&1
+# Recria o processo PM2 sempre com o caminho correto — nunca depende de config prévia
+pm2 delete inove-prime >> $LOG 2>&1; true
+pm2 start npm --name "inove-prime" --cwd /var/www/inove-prime -- start >> $LOG 2>&1
+pm2 save >> $LOG 2>&1
 echo "PRONTO" >> $LOG
