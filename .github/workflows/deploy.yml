@@ -14,20 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ── 1. BUILD no GitHub Actions (RAM ilimitada) ──
+      # ── 1. BUILD no GitHub Actions ──────────────────────────────────────────
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Preparar projeto e fazer build
         run: |
-          # Criar dir de build
           mkdir -p /tmp/build-project
 
-          # Copiar base completa do projeto (package.json, configs, etc.)
           cp -r "SISTEMA-GESTAO-INOVE/0 - INOVE-PRIME/inove-prime/." /tmp/build-project/
-
-          # Sobrepor com src/ (versão mais recente de app/, components/, etc.)
           cp -rf SISTEMA-GESTAO-INOVE/src/app/.        /tmp/build-project/app/
           cp -rf SISTEMA-GESTAO-INOVE/src/components/. /tmp/build-project/components/
           mkdir -p /tmp/build-project/lib
@@ -37,30 +33,21 @@ jobs:
           cp -f  SISTEMA-GESTAO-INOVE/src/package.json    /tmp/build-project/package.json
 
           cd /tmp/build-project
-
-          # Usar npm install (não ci) — instala binários nativos corretos para Linux
           npm install --legacy-peer-deps
-
-          # Build (TypeScript e ESLint já ignorados no next.config.ts)
-          # output: "standalone" gera .next/standalone/server.js autocontido
           npm run build
           echo "=== Build concluído ==="
 
-      # ── 2. Empacotar standalone (autocontido — sem npm no servidor) ──
+      # ── 2. Empacotar standalone ──────────────────────────────────────────────
       - name: Empacotar artefato standalone
         run: |
           cd /tmp/build-project
-
-          # Copiar arquivos estáticos e public DENTRO do standalone (obrigatório)
-          cp -r .next/static   .next/standalone/.next/static
-          cp -r public         .next/standalone/public
-
-          # Empacotar standalone — salvar NO WORKSPACE (scp-action não lê /tmp)
+          cp -r .next/static  .next/standalone/.next/static
+          cp -r public        .next/standalone/public
           tar -czf "$GITHUB_WORKSPACE/inove-deploy.tar.gz" -C .next/standalone .
           echo "Tamanho: $(du -sh $GITHUB_WORKSPACE/inove-deploy.tar.gz | cut -f1)"
 
-      # ── 3. Parar PM2 e limpar diretório ──
-      - name: Parar PM2 no VPS
+      # ── 3. Preparar diretório de destino (app ainda rodando) ────────────────
+      - name: Preparar diretório next no VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 129.121.39.150
@@ -69,11 +56,12 @@ jobs:
           port: 22022
           command_timeout: 1m
           script: |
-            pm2 stop inove-prime 2>/dev/null || true
-            rm -rf /var/www/inove-prime
-            mkdir -p /var/www/inove-prime
+            # Limpa apenas o staging — app corrente continua no ar
+            rm -rf /var/www/inove-prime-next
+            mkdir -p /var/www/inove-prime-next
+            echo "=== Staging pronto — app continua rodando ==="
 
-      # ── 4. Enviar tarball ──
+      # ── 4. Enviar tarball (app ainda rodando) ────────────────────────────────
       - name: Enviar build via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -84,8 +72,8 @@ jobs:
           source: inove-deploy.tar.gz
           target: /tmp/
 
-      # ── 5. Extrair e reiniciar — sem npm, sem node_modules extra ──
-      - name: Extrair e reiniciar PM2
+      # ── 5. Extrair + swap atômico + health check (downtime ~3s) ─────────────
+      - name: Extrair, swap e verificar
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 129.121.39.150
@@ -94,36 +82,53 @@ jobs:
           port: 22022
           command_timeout: 3m
           script: |
-            echo "=== Localizando tarball ==="
-            TARBALL=$(find /tmp -name "inove-deploy.tar.gz" 2>/dev/null | head -1)
-            echo "Tarball: $TARBALL"
-            ls -lh "$TARBALL" || { echo "ERRO: tarball nao encontrado!"; find /tmp -ls 2>/dev/null | head -20; exit 1; }
+            set -e
 
-            echo "=== Extraindo standalone em /var/www/inove-prime ==="
-            tar -xzf "$TARBALL" -C /var/www/inove-prime
-            echo "Conteudo extraido:"
-            ls -la /var/www/inove-prime/
-
-            echo "=== Criando ecosystem.config.json ==="
+            # ── Extrair no staging (app ainda no ar) ──
+            echo "=== Extraindo no staging ==="
+            TARBALL=$(find /tmp -name "inove-deploy.tar.gz" | head -1)
+            [ -f "$TARBALL" ] || { echo "ERRO: tarball não encontrado"; exit 1; }
+            tar -xzf "$TARBALL" -C /var/www/inove-prime-next
             echo '{"apps":[{"name":"inove-prime","script":"./server.js","cwd":"/var/www/inove-prime","env":{"PORT":3001,"NODE_ENV":"production","HOSTNAME":"0.0.0.0"}}]}' \
-              > /var/www/inove-prime/ecosystem.config.json
+              > /var/www/inove-prime-next/ecosystem.config.json
+            echo "Staging pronto: $(du -sh /var/www/inove-prime-next | cut -f1)"
 
-            echo "=== Reiniciando PM2 ==="
+            # ── SWAP ATÔMICO (~3 segundos de downtime) ──────────────────────
+            echo "=== Iniciando swap ==="
+            pm2 stop inove-prime 2>/dev/null || true
+
+            # Manter versão anterior como backup (rollback rápido)
+            rm -rf /var/www/inove-prime-old
+            [ -d /var/www/inove-prime ] && mv /var/www/inove-prime /var/www/inove-prime-old
+
+            # Ativar nova versão
+            mv /var/www/inove-prime-next /var/www/inove-prime
+
+            # Iniciar PM2 com nova versão
             pm2 delete inove-prime 2>/dev/null || true
             pm2 start /var/www/inove-prime/ecosystem.config.json
             pm2 save --force
+            echo "=== App reiniciado ==="
 
-            echo "=== Status PM2 ==="
+            # ── Health check ─────────────────────────────────────────────────
+            echo "=== Aguardando app subir ==="
+            sleep 10
+
+            if curl -sfL http://localhost:3001 > /dev/null 2>&1; then
+              echo "=== DEPLOY OK — app respondendo ==="
+              # Limpa backup após confirmação
+              rm -rf /var/www/inove-prime-old
+            else
+              echo "=== FALHA NO HEALTH CHECK — iniciando rollback ==="
+              pm2 stop inove-prime 2>/dev/null || true
+              rm -rf /var/www/inove-prime
+              mv /var/www/inove-prime-old /var/www/inove-prime
+              pm2 start /var/www/inove-prime/ecosystem.config.json
+              pm2 save --force
+              echo "=== ROLLBACK CONCLUÍDO — versão anterior restaurada ==="
+              pm2 logs inove-prime --lines 30 --nostream
+              exit 1
+            fi
+
+            echo "=== DEPLOY CONCLUÍDO COM SUCESSO ==="
             pm2 list
-
-            echo "=== Aguardando app subir (15s) ==="
-            sleep 15
-
-            echo "=== Portas em uso ==="
-            ss -tlnp | grep -E "3001|3000" || echo "(nenhuma porta aberta)"
-
-            echo "=== Testando health ==="
-            curl -sfL http://localhost:3001 > /dev/null \
-              && echo "=== APP OK ===" \
-              || { echo "=== FALHA: logs PM2 ==="; pm2 logs inove-prime --lines 50 --nostream; exit 1; }
-            echo "=== DEPLOY CONCLUIDO ==="
