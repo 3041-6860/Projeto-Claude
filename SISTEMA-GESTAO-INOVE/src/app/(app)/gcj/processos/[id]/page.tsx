@@ -128,7 +128,7 @@ export default function ProcessoDetalhePage() {
   function handleDelete() {
     if (!processo) return;
     removerProcesso(processo.id);
-    router.push("/datajuri/processos");
+    router.push("/gcj/processos");
   }
 
   if (carregando) {
@@ -145,7 +145,7 @@ export default function ProcessoDetalhePage() {
       <div className="flex flex-col items-center justify-center py-20" style={{ color: "var(--text-muted)" }}>
         <AlertCircle className="h-10 w-10 mb-3" />
         <p className="font-medium text-sm">Processo não encontrado</p>
-        <Link href="/datajuri/processos">
+        <Link href="/gcj/processos">
           <button type="button" className="mt-4 px-4 py-2 rounded-lg text-xs font-semibold" style={{ background: "var(--gcj-red)", color: "#fff" }}>
             Voltar para Processos
           </button>
@@ -163,7 +163,7 @@ export default function ProcessoDetalhePage() {
 
       {/* Cabeçalho */}
       <div className="flex items-center gap-3">
-        <Link href="/datajuri/processos">
+        <Link href="/gcj/processos">
           <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium"
             style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
             <ArrowLeft className="h-3.5 w-3.5" /> Voltar

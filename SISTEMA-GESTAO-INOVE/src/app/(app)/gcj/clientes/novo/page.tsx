@@ -6,7 +6,7 @@ export default function NovoClientePage() {
   return (
     <div style={{ maxWidth: 520, margin: "0 auto", padding: "40px 16px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
-        <Link href="/datajuri/clientes">
+        <Link href="/gcj/clientes">
           <button
             type="button"
             style={{
@@ -54,7 +54,7 @@ export default function NovoClientePage() {
           </p>
         </div>
 
-        <Link href="/datajuri/processos/novo">
+        <Link href="/gcj/processos/novo">
           <button
             type="button"
             style={{

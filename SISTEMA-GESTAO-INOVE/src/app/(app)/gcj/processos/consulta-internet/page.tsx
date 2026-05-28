@@ -158,7 +158,7 @@ function ModalAdicionar({ onAdd, onClose }: { onAdd: (cfg: Omit<ConfigConsulta, 
             <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" style={{ color: "#b45309" }} />
             <p className="text-[10px]" style={{ color: "#92400e" }}>
               O processo será consultado automaticamente via DataJud conforme o horário configurado em{" "}
-              <Link href="/datajuri/admin/configuracoes" className="underline font-medium">Configurações → Processos</Link>.
+              <Link href="/gcj/admin/configuracoes" className="underline font-medium">Configurações → Processos</Link>.
             </p>
           </div>
         </div>
@@ -391,7 +391,7 @@ export default function ConsultaInternetPage() {
               <Plus className="h-3.5 w-3.5" />
               Adicionar processo
             </button>
-            <Link href="/datajuri/admin/configuracoes">
+            <Link href="/gcj/admin/configuracoes">
               <button type="button"
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium"
                 style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
@@ -516,11 +516,11 @@ export default function ConsultaInternetPage() {
         <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
           As consultas são realizadas via <strong>API pública do DataJud (CNJ)</strong>.
           Para configurar o horário de atualização automática ou usar uma chave própria, acesse{" "}
-          <Link href="/datajuri/admin/configuracoes" className="underline" style={{ color: "var(--gcj-red)" }}>
+          <Link href="/gcj/admin/configuracoes" className="underline" style={{ color: "var(--gcj-red)" }}>
             Configurações → Processos
           </Link>.
           Para adicionar um processo já com todos os dados importados, use{" "}
-          <Link href="/datajuri/processos/novo" className="underline" style={{ color: "var(--gcj-red)" }}>
+          <Link href="/gcj/processos/novo" className="underline" style={{ color: "var(--gcj-red)" }}>
             Processos → Novo processo (CNJ)
           </Link>.
         </p>

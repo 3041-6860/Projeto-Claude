@@ -83,7 +83,7 @@ export default function ProcessosPage() {
         </div>
         <div className="ml-auto flex items-center gap-2">
           <span className="text-xs text-gray-400">{filtrados.length} processo{filtrados.length !== 1 ? "s" : ""}</span>
-          <Link href="/datajuri/processos/novo">
+          <Link href="/gcj/processos/novo">
             <Button className="h-8 text-xs">
               <Plus className="h-3.5 w-3.5 mr-1" />
               Novo Processo

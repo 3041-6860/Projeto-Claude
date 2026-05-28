@@ -5,26 +5,26 @@ import { usePathname } from "next/navigation";
 
 // ─── Abas principais ──────────────────────────────────────────────────────────
 const ABAS = [
-  { label: "Início",            href: "/datajuri"                              },
-  { label: "Processos",         href: "/datajuri/processos"                    },
-  { label: "Clientes",          href: "/datajuri/clientes"                     },
-  { label: "Prazos",            href: "/datajuri/prazos"                       },
-  { label: "Agenda",            href: "/datajuri/agenda"                       },
-  { label: "Tarefas",           href: "/datajuri/tarefas"                      },
-  { label: "Contratos",         href: "/datajuri/contratos"                    },
-  { label: "Documentos",        href: "/datajuri/documentos"                   },
-  { label: "Financeiro",        href: "/datajuri/financeiro"                   },
-  { label: "Relatórios",        href: "/datajuri/relatorios"                   },
-  { label: "Consulta",          href: "/datajuri/processos/consulta-internet"  },
+  { label: "Início",            href: "/gcj"                              },
+  { label: "Processos",         href: "/gcj/processos"                    },
+  { label: "Clientes",          href: "/gcj/clientes"                     },
+  { label: "Prazos",            href: "/gcj/prazos"                       },
+  { label: "Agenda",            href: "/gcj/agenda"                       },
+  { label: "Tarefas",           href: "/gcj/tarefas"                      },
+  { label: "Contratos",         href: "/gcj/contratos"                    },
+  { label: "Documentos",        href: "/gcj/documentos"                   },
+  { label: "Financeiro",        href: "/gcj/financeiro"                   },
+  { label: "Relatórios",        href: "/gcj/relatorios"                   },
+  { label: "Consulta",          href: "/gcj/processos/consulta-internet"  },
 ];
 
 // ─── Ações rápidas (2ª linha) ─────────────────────────────────────────────────
 const ACOES = [
-  { label: "Meu Jurídico",   href: "/datajuri"                              },
-  { label: "Novo Processo",  href: "/datajuri/processos/novo"               },
-  { label: "Novo Cliente",   href: "/datajuri/clientes/novo"                },
-  { label: "Baixa em Lote",  href: "/datajuri/baixa"                        },
-  { label: "+ Adicionar",    href: "/datajuri/processos/novo"               },
+  { label: "Meu Jurídico",   href: "/gcj"                              },
+  { label: "Novo Processo",  href: "/gcj/processos/novo"               },
+  { label: "Novo Cliente",   href: "/gcj/clientes/novo"                },
+  { label: "Baixa em Lote",  href: "/gcj/baixa"                        },
+  { label: "+ Adicionar",    href: "/gcj/processos/novo"               },
 ];
 
 export default function JuridicoTopNav() {
@@ -41,8 +41,8 @@ export default function JuridicoTopNav() {
         {ABAS.map((aba) => {
           // "Início" é ativo apenas na rota exata
           const isActive =
-            aba.href === "/datajuri"
-              ? pathname === "/datajuri"
+            aba.href === "/gcj"
+              ? pathname === "/gcj"
               : pathname === aba.href || pathname.startsWith(aba.href + "/");
 
           return (

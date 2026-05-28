@@ -48,7 +48,7 @@ export default function ClienteDetalhePage() {
         <AlertCircle className="h-10 w-10 mb-3" />
         <p className="font-medium text-sm">Cliente não encontrado</p>
         <p className="text-xs mt-1">{nomeDecoded}</p>
-        <Link href="/datajuri/clientes">
+        <Link href="/gcj/clientes">
           <button type="button" className="mt-4 px-4 py-2 rounded-lg text-xs font-semibold" style={{ background: "var(--gcj-red)", color: "#fff" }}>
             Voltar para Clientes
           </button>
@@ -62,7 +62,7 @@ export default function ClienteDetalhePage() {
 
       {/* Cabeçalho */}
       <div className="flex items-center gap-3">
-        <Link href="/datajuri/clientes">
+        <Link href="/gcj/clientes">
           <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium"
             style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
             <ArrowLeft className="h-3.5 w-3.5" /> Clientes

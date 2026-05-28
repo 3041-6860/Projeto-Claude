@@ -127,7 +127,7 @@ const ALL_NAV_ITEMS = [
   { label: "Negócios",      href: "/negocios",     roles: null                     },
   { label: "Financeiro",    href: "/financeiro",   roles: null                     },
   { label: "RH",            href: "/rh",           roles: null                     },
-  { label: "Jurídico",      href: "/datajuri",     roles: ["admin","juridico"]     },
+  { label: "Jurídico",      href: "/gcj",     roles: ["admin","juridico"]     },
   { label: "Marketing",     href: "/marketing",    roles: null                     },
   { label: "Messenger",     href: "/mensagens",    roles: null                     },
   { label: "Configurações", href: "/configuracoes",roles: null                     },

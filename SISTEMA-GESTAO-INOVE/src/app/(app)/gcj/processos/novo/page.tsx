@@ -309,7 +309,7 @@ function ModoAutomatico({ onSwitchManual }: { onSwitchManual: (numero: string, d
         <p className="text-[11px]" style={{ color: "#92400e" }}>
           A busca consulta a <strong>API pública do DataJud (CNJ)</strong> — cobre todos os tribunais brasileiros (TJSC, TRT, TRF, STJ…).
           Para uma chave dedicada com limites maiores, configure em{" "}
-          <Link href="/datajuri/admin/configuracoes" className="underline font-medium">Configurações → Processos</Link>.
+          <Link href="/gcj/admin/configuracoes" className="underline font-medium">Configurações → Processos</Link>.
         </p>
       </div>
 
@@ -489,7 +489,7 @@ function ModoAutomatico({ onSwitchManual }: { onSwitchManual: (numero: string, d
           <p className="text-[13px] font-bold" style={{ color: "var(--text-primary)" }}>Processo cadastrado com sucesso!</p>
           <p className="text-[11px] mt-1 mb-5" style={{ color: "var(--text-muted)" }}>{numero}</p>
           <div className="flex gap-2">
-            <Link href="/datajuri/processos">
+            <Link href="/gcj/processos">
               <button type="button" className="px-4 py-2 rounded-lg text-[11px] font-semibold"
                 style={{ background: "var(--gcj-red)", color: "#fff" }}>
                 Ver lista de processos
@@ -569,7 +569,7 @@ function ModoManual({ numeroInicial, dadosIniciais }: { numeroInicial?: string; 
         <p className="text-[13px] font-bold" style={{ color: "var(--text-primary)" }}>Processo cadastrado com sucesso!</p>
         <p className="text-[11px] mt-1 mb-5 font-mono" style={{ color: "var(--text-muted)" }}>{form.numero}</p>
         <div className="flex gap-2">
-          <Link href="/datajuri/processos">
+          <Link href="/gcj/processos">
             <button type="button" className="px-4 py-2 rounded-lg text-[11px] font-semibold" style={{ background: "var(--gcj-red)", color: "#fff" }}>
               Ver lista de processos
             </button>
@@ -687,7 +687,7 @@ function ModoManual({ numeroInicial, dadosIniciais }: { numeroInicial?: string; 
       </CardSection>
 
       <div className="flex justify-end gap-2 pb-6">
-        <Link href="/datajuri/processos">
+        <Link href="/gcj/processos">
           <button type="button" className="px-4 py-2 rounded-lg text-[12px] font-medium"
             style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
             Cancelar
@@ -725,7 +725,7 @@ export default function NovoProcessoPage() {
 
       {/* Cabeçalho */}
       <div className="flex items-center gap-3">
-        <Link href="/datajuri/processos">
+        <Link href="/gcj/processos">
           <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium"
             style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
             <ArrowLeft className="h-3.5 w-3.5" /> Voltar

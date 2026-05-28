@@ -58,7 +58,7 @@ export default function ClientesPage() {
           <span className="text-xs" style={{ color: "var(--text-muted)" }}>
             {filtrados.length} cliente{filtrados.length !== 1 ? "s" : ""}
           </span>
-          <Link href="/datajuri/processos/novo">
+          <Link href="/gcj/processos/novo">
             <button
               type="button"
               className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold"
@@ -88,7 +88,7 @@ export default function ClientesPage() {
               {clientes.length === 0 ? "Nenhum cliente cadastrado" : "Nenhum cliente encontrado"}
             </p>
             {clientes.length === 0 && (
-              <Link href="/datajuri/processos/novo">
+              <Link href="/gcj/processos/novo">
                 <button
                   type="button"
                   className="mt-3 px-4 py-2 rounded-lg text-xs font-semibold"

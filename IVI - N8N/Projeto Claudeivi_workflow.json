@@ -383,40 +383,6 @@
             },
             "conditions": [
               {
-                "id": "fh001",
-                "leftValue": "={{ $json.estado }}",
-                "rightValue": "fora_horario_menu",
-                "operator": {
-                  "type": "string",
-                  "operation": "equals"
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "looseTypeValidation": true,
-          "options": {}
-        },
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2.3,
-        "position": [
-          -13424,
-          6192
-        ],
-        "id": "a8402aea-a4dc-4b38-a926-f7e3f2e21d76",
-        "name": "Menu Fora Horario"
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "loose",
-              "version": 3
-            },
-            "conditions": [
-              {
                 "id": "fh002",
                 "leftValue": "={{ $json.mensagem }}",
                 "rightValue": "1",
@@ -798,7 +764,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst agora = Date.now();\nconst TRES_HORAS = 3 * 60 * 60 * 1000;\nconst QUINZE_MIN = 15 * 60 * 1000;\nconst BRT_OFFSET = -3 * 60 * 60 * 1000;\n\nif (!staticData.estados) staticData.estados = {};\nif (!staticData.filaRetorno) staticData.filaRetorno = {};\n\nconst brt = new Date(agora + BRT_OFFSET);\nconst hora = brt.getUTCHours();\nconst dia = brt.getUTCDay();\nconst horarioComercial = dia >= 1 && dia <= 5 && hora >= 8 && hora < 18;\n\nconst paraEnviarMenu = [];\nconst paraAvisar = [];\nconst paraEncerrar = [];\n\n// Fila de retorno — so envia menu se nao tiver conversa ativa\nif (horarioComercial && Object.keys(staticData.filaRetorno).length > 0) {\n  for (const [numero] of Object.entries(staticData.filaRetorno)) {\n    const dadosAtivos = staticData.estados[numero];\n    const estadoAtivo = dadosAtivos ? (typeof dadosAtivos === 'string' ? dadosAtivos : dadosAtivos.estado) : null;\n    if (!estadoAtivo || estadoAtivo === 'menu_enviado') {\n      paraEnviarMenu.push({ numero, acao: 'menu_retorno' });\n    }\n    delete staticData.filaRetorno[numero];\n  }\n}\n\n// Avisos e encerramentos — SOMENTE dentro do horario comercial\nif (horarioComercial) {\n  for (const [numero, dados] of Object.entries(staticData.estados)) {\n    if (typeof dados === 'string') continue;\n    const { estado, timestamp, avisado } = dados;\n    const inativo = agora - timestamp;\n\n    if (estado === 'aguardando_atendente') {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        paraAvisar.push({ numero, acao: 'avisar_espera' });\n      }\n    } else if (estado === 'aguardando_cliente') {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        staticData.estados[numero].timestamp = Date.now();\n        paraAvisar.push({ numero, acao: 'avisar_cliente' });\n      } else if (avisado && inativo >= QUINZE_MIN) {\n        // Remove o estado IMEDIATAMENTE antes de encerrar para nao repetir\n        delete staticData.estados[numero];\n        paraEncerrar.push({ numero, acao: 'encerrar' });\n      }\n    }\n  }\n}\n\nconst resultado = [\n  ...paraEnviarMenu.map(n => ({ json: n })),\n  ...paraAvisar.map(n => ({ json: n })),\n  ...paraEncerrar.map(n => ({ json: n }))\n];\n\nreturn resultado.length > 0 ? resultado : [{ json: { vazio: true } }];"
+          "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst agora = Date.now();\nconst TRES_HORAS = 3 * 60 * 60 * 1000;\nconst QUINZE_MIN = 15 * 60 * 1000;\nconst UM_DIA = 24 * 60 * 60 * 1000;\nconst BRT_OFFSET = -3 * 60 * 60 * 1000;\n\nif (!staticData.estados) staticData.estados = {};\nif (!staticData.filaRetorno) staticData.filaRetorno = {};\n\nconst brt = new Date(agora + BRT_OFFSET);\nconst hora = brt.getUTCHours();\nconst dia = brt.getUTCDay();\nconst horarioComercial = dia >= 1 && dia <= 5 && hora >= 8 && hora < 18;\n\nconst paraEnviarMenu = [];\nconst paraAvisar = [];\nconst paraEncerrar = [];\n\nif (horarioComercial && Object.keys(staticData.filaRetorno).length > 0) {\n  for (const [numero] of Object.entries(staticData.filaRetorno)) {\n    const dadosAtivos = staticData.estados[numero];\n    const estadoAtivo = dadosAtivos ? (typeof dadosAtivos === 'string' ? dadosAtivos : dadosAtivos.estado) : null;\n    if (!estadoAtivo || estadoAtivo === 'menu_enviado') {\n      paraEnviarMenu.push({ numero, acao: 'menu_retorno' });\n    }\n    delete staticData.filaRetorno[numero];\n  }\n}\n\nfor (const [numero, dados] of Object.entries(staticData.estados)) {\n  if (typeof dados === 'string') continue;\n  const { estado, timestamp, avisado } = dados;\n  const inativo = agora - timestamp;\n\n  if (estado === 'aguardando_atendente' || estado === 'atendente_iniciou') {\n    if (horarioComercial && !avisado && inativo >= TRES_HORAS) {\n      staticData.estados[numero].avisado = true;\n      paraAvisar.push({ numero, acao: 'avisar_espera' });\n    }\n  } else if (estado === 'aguardando_cliente') {\n    if (horarioComercial) {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        staticData.estados[numero].timestamp = Date.now();\n        paraAvisar.push({ numero, acao: 'avisar_cliente' });\n      } else if (avisado && inativo >= QUINZE_MIN) {\n        delete staticData.estados[numero];\n        paraEncerrar.push({ numero, acao: 'encerrar' });\n      }\n    }\n  } else if (estado === 'menu_enviado' || estado === 'fora_horario_menu') {\n    if (inativo >= UM_DIA) {\n      delete staticData.estados[numero];\n    }\n  }\n}\n\nconst resultado = [\n  ...paraEnviarMenu.map(n => ({ json: n })),\n  ...paraAvisar.map(n => ({ json: n })),\n  ...paraEncerrar.map(n => ({ json: n }))\n];\n\nreturn resultado.length > 0 ? resultado : [{ json: { vazio: true } }];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -1187,6 +1153,40 @@
         ],
         "id": "d90fc3d3-f734-4c3d-beaf-527ded55a76d",
         "name": "Fora Horario Ativo"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "fh003",
+                "leftValue": "={{ $json.mensagem }}",
+                "rightValue": "2",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -13024,
+          6380
+        ],
+        "id": "fh-opcao2-ivi-node",
+        "name": "Fora Horario Opcao 2"
       }
     ],
     "connections": {
@@ -1342,24 +1342,6 @@
           ]
         ]
       },
-      "Menu Fora Horario": {
-        "main": [
-          [
-            {
-              "node": "Fora Horario Opcao 1 ou 2",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Enviar Menu",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Fora Horario Opcao 1 ou 2": {
         "main": [
           [
@@ -1371,7 +1353,7 @@
           ],
           [
             {
-              "node": "Fora Horario Resp 2",
+              "node": "Fora Horario Opcao 2",
               "type": "main",
               "index": 0
             }
@@ -1658,6 +1640,24 @@
             }
           ]
         ]
+      },
+      "Fora Horario Opcao 2": {
+        "main": [
+          [
+            {
+              "node": "Fora Horario Resp 2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Msg Fora Horario",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "settings": {
@@ -1667,38 +1667,7 @@
     },
     "staticData": {
       "global": {
-        "estados": {
-          "554791928128@s.whatsapp.net": {
-            "estado": "atendente_iniciou",
-            "timestamp": 1777550899451,
-            "avisado": false
-          },
-          "554784018389@s.whatsapp.net": {
-            "estado": "fora_horario_menu",
-            "timestamp": 1778036074772,
-            "avisado": false
-          },
-          "554792260444@s.whatsapp.net": {
-            "estado": "menu_enviado",
-            "timestamp": 1778081025751,
-            "avisado": false
-          },
-          "554791340162@s.whatsapp.net": {
-            "estado": "aguardando_cliente",
-            "timestamp": 1778696152031,
-            "avisado": true
-          },
-          "554797551267@s.whatsapp.net": {
-            "estado": "menu_enviado",
-            "timestamp": 1778503334343,
-            "avisado": false
-          },
-          "554788540599@s.whatsapp.net": {
-            "estado": "menu_enviado",
-            "timestamp": 1778694422400,
-            "avisado": false
-          }
-        },
+        "estados": {},
         "filaRetorno": {}
       },
       "node:Schedule 15min": {
@@ -2113,40 +2082,6 @@
               },
               "conditions": [
                 {
-                  "id": "fh001",
-                  "leftValue": "={{ $json.estado }}",
-                  "rightValue": "fora_horario_menu",
-                  "operator": {
-                    "type": "string",
-                    "operation": "equals"
-                  }
-                }
-              ],
-              "combinator": "and"
-            },
-            "looseTypeValidation": true,
-            "options": {}
-          },
-          "type": "n8n-nodes-base.if",
-          "typeVersion": 2.3,
-          "position": [
-            -13424,
-            6192
-          ],
-          "id": "a8402aea-a4dc-4b38-a926-f7e3f2e21d76",
-          "name": "Menu Fora Horario"
-        },
-        {
-          "parameters": {
-            "conditions": {
-              "options": {
-                "caseSensitive": true,
-                "leftValue": "",
-                "typeValidation": "loose",
-                "version": 3
-              },
-              "conditions": [
-                {
                   "id": "fh002",
                   "leftValue": "={{ $json.mensagem }}",
                   "rightValue": "1",
@@ -2528,7 +2463,7 @@
         },
         {
           "parameters": {
-            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst agora = Date.now();\nconst TRES_HORAS = 3 * 60 * 60 * 1000;\nconst QUINZE_MIN = 15 * 60 * 1000;\nconst BRT_OFFSET = -3 * 60 * 60 * 1000;\n\nif (!staticData.estados) staticData.estados = {};\nif (!staticData.filaRetorno) staticData.filaRetorno = {};\n\nconst brt = new Date(agora + BRT_OFFSET);\nconst hora = brt.getUTCHours();\nconst dia = brt.getUTCDay();\nconst horarioComercial = dia >= 1 && dia <= 5 && hora >= 8 && hora < 18;\n\nconst paraEnviarMenu = [];\nconst paraAvisar = [];\nconst paraEncerrar = [];\n\n// Fila de retorno — so envia menu se nao tiver conversa ativa\nif (horarioComercial && Object.keys(staticData.filaRetorno).length > 0) {\n  for (const [numero] of Object.entries(staticData.filaRetorno)) {\n    const dadosAtivos = staticData.estados[numero];\n    const estadoAtivo = dadosAtivos ? (typeof dadosAtivos === 'string' ? dadosAtivos : dadosAtivos.estado) : null;\n    if (!estadoAtivo || estadoAtivo === 'menu_enviado') {\n      paraEnviarMenu.push({ numero, acao: 'menu_retorno' });\n    }\n    delete staticData.filaRetorno[numero];\n  }\n}\n\n// Avisos e encerramentos — SOMENTE dentro do horario comercial\nif (horarioComercial) {\n  for (const [numero, dados] of Object.entries(staticData.estados)) {\n    if (typeof dados === 'string') continue;\n    const { estado, timestamp, avisado } = dados;\n    const inativo = agora - timestamp;\n\n    if (estado === 'aguardando_atendente') {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        paraAvisar.push({ numero, acao: 'avisar_espera' });\n      }\n    } else if (estado === 'aguardando_cliente') {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        staticData.estados[numero].timestamp = Date.now();\n        paraAvisar.push({ numero, acao: 'avisar_cliente' });\n      } else if (avisado && inativo >= QUINZE_MIN) {\n        // Remove o estado IMEDIATAMENTE antes de encerrar para nao repetir\n        delete staticData.estados[numero];\n        paraEncerrar.push({ numero, acao: 'encerrar' });\n      }\n    }\n  }\n}\n\nconst resultado = [\n  ...paraEnviarMenu.map(n => ({ json: n })),\n  ...paraAvisar.map(n => ({ json: n })),\n  ...paraEncerrar.map(n => ({ json: n }))\n];\n\nreturn resultado.length > 0 ? resultado : [{ json: { vazio: true } }];"
+            "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst agora = Date.now();\nconst TRES_HORAS = 3 * 60 * 60 * 1000;\nconst QUINZE_MIN = 15 * 60 * 1000;\nconst UM_DIA = 24 * 60 * 60 * 1000;\nconst BRT_OFFSET = -3 * 60 * 60 * 1000;\n\nif (!staticData.estados) staticData.estados = {};\nif (!staticData.filaRetorno) staticData.filaRetorno = {};\n\nconst brt = new Date(agora + BRT_OFFSET);\nconst hora = brt.getUTCHours();\nconst dia = brt.getUTCDay();\nconst horarioComercial = dia >= 1 && dia <= 5 && hora >= 8 && hora < 18;\n\nconst paraEnviarMenu = [];\nconst paraAvisar = [];\nconst paraEncerrar = [];\n\nif (horarioComercial && Object.keys(staticData.filaRetorno).length > 0) {\n  for (const [numero] of Object.entries(staticData.filaRetorno)) {\n    const dadosAtivos = staticData.estados[numero];\n    const estadoAtivo = dadosAtivos ? (typeof dadosAtivos === 'string' ? dadosAtivos : dadosAtivos.estado) : null;\n    if (!estadoAtivo || estadoAtivo === 'menu_enviado') {\n      paraEnviarMenu.push({ numero, acao: 'menu_retorno' });\n    }\n    delete staticData.filaRetorno[numero];\n  }\n}\n\nfor (const [numero, dados] of Object.entries(staticData.estados)) {\n  if (typeof dados === 'string') continue;\n  const { estado, timestamp, avisado } = dados;\n  const inativo = agora - timestamp;\n\n  if (estado === 'aguardando_atendente' || estado === 'atendente_iniciou') {\n    if (horarioComercial && !avisado && inativo >= TRES_HORAS) {\n      staticData.estados[numero].avisado = true;\n      paraAvisar.push({ numero, acao: 'avisar_espera' });\n    }\n  } else if (estado === 'aguardando_cliente') {\n    if (horarioComercial) {\n      if (!avisado && inativo >= TRES_HORAS) {\n        staticData.estados[numero].avisado = true;\n        staticData.estados[numero].timestamp = Date.now();\n        paraAvisar.push({ numero, acao: 'avisar_cliente' });\n      } else if (avisado && inativo >= QUINZE_MIN) {\n        delete staticData.estados[numero];\n        paraEncerrar.push({ numero, acao: 'encerrar' });\n      }\n    }\n  } else if (estado === 'menu_enviado' || estado === 'fora_horario_menu') {\n    if (inativo >= UM_DIA) {\n      delete staticData.estados[numero];\n    }\n  }\n}\n\nconst resultado = [\n  ...paraEnviarMenu.map(n => ({ json: n })),\n  ...paraAvisar.map(n => ({ json: n })),\n  ...paraEncerrar.map(n => ({ json: n }))\n];\n\nreturn resultado.length > 0 ? resultado : [{ json: { vazio: true } }];"
           },
           "type": "n8n-nodes-base.code",
           "typeVersion": 2,
@@ -2917,6 +2852,40 @@
           ],
           "id": "d90fc3d3-f734-4c3d-beaf-527ded55a76d",
           "name": "Fora Horario Ativo"
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "loose",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "fh003",
+                  "leftValue": "={{ $json.mensagem }}",
+                  "rightValue": "2",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "looseTypeValidation": true,
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -13024,
+            6380
+          ],
+          "id": "fh-opcao2-ivi-node",
+          "name": "Fora Horario Opcao 2"
         }
       ],
       "connections": {
@@ -3072,24 +3041,6 @@
             ]
           ]
         },
-        "Menu Fora Horario": {
-          "main": [
-            [
-              {
-                "node": "Fora Horario Opcao 1 ou 2",
-                "type": "main",
-                "index": 0
-              }
-            ],
-            [
-              {
-                "node": "Enviar Menu",
-                "type": "main",
-                "index": 0
-              }
-            ]
-          ]
-        },
         "Fora Horario Opcao 1 ou 2": {
           "main": [
             [
@@ -3101,7 +3052,7 @@
             ],
             [
               {
-                "node": "Fora Horario Resp 2",
+                "node": "Fora Horario Opcao 2",
                 "type": "main",
                 "index": 0
               }
@@ -3376,6 +3327,24 @@
             [
               {
                 "node": "Fora Horario Opcao 1 ou 2",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "Msg Fora Horario",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Fora Horario Opcao 2": {
+          "main": [
+            [
+              {
+                "node": "Fora Horario Resp 2",
                 "type": "main",
                 "index": 0
               }

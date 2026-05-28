@@ -49,7 +49,7 @@ const sections: Section[] = [
     roleOnly: ["admin", "juridico"],
     items: [
       // Sem filhos — navegação interna feita pelo JuridicoTopNav
-      { label: "Jurídico", href: "/datajuri", icon: Scale },
+      { label: "Jurídico", href: "/gcj", icon: Scale },
     ],
   },
   {

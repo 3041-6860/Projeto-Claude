@@ -210,7 +210,7 @@ export default function Dashboard() {
       {(w("lista_prazos") || w("lista_audiencias")) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {w("lista_prazos") && (
-            <SectionCard title="Prazos Próximos" icon={AlertTriangle} href="/datajuri/prazos" linkLabel="Ver todos">
+            <SectionCard title="Prazos Próximos" icon={AlertTriangle} href="/gcj/prazos" linkLabel="Ver todos">
               {prazos.filter((p) => p.status !== "cumprido").length === 0
                 ? <Empty text="Nenhum prazo cadastrado" />
                 : prazos
@@ -232,7 +232,7 @@ export default function Dashboard() {
             </SectionCard>
           )}
           {w("lista_audiencias") && (
-            <SectionCard title="Próximas Audiências" icon={Calendar} href="/datajuri/agenda" linkLabel="Ver agenda">
+            <SectionCard title="Próximas Audiências" icon={Calendar} href="/gcj/agenda" linkLabel="Ver agenda">
               {proximasAudiencias.length === 0
                 ? <Empty text="Nenhuma audiência agendada" />
                 : proximasAudiencias.map((a) => {
@@ -255,7 +255,7 @@ export default function Dashboard() {
       {(w("lista_processos") || w("lista_tarefas")) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {w("lista_processos") && (
-            <SectionCard title="Processos Recentes" icon={FolderOpen} href="/datajuri/processos" linkLabel="Ver todos">
+            <SectionCard title="Processos Recentes" icon={FolderOpen} href="/gcj/processos" linkLabel="Ver todos">
               {recentesProcessos.length === 0
                 ? <Empty text="Nenhum processo cadastrado" />
                 : recentesProcessos.map((processo) => {
@@ -278,7 +278,7 @@ export default function Dashboard() {
             </SectionCard>
           )}
           {w("lista_tarefas") && (
-            <SectionCard title="Tarefas Prioritárias" icon={CheckSquare} href="/datajuri/tarefas" linkLabel="Ver todas">
+            <SectionCard title="Tarefas Prioritárias" icon={CheckSquare} href="/gcj/tarefas" linkLabel="Ver todas">
               {tarefas.filter((t) => t.status !== "concluida").length === 0
                 ? <Empty text="Nenhuma tarefa pendente" />
                 : tarefas
@@ -319,7 +319,7 @@ export default function Dashboard() {
               <p className="text-[10px]" style={{ color: "#b45309" }}>Processos encerrados que precisam ser baixados no sistema</p>
             </div>
           </div>
-          <Link href="/datajuri/baixa">
+          <Link href="/gcj/baixa">
             <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold" style={{ background: "#b45309", color: "#fff" }}>
               <CheckCircle style={{ width: 13, height: 13 }} />
               Realizar Baixa
@@ -335,12 +335,12 @@ export default function Dashboard() {
           <p className="text-sm font-semibold" style={{ color: "#222222" }}>Nenhum dado cadastrado</p>
           <p className="text-[11px] mt-1" style={{ color: "#555555" }}>Comece adicionando clientes e processos</p>
           <div className="flex gap-2 mt-4">
-            <Link href="/datajuri/clientes/novo">
+            <Link href="/gcj/clientes/novo">
               <button type="button" className="px-4 py-2 rounded-xl text-[11px] font-semibold" style={{ background: "#8b2333", color: "#fff" }}>
                 Novo Cliente
               </button>
             </Link>
-            <Link href="/datajuri/processos/novo">
+            <Link href="/gcj/processos/novo">
               <button type="button" className="px-4 py-2 rounded-xl text-[11px] font-semibold" style={{ background: "#faf8f6", color: "#4a3a34", border: "1px solid #e8dad3" }}>
                 Novo Processo
               </button>

@@ -19,7 +19,7 @@ const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
   '/rh':                      ['admin', 'gestor', 'rh'],
   '/marketing':               ['admin', 'gestor', 'comercial'],
   '/processos':               ['admin', 'gestor', 'juridico'],
-  '/datajuri':                ['admin', 'juridico'],
+  '/gcj':                ['admin', 'juridico'],
   '/configuracoes':           ['admin'],
 }
 
