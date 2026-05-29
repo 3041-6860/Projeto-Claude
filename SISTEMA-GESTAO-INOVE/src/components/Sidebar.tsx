@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import {
   Home, Briefcase, Users, FileText,
   DollarSign, UserSquare2, Megaphone, MessageSquare,
-  Settings, CheckSquare, Calendar, Rss, UserPlus, Clock, Palmtree, Network, BarChart2, User,
+  Settings, CheckSquare, Calendar, Rss, User,
   Scale, ChevronDown, ChevronRight,
 } from "lucide-react";
 
@@ -30,18 +30,8 @@ const sections: Section[] = [
     items: [
       { label: "Documentos", href: "/documentos", icon: FileText   },
       { label: "Financeiro", href: "/financeiro", icon: DollarSign },
-      {
-        label: "RH", href: "/rh", icon: UserSquare2,
-        children: [
-          { label: "Onboarding",  href: "/rh/onboarding",  icon: UserPlus  },
-          { label: "Organograma", href: "/rh/organograma", icon: Network   },
-          { label: "Ponto",       href: "/rh/ponto",       icon: Clock     },
-          { label: "Férias",      href: "/rh/ferias",      icon: Palmtree  },
-          { label: "Relatórios",  href: "/rh/relatorios",  icon: BarChart2 },
-        ],
-      },
-      { label: "Marketing", href: "/marketing",   icon: Megaphone   },
-      { label: "Tarefas",   href: "/tarefas",     icon: CheckSquare },
+      { label: "Marketing",  href: "/marketing",  icon: Megaphone  },
+      { label: "Tarefas",    href: "/tarefas",    icon: CheckSquare },
     ],
   },
   {
@@ -50,6 +40,14 @@ const sections: Section[] = [
     items: [
       // Sem filhos — navegação interna feita pelo JuridicoTopNav
       { label: "Jurídico", href: "/gcj", icon: Scale },
+    ],
+  },
+  {
+    label: "RH",
+    roleOnly: ["admin", "rh"],
+    items: [
+      // Sem filhos — navegação interna feita pelo RHTopNav
+      { label: "RH", href: "/rh", icon: UserSquare2 },
     ],
   },
   {
@@ -103,8 +101,8 @@ export default function Sidebar({ role }: SidebarProps) {
   }
 
   return (
-    <aside className="app-sidebar flex-shrink-0 flex flex-col h-full overflow-y-auto">
-      <nav className="flex-1 py-2">
+    <aside className="app-sidebar" style={{ flexShrink: 0, display: "flex", flexDirection: "column", height: "100%", overflowY: "auto" }}>
+      <nav style={{ flex: 1, paddingTop: 8, paddingBottom: 8 }}>
         {sections.map((section, si) => {
           if (section.roleOnly && !section.roleOnly.includes(role ?? "")) return null;
           return (

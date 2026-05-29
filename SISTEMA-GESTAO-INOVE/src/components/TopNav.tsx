@@ -80,7 +80,8 @@ type PR = { entrada?: string; almoco?: string; retorno?: string; saida?: string 
 
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 function hhmm() {
-  return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const d = new Date();
+  return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
 }
 
 function usePonto(email: string) {
@@ -223,7 +224,7 @@ export default function TopNav({ user }: TopNavProps) {
   }
 
   return (
-    <nav className="top-nav shrink-0 flex items-stretch">
+    <nav className="top-nav" style={{ display: "flex", alignItems: "stretch", flexShrink: 0 }}>
 
       {/* Logo */}
       <div className="top-nav-brand">
@@ -232,14 +233,15 @@ export default function TopNav({ user }: TopNavProps) {
       </div>
 
       {/* Links centrais */}
-      <div className="flex flex-1">
+      <div style={{ display: "flex", flex: 1 }}>
         {ALL_NAV_ITEMS.filter(item => !item.roles || item.roles.includes(role)).map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href !== "/dashboard" && pathname.startsWith(item.href));
           return (
             <Link key={item.href} href={item.href}
-              className={`top-nav-link flex-1 flex items-center justify-center whitespace-nowrap${isActive ? " active" : ""}`}>
+              className={`top-nav-link${isActive ? " active" : ""}`}
+              style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", whiteSpace: "nowrap" }}>
               {item.label}
             </Link>
           );

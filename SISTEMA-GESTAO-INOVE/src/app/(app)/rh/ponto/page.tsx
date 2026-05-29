@@ -117,7 +117,7 @@ export default function PontoEletronico() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-4 gap-2.5 mb-3">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 12 }}>
         <div className="card card-top-green card-bg-green">
           <p className="card-label">Presentes hoje</p>
           <p className="card-val val-green">{presentes}</p>
@@ -142,7 +142,7 @@ export default function PontoEletronico() {
 
       {/* Alerta ausência */}
       {ausentes > 0 && (
-        <div className="alert alert-red mb-3">
+        <div className="alert alert-red" style={{ marginBottom: 12 }}>
           <span>❌</span>
           <span>
             <strong>{ausentes} usuário{ausentes > 1 ? 's' : ''}</strong> sem registro de ponto hoje — {hojeRows.filter(r => r.status === 'Ausente').map(r => r.nome.split(' ')[0]).join(', ')}.
@@ -244,7 +244,7 @@ export default function PontoEletronico() {
       {/* ── Tab 2: Banco de Horas ── */}
       {tab === 2 && (
         <div>
-          <div className="grid grid-cols-3 gap-2.5 mb-3">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 12 }}>
             <div className="card card-top-green">
               <p className="card-label">Total horas extras</p>
               <p className="card-val val-green">{bancoRows.reduce((a, b) => a + b.extra, 0).toFixed(1)}h</p>

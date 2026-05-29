@@ -14,12 +14,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <TopNav user={user} />
       <Header />
-      <div className="flex flex-1 overflow-hidden">
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Sidebar role={user.role} />
-        <main className="flex-1 overflow-y-auto p-5">
+        <main style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
           {children}
         </main>
       </div>

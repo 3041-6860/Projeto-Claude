@@ -1,22 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import {
-  Users, UserCheck, Calendar, ArrowRight, Building2, Clock,
-  CheckSquare,
-} from 'lucide-react'
 
 // ─── Storage ───────────────────────────────────────────────────────────────────
 const RH_STORAGE = 'inove-rh-colaboradores-v1'
-const PONTO_KEY  = 'inove-ponto-v1'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 interface Colaborador {
   nome: string; cargo: string; dept: string
   adm: string; status: string; ferias: boolean; ativo: boolean
 }
-type PontoRec   = { entrada?: string; almoco?: string; retorno?: string; saida?: string }
-type PontoStore = Record<string, Record<string, PontoRec>>
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 const RH_COLOR  = '#1e4d3a'
@@ -34,77 +27,6 @@ const checklistDeslig = [
   'Entrevista de desligamento realizada',
 ]
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
-function today() { return new Date().toISOString().slice(0, 10) }
-
-// ─── MetricCard ────────────────────────────────────────────────────────────────
-function MetricCard({ label, value, sub, iconBg, icon: Icon }: {
-  label: string; value: string | number; sub?: string; iconBg: string; icon: React.ElementType
-}) {
-  return (
-    <div className="rounded-xl p-3.5" style={{ background: '#fff', border: '1px solid #d1e7dd' }}>
-      <div className="flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] truncate" style={{ color: '#555555' }}>{label}</p>
-          <p className="text-xl font-bold mt-0.5 leading-none" style={{ color: '#111111' }}>{value}</p>
-          {sub && <p className="text-[10px] mt-1 truncate" style={{ color: '#555555' }}>{sub}</p>}
-        </div>
-        <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: iconBg }}>
-          <Icon style={{ width: 18, height: 18, color: RH_COLOR }} />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── SectionCard ───────────────────────────────────────────────────────────────
-function SectionCard({ title, icon: Icon, href, linkLabel, children }: {
-  title: string; icon: React.ElementType; href?: string; linkLabel?: string; children: React.ReactNode
-}) {
-  return (
-    <div className="rounded-xl" style={{ background: '#fff', border: '1px solid #d1e7dd' }}>
-      <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: '#e8f5e9' }}>
-        <span className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: '#111111' }}>
-          <Icon style={{ width: 13, height: 13, color: RH_COLOR }} />
-          {title}
-        </span>
-        {href && linkLabel && (
-          <Link href={href}>
-            <span className="flex items-center gap-0.5 text-[10px] font-medium" style={{ color: RH_COLOR }}>
-              {linkLabel} <ArrowRight style={{ width: 10, height: 10 }} />
-            </span>
-          </Link>
-        )}
-      </div>
-      <div className="px-3 py-2 space-y-1">{children}</div>
-    </div>
-  )
-}
-
-// ─── RowItem ───────────────────────────────────────────────────────────────────
-function RowItem({ dotColor, main, sub, right, right2 }: {
-  dotColor: string; main: string; sub?: string; right?: string; right2?: string
-}) {
-  return (
-    <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg" style={{ background: '#f6fbf7' }}>
-      <div className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: dotColor }} />
-      <div className="flex-1 min-w-0">
-        <p className="text-[11px] font-medium truncate" style={{ color: '#111111' }}>{main}</p>
-        {sub && <p className="text-[10px] truncate" style={{ color: '#555555' }}>{sub}</p>}
-      </div>
-      <div className="text-right shrink-0">
-        {right  && <p className="text-[10px] font-medium" style={{ color: '#222222' }}>{right}</p>}
-        {right2 && <p className="text-[10px] font-semibold" style={{ color: RH_COLOR }}>{right2}</p>}
-      </div>
-    </div>
-  )
-}
-
-// ─── Empty ─────────────────────────────────────────────────────────────────────
-function Empty({ text }: { text: string }) {
-  return <p className="text-[11px] text-center py-6" style={{ color: '#555555' }}>{text}</p>
-}
-
 // ─── Form helpers ──────────────────────────────────────────────────────────────
 function Campo({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
@@ -119,10 +41,12 @@ function Campo({ label, required, children }: { label: string; required?: boolea
 const inputStyle  = { width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid var(--border)', fontFamily: 'inherit', fontSize: 13, outline: 'none', boxSizing: 'border-box' as const }
 const selectStyle = { ...inputStyle, background: '#fff', cursor: 'pointer' }
 
-// ─── Dashboard ─────────────────────────────────────────────────────────────────
-export default function RHDashboard() {
-  const [lista, setLista] = useState<Colaborador[]>([])
-  const [ponto, setPonto] = useState<PontoStore>({})
+// ─── Página ────────────────────────────────────────────────────────────────────
+export default function Colaboradores() {
+  const [lista, setLista]           = useState<Colaborador[]>([])
+  const [filtDept, setFiltDept]     = useState('')
+  const [filtStatus, setFiltStatus] = useState('')
+  const [busca, setBusca]           = useState('')
 
   // Modais
   const [modalAdm,    setModalAdm]    = useState(false)
@@ -152,8 +76,6 @@ export default function RHDashboard() {
     try {
       const s = localStorage.getItem(RH_STORAGE)
       if (s) setLista(JSON.parse(s))
-      const p = localStorage.getItem(PONTO_KEY)
-      if (p) setPonto(JSON.parse(p))
     } catch {}
   }, [])
 
@@ -161,6 +83,13 @@ export default function RHDashboard() {
     setLista(data)
     try { localStorage.setItem(RH_STORAGE, JSON.stringify(data)) } catch {}
   }
+
+  const ativos = lista.filter(c => c.ativo)
+  const filtrados = ativos.filter(c =>
+    (!filtDept   || c.dept === filtDept) &&
+    (!filtStatus || c.status === filtStatus) &&
+    (!busca      || c.nome.toLowerCase().includes(busca.toLowerCase()) || c.cargo.toLowerCase().includes(busca.toLowerCase()))
+  )
 
   function admitir() {
     if (!admNome || !admCargo || !admDept || !admDataAdm) return
@@ -190,152 +119,128 @@ export default function RHDashboard() {
     setDChecklist(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])
   }
 
-  // ── Métricas ──────────────────────────────────────────────────────────────────
-  const ativos    = lista.filter(c => c.ativo)
-  const juridico  = ativos.filter(c => c.dept === 'Jurídico').length
-  const emFerias  = ativos.filter(c => c.ferias).length
-  const todayKey  = today()
-
-  // Ponto — presentes hoje
-  const pontoEmails    = Object.keys(ponto)
-  const presentesHoje  = pontoEmails.filter(email => ponto[email]?.[todayKey]?.entrada).length
-  const ausentesHoje   = pontoEmails.filter(email => !ponto[email]?.[todayKey]?.entrada).length
-
-  // Colaboradores recentes (5 últimos admitidos)
-  const recentes = [...ativos]
-    .sort((a, b) => b.adm.localeCompare(a.adm))
-    .slice(0, 5)
-
-  // Ponto hoje — linhas para exibição
-  const pontoHoje = pontoEmails.slice(0, 5).map(email => ({
-    email,
-    rec: ponto[email]?.[todayKey] ?? {} as PontoRec,
-    presente: !!(ponto[email]?.[todayKey]?.entrada),
-  }))
-
   return (
-    <div className="space-y-4 max-w-[1200px]">
+    <div className="dash-wrap">
 
-      {/* Cabeçalho */}
-      <div className="flex items-center justify-between">
+      {/* Breadcrumb */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, fontSize: 13, color: 'var(--gray)' }}>
+        <Link href="/rh" style={{ color: RH_COLOR, fontWeight: 600 }}>RH</Link>
+        <span>›</span>
+        <span>Colaboradores</span>
+      </div>
+
+      {/* Toolbar */}
+      <div className="pg-toolbar">
         <div>
-          <h1 className="text-base font-bold" style={{ color: '#111111' }}>Dashboard</h1>
-          <p className="text-[10px] mt-0.5" style={{ color: '#555555' }}>Gestão de Pessoas · RH</p>
+          <p className="pg-title">Colaboradores</p>
+          <p className="pg-sub">{ativos.length} colaboradores ativos</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setModalAdm(true)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold"
-          style={{ background: RH_COLOR, color: '#fff' }}
-        >
-          + Admitir Colaborador
-        </button>
-      </div>
-
-      {/* Linha 1 — métricas principais */}
-      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
-        <MetricCard label="Colaboradores Ativos" value={ativos.length}
-          sub={`${lista.length} total`} iconBg="#e8f5e9" icon={Users} />
-        <MetricCard label="Jurídico" value={juridico}
-          sub="Advogados e estagiários" iconBg="#e3f2fd" icon={Building2} />
-        <MetricCard label="Presentes Hoje" value={presentesHoje > 0 ? presentesHoje : '—'}
-          sub={ausentesHoje > 0 ? `${ausentesHoje} ausente${ausentesHoje > 1 ? 's' : ''}` : 'Sem registros hoje'}
-          iconBg="#f1f8e9" icon={UserCheck} />
-        <MetricCard label="Em Férias" value={emFerias > 0 ? emFerias : '—'}
-          sub="Afastamentos ativos" iconBg="#fff3e0" icon={Calendar} />
-      </div>
-
-      {/* Linha 2 — seções */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        {/* Colaboradores recentes */}
-        <SectionCard title="Colaboradores Ativos" icon={Users}
-          href="/rh/colaboradores" linkLabel="Ver todos">
-          {recentes.length === 0
-            ? <Empty text="Nenhum colaborador cadastrado" />
-            : recentes.map(c => (
-                <RowItem key={c.nome}
-                  dotColor={c.status === 'Ativo' ? '#16a34a' : '#d97706'}
-                  main={c.nome}
-                  sub={`${c.cargo} · ${c.dept}`}
-                  right={c.adm}
-                  right2={c.status}
-                />
-              ))
-          }
-        </SectionCard>
-
-        {/* Ponto hoje */}
-        <SectionCard title="Ponto Hoje" icon={Clock}
-          href="/rh/ponto" linkLabel="Ver ponto completo">
-          {pontoHoje.length === 0
-            ? <Empty text="Nenhum registro de ponto hoje" />
-            : pontoHoje.map(r => (
-                <RowItem key={r.email}
-                  dotColor={r.presente ? '#16a34a' : '#dc2626'}
-                  main={r.email}
-                  sub={r.rec.entrada ? `Entrada: ${r.rec.entrada}${r.rec.saida ? ` · Saída: ${r.rec.saida}` : ''}` : 'Sem registro'}
-                  right2={r.presente ? 'Presente' : 'Ausente'}
-                />
-              ))
-          }
-        </SectionCard>
-      </div>
-
-      {/* Linha 3 — acesso rápido aos módulos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <SectionCard title="Módulos" icon={CheckSquare}>
-          <div className="grid grid-cols-2 gap-2 py-1">
-            {[
-              { label: 'Ponto Eletrônico', href: '/rh/ponto',      emoji: '🕐' },
-              { label: 'Férias',           href: '/rh/ferias',     emoji: '🌴' },
-              { label: 'Organograma',      href: '/rh/organograma',emoji: '🏢' },
-              { label: 'Onboarding',       href: '/rh/onboarding', emoji: '📋' },
-              { label: 'Relatórios',       href: '/rh/relatorios', emoji: '📊' },
-            ].map(m => (
-              <Link key={m.href} href={m.href}>
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium transition-opacity hover:opacity-75"
-                  style={{ background: '#f6fbf7', color: '#111111', border: '1px solid #d1e7dd' }}>
-                  <span>{m.emoji}</span>
-                  {m.label}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </SectionCard>
-
-        {/* Alerta colaboradores em férias */}
-        {emFerias > 0 && (
-          <SectionCard title="Em Férias" icon={Calendar} href="/rh/ferias" linkLabel="Gerenciar férias">
-            {ativos.filter(c => c.ferias).map(c => (
-              <RowItem key={c.nome}
-                dotColor="#d97706"
-                main={c.nome}
-                sub={`${c.cargo} · ${c.dept}`}
-                right2="Férias"
-              />
-            ))}
-          </SectionCard>
-        )}
-      </div>
-
-      {/* Estado vazio */}
-      {ativos.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 rounded-2xl"
-          style={{ background: '#fff', border: '2px dashed #d1e7dd' }}>
-          <Users style={{ width: 40, height: 40, color: '#d1e7dd', marginBottom: 12 }} />
-          <p className="text-sm font-semibold" style={{ color: '#222222' }}>Nenhum colaborador cadastrado</p>
-          <p className="text-[11px] mt-1" style={{ color: '#555555' }}>Comece admitindo o primeiro colaborador</p>
-          <button
-            type="button"
-            onClick={() => setModalAdm(true)}
-            className="mt-4 px-4 py-2 rounded-xl text-[11px] font-semibold"
-            style={{ background: RH_COLOR, color: '#fff' }}
-          >
-            + Admitir Colaborador
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Link href="/rh/ponto"        className="btn btn-outline btn-sm">🕐 Ponto</Link>
+          <Link href="/rh/ferias"       className="btn btn-outline btn-sm">🌴 Férias</Link>
+          <Link href="/rh/organograma"  className="btn btn-outline btn-sm">🏢 Organograma</Link>
+          <button type="button" onClick={() => setModalAdm(true)} className="btn btn-sm" style={{ background: RH_COLOR, color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 6, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600, fontSize: 13 }}>
+            + Admitir colaborador
           </button>
         </div>
-      )}
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-4 gap-2.5 mb-3">
+        {[
+          { label: 'Total',      val: String(ativos.length),                                                         hint: 'Colaboradores ativos',    valClass: 'val-navy' },
+          { label: 'Jurídico',   val: String(ativos.filter(c => c.dept === 'Jurídico').length),                      hint: 'Advogados e estagiários', valClass: 'val-navy' },
+          { label: 'Férias',     val: String(ativos.filter(c => c.ferias).length) || '—',                            hint: 'Pendentes de aprovação',  valClass: ativos.filter(c => c.ferias).length > 0 ? 'val-navy' : 'val-gray' },
+          { label: 'Contratos',  val: String(ativos.filter(c => c.status === 'Estágio').length) || '—',              hint: 'Estagiários ativos',      valClass: 'val-gray' },
+        ].map((c) => (
+          <div key={c.label} className="card">
+            <p className="card-label">{c.label}</p>
+            <p className={`card-val ${c.valClass}`}>{c.val}</p>
+            <p className="card-hint">{c.hint}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Filtros */}
+      <div className="filter-bar">
+        <select title="Filtrar por departamento" value={filtDept} onChange={e => setFiltDept(e.target.value)}>
+          <option value="">Todos os departamentos</option>
+          {depts.map(d => <option key={d}>{d}</option>)}
+        </select>
+        <select title="Filtrar por status" value={filtStatus} onChange={e => setFiltStatus(e.target.value)}>
+          <option value="">Todos os status</option>
+          <option>Ativo</option>
+          <option>Estágio</option>
+          <option>Férias</option>
+        </select>
+        <input
+          type="text"
+          value={busca}
+          onChange={e => setBusca(e.target.value)}
+          placeholder="Buscar por nome ou cargo…"
+          style={{ minWidth: 200 }}
+        />
+      </div>
+
+      {/* Tabela */}
+      <table className="tbl">
+        <thead>
+          <tr>
+            <th>Nome</th><th>Cargo</th><th>Departamento</th>
+            <th>Admissão</th><th>Status</th><th>Férias</th>
+            <th aria-label="Ações"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtrados.length === 0 && (
+            <tr>
+              <td colSpan={7} style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--gray)', fontSize: 13 }}>
+                {ativos.length === 0
+                  ? 'Nenhum colaborador cadastrado. Clique em "+ Admitir colaborador" para começar.'
+                  : 'Nenhum colaborador encontrado com os filtros selecionados.'}
+              </td>
+            </tr>
+          )}
+          {filtrados.map((c) => (
+            <tr key={c.nome}>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: RH_COLOR, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
+                    {c.nome.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                  </div>
+                  <span className="font-semibold">{c.nome}</span>
+                </div>
+              </td>
+              <td>{c.cargo}</td>
+              <td>{c.dept}</td>
+              <td style={{ color: 'var(--gray)' }}>{c.adm}</td>
+              <td>
+                <span className={c.status === 'Ativo' ? 'badge badge-green' : 'badge badge-navy'}>
+                  {c.status}
+                </span>
+              </td>
+              <td>
+                {c.ferias
+                  ? <span className="badge badge-orange">Pendente</span>
+                  : <span className="val-gray">—</span>}
+              </td>
+              <td>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  <button type="button" className="btn btn-outline btn-sm">Ver</button>
+                  <button
+                    type="button"
+                    onClick={() => setModalDeslig(c)}
+                    className="btn btn-sm"
+                    style={{ background: '#fff', color: '#c62828', border: '1px solid #c62828', padding: '5px 11px', fontSize: 12, borderRadius: 6, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}
+                  >
+                    Dispensar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {/* ── Modal Admissão ─────────────────────────────────────────────────────── */}
       {modalAdm && (
@@ -415,7 +320,9 @@ export default function RHDashboard() {
 
             <div style={{ padding: '14px 24px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
               <button type="button" onClick={() => setModalAdm(false)} className="btn btn-outline">Cancelar</button>
-              <button type="button" onClick={admitir} className="btn btn-navy" style={{ background: RH_COLOR }}>✅ Confirmar admissão</button>
+              <button type="button" onClick={admitir} className="btn btn-sm" style={{ background: RH_COLOR, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600, fontSize: 13 }}>
+                ✅ Confirmar admissão
+              </button>
             </div>
           </div>
         </div>
